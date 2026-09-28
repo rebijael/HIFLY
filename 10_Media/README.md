@@ -132,7 +132,12 @@ protective enclosure
 antenna protection
 component interfaces
 
-CAD images should be distinguishable from photographs of physical hardware.
+<img width="1600" height="899" alt="WhatsApp Image 2026-09-28 at 20 47 53" src="https://github.com/user-attachments/assets/d5b3ab6c-db73-40af-a86b-61017230391b" />
+<img width="1600" height="899" alt="WhatsApp Image 2026-09-28 at 20 47 53 (1)" src="https://github.com/user-attachments/assets/24473fa3-7187-40fa-bb9e-224a25a5efc1" />
+<img width="1600" height="899" alt="WhatsApp Image 2026-09-28 at 20 47 31" src="https://github.com/user-attachments/assets/d01d1947-08b7-467c-9f2f-dc29ac6d8b97" />
+<img width="1600" height="899" alt="WhatsApp Image 2026-09-28 at 20 47 43 (1)" src="https://github.com/user-attachments/assets/dbc1de7c-00c7-4bc5-8e8f-d59629284b3b" />
+<img width="1600" height="631" alt="WhatsApp Image 2026-09-28 at 20 47 43 (2)" src="https://github.com/user-attachments/assets/b2431cd6-c3a1-408c-b4e4-de3c12737bf8" />
+
 
 8. CAD and Prototype Distinction
 
