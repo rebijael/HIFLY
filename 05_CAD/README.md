@@ -1,343 +1,67 @@
-# HIFLY — CAD and Mechanical Design
+# 05 — CAD
 
-## 1. Overview
+## 1. CAD Overview
 
-This directory contains the Computer-Aided Design (CAD) documentation for the HIFLY thermal-management system.
+The HIFLY CAD section represents the mechanical and thermal integration of the major physical subsystems.
 
-The CAD section provides the mechanical and physical representation of the proposed system, including:
+The CAD architecture connects:
 
-- Battery thermal-management arrangement
-- Pulsating Heat Pipe (PHP) integration
-- Thermal insulation arrangement
-- Heating-element placement
-- Protection enclosure/chamber
-- Flexible silicone protection
-- Lightweight protective-layer concept
-- Sensor placement
-- Antenna/radome protection
-- Assembly arrangement
-- Prototype photographs and CAD evidence
+- overall system assembly
+- battery enclosure and battery placement
+- Pulsating Heat Pipe (PHP)
+- thermal-management structure
+- protection enclosure
+- flexible thermal-protection elements
+- antenna protection
+- internal component arrangement
 
----
-
-## 2. CAD Objectives
-
-The CAD design should support the following objectives:
-
-1. Provide a clear physical arrangement of the thermal-management system.
-2. Define the relative placement of the battery, heating element and thermal-management components.
-3. Provide a basis for prototype fabrication.
-4. Support thermal and mechanical analysis.
-5. Document the physical integration of the protection features.
-6. Provide traceable evidence of the proposed design.
-
----
-
-## 3. CAD Design Architecture
-
-The conceptual physical arrangement is:
+The CAD models provide the physical representation required to understand how the HIFLY thermal, electrical, and environmental-protection concepts are integrated into a single system.
 
 ```text
-+---------------------------------------------------+
-|              PROTECTIVE OUTER LAYER               |
-|                                                   |
-|   +-------------------------------------------+   |
-|   |              INSULATION                   |   |
-|   |                                           |   |
-|   |    +---------------------------------+    |   |
-|   |    |        BATTERY PACK             |    |   |
-|   |    |                                 |    |   |
-|   |    |  Thermal Monitoring             |    |   |
-|   |    +---------------------------------+    |   |
-|   |             ↑               ↑             |   |
-|   |       Heating Element      PHP            |   |
-|   |                                           |   |
-|   +-------------------------------------------+   |
-|                                                   |
-|       Protection / Chamber / Support Structure    |
-+---------------------------------------------------+
+                         HIFLY CAD SYSTEM
+                              │
+             ┌────────────────┼────────────────┐
+             │                │                │
+             ▼                ▼                ▼
+        Main Assembly      Battery          Thermal
+                           Structure        Management
+             │                │                │
+             └────────────────┼────────────────┘
+                              │
+                              ▼
+                       Protection System
+                              │
+                 ┌────────────┼────────────┐
+                 │            │            │
+                 ▼            ▼            ▼
+              Enclosure    Silicone      Antenna
+                           Protection     Protection
+                              │
+                              ▼
+                        Complete CAD
+                           Assembly
 ```
+2. CAD Purpose
 
-The final geometry must follow the actual CAD model.
+The CAD models are used to represent the physical implementation of the HIFLY design.
 
----
+The CAD work provides a connection between the system architecture and the prototype hardware by showing:
 
-## 4. Main CAD Components
+component placement
+enclosure relationships
+thermal-management integration
+battery arrangement
+PHP placement
+protection structures
+mechanical interfaces
+overall packaging
 
-The CAD model may contain the following major components.
+The CAD representation is therefore part of the engineering evidence for the proposed system.
 
-### 4.1 Battery Pack
+3. CAD Architecture
 
-The battery pack is the primary component being thermally managed.
+The HIFLY CAD structure is divided into major mechanical and thermal subsystems.
 
-The CAD representation should document:
-
-- Overall battery dimensions
-- Mounting arrangement
-- Available clearance
-- Sensor locations
-- Heating-element interface
-- PHP interface where applicable
-- Insulation interface
-
-Actual dimensions should be taken from the physical battery or finalized CAD model.
-
----
-
-### 4.2 Pulsating Heat Pipe
-
-The Pulsating Heat Pipe (PHP) is integrated as part of the thermal-management architecture.
-
-The CAD model should show:
-
-- PHP routing
-- Thermal contact region
-- Condenser region
-- Connection/interface with the protected thermal system
-- Mechanical support where required
-
-The CAD model represents the physical PHP-assisted thermal path.
-
-It should not be interpreted as a direct simulation of the internal pulsating two-phase flow.
-
----
-
-### 4.3 Heating Element
-
-The heating element provides controlled thermal input to the battery thermal-management system.
-
-The CAD model should document:
-
-- Heating-element location
-- Contact/interface region
-- Mounting arrangement
-- Electrical connection clearance
-- Insulation relationship
-
-The final heater dimensions should match the selected physical component.
-
----
-
-### 4.4 Thermal Insulation
-
-Thermal insulation is incorporated to reduce unwanted heat transfer to the surrounding environment.
-
-The CAD model should show:
-
-```text
-External Environment
-        ↓
-Protective Layer
-        ↓
-Thermal Insulation
-        ↓
-Thermal Management System
-        ↓
-Battery
-```
-
-The final insulation thickness should be based on the selected material and prototype design.
-
----
-
-### 4.5 Protection Chamber
-
-The protection chamber represents the protected environment for sensitive electrical/electronic components where required.
-
-The design objective is to provide:
-
-- Physical protection
-- Controlled enclosure conditions
-- Reduced exposure to the external environment
-- Electrical insulation support
-- Component mounting
-
-The final design should document the actual enclosure geometry and sealing approach.
-
----
-
-### 4.6 Flexible Silicone Protection
-
-Flexible silicone protection may be used around selected components or interfaces.
-
-Potential purposes include:
-
-- Mechanical protection
-- Flexible sealing
-- Vibration isolation
-- Protection of exposed interfaces
-- Accommodation of thermal expansion
-
-The exact material and geometry must be documented from the actual prototype/design.
-
----
-
-### 4.7 Lightweight Protective Layer
-
-A lightweight protective layer is included as part of the environmental-protection concept.
-
-Its final material and thickness must be selected and documented based on the actual design.
-
-Do not claim a specific radiation-protection performance unless supported by test or analysis evidence.
-
----
-
-### 4.8 Antenna Protection
-
-The antenna/radome arrangement should provide environmental protection while maintaining the intended communication configuration.
-
-The CAD model should document:
-
-- Antenna location
-- Antenna mounting
-- Protective cover/radome where applicable
-- Cable routing
-- Clearance around the antenna
-
-Communication performance should be supported by separate testing rather than inferred from CAD geometry alone.
-
----
-
-## 5. Assembly Structure
-
-A possible CAD assembly hierarchy is:
-
-```text
-HIFLY_Assembly
-│
-├── Battery_Pack
-│
-├── Heating_Element
-│
-├── PHP
-│   ├── Evaporator_Region
-│   ├── Transport_Section
-│   └── Condenser_Region
-│
-├── Thermal_Insulation
-│
-├── Protection_Chamber
-│
-├── Flexible_Silicone
-│
-├── Protective_Layer
-│
-├── Temperature_Sensor
-│
-├── Voltage_Current_Monitoring
-│
-├── Antenna
-│
-└── Mechanical_Supports
-```
-
-The actual assembly hierarchy may differ according to the CAD software and finalized design.
-
----
-
-## 6. Sensor Placement
-
-Temperature sensors should be positioned at locations relevant to the thermal-control objective.
-
-The CAD documentation should identify:
-
-- Battery temperature sensor
-- Ambient temperature sensor where available
-- Additional thermal measurement points where used
-
-Example:
-
-```text
-+--------------------------+
-|       Battery Pack       |
-|                          |
-|        [TEMP]            |
-|                          |
-+--------------------------+
-          │
-          ↓
-      Controller
-```
-
-Actual sensor locations should be shown in the final CAD model and prototype photographs.
-
----
-
-## 7. Cable Routing
-
-Electrical wiring should be considered during CAD development.
-
-The model should provide appropriate routing for:
-
-- Temperature sensors
-- Voltage/current monitoring
-- Heating-element wiring
-- MOSFET/control wiring
-- LoRa/antenna connections
-- Power connections
-
-Cable routing should avoid:
-
-- Excessive bending
-- Moving mechanical parts
-- Unprotected sharp edges
-- Unnecessary thermal exposure
-- Interference with enclosure closure
-
-Final routing must be verified against the physical prototype.
-
----
-
-## 8. Mechanical Integration
-
-The CAD design should consider how the components are physically assembled.
-
-Important considerations include:
-
-- Component alignment
-- Mounting
-- Fastening
-- Clearance
-- Serviceability
-- Cable access
-- Sensor access
-- Thermal contact
-- Insulation placement
-- Protective enclosure fit
-
-The final mechanical assembly should be checked before fabrication.
-
----
-
-## 9. Design for Assembly
-
-The CAD model should support straightforward assembly and maintenance.
-
-Where practical:
-
-```text
-Component
-   ↓
-Mount
-   ↓
-Connect
-   ↓
-Insulate
-   ↓
-Protect
-   ↓
-Inspect
-```
-
-The final design should make it possible to access components that require inspection or replacement.
-
----
-
-## 10. CAD File Organization
-
-The recommended CAD repository structure is:
-
-```text
 05_CAD/
 │
 ├── README.md
@@ -354,345 +78,766 @@ The recommended CAD repository structure is:
 ├── enclosure/
 │   └── README.md
 │
-├── thermal_management/
-│   └── README.md
-│
-├── drawings/
-│   └── README.md
-│
-├── renders/
-│   └── README.md
-│
-└── screenshots/
+└── thermal_management/
     └── README.md
-```
 
-Actual CAD files can be added to the relevant directories.
+Each directory corresponds to a specific physical aspect of the HIFLY design.
 
----
+4. Overall Assembly
 
-## 11. Recommended CAD File Types
+The overall HIFLY assembly represents the relationship between the major physical subsystems.
 
-Depending on the CAD software used, the repository may contain:
+                  ┌──────────────────────────┐
+                  │      HIFLY ASSEMBLY      │
+                  └─────────────┬────────────┘
+                                │
+         ┌──────────────────────┼──────────────────────┐
+         │                      │                      │
+         ▼                      ▼                      ▼
+   Battery System         Thermal System        Protection System
+         │                      │                      │
+         │                      ├── PHP                ├── Enclosure
+         │                      ├── Heater             ├── Insulation
+         │                      └── Thermal Path       ├── Silicone
+         │                                             └── Protective Layer
+         │
+         └──────────────────────┬──────────────────────┘
+                                │
+                                ▼
+                       Electrical / Control
+                                │
+                                ├── Sensors
+                                ├── Controller
+                                ├── MOSFET
+                                └── LoRa / Antenna
 
-```text
-STEP
-STP
-IGES
-IGS
-STL
-F3D
-SLDPRT
-SLDASM
-FCStd
-DXF
-DWG
-PNG
-JPG
-PDF
-```
+The assembly is intended to provide a common physical representation of the complete HIFLY architecture.
 
-Only include formats that are actually generated by the project.
+5. Mechanical Integration
 
----
+Mechanical integration is important because the thermal, electrical, and protection systems occupy the same physical package.
 
-## 12. CAD Naming Convention
+The CAD design considers the relationship between:
 
-Use descriptive file names.
+Battery
+   │
+   ├── Thermal Protection
+   │
+   ├── Heating Element
+   │
+   ├── PHP
+   │
+   ├── Temperature Sensing
+   │
+   └── Electrical Connections
+            │
+            ▼
+        Main Assembly
+            │
+            ├── Controller
+            ├── MOSFET
+            ├── Power Monitoring
+            └── LoRa / Antenna
 
-Recommended examples:
+The CAD model therefore represents the physical arrangement required for the integrated HIFLY system rather than treating every subsystem as an isolated component.
 
-```text
-HIFLY_Main_Assembly
-HIFLY_Battery_Mount
-HIFLY_PHP_Module
-HIFLY_Heater_Mount
-HIFLY_Thermal_Insulation
-HIFLY_Protection_Chamber
-HIFLY_Antenna_Protection
-HIFLY_Thermal_System_Assembly
-```
+6. Thermal Integration
 
-Include revision information when required:
+The CAD architecture places the thermal-management elements around the components that require thermal protection or thermal control.
 
-```text
-HIFLY_Main_Assembly_REV_A
-HIFLY_Main_Assembly_REV_B
-```
+The major thermal elements are:
 
-Do not overwrite important design revisions without preserving the previous version.
+thermal insulation
+Pulsating Heat Pipe
+heating element
+battery
+temperature-sensing locations
+thermal-contact structures
+enclosure/protection structure
+                  THERMAL INTEGRATION
 
----
+                     Environment
+                          │
+                          ▼
+                  ┌──────────────┐
+                  │  Insulation  │
+                  └──────┬───────┘
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+              ▼                     ▼
+             PHP                  Heater
+              │                     │
+              └──────────┬──────────┘
+                         │
+                         ▼
+                      Battery
+                         │
+                         ▼
+                 Temperature Sensor
 
-## 13. CAD Revision Control
+The CAD model provides the physical geometry needed to understand this thermal arrangement.
 
-Each major CAD revision should record:
+7. Battery CAD
 
-| Field | Description |
-|---|---|
-| Revision | Design revision |
-| Date | Revision date |
-| Change | Description of modification |
-| Reason | Why the change was made |
-| Author | Person responsible |
-| Status | Design / Prototype / Tested |
+The battery subsystem is represented as a dedicated CAD component because the battery is both:
 
-Example:
+the primary stored-energy source
+a major thermal-management target
 
-| Revision | Change | Status |
-|---|---|---|
-| A | Initial assembly | Design |
-| B | Updated component placement | Design |
-| C | Prototype-compatible arrangement | Prototype |
+The battery CAD representation connects the battery geometry with the surrounding thermal-management and protection structure.
 
-Replace the example entries with actual project history.
+                ┌─────────────────────┐
+                │   BATTERY SYSTEM    │
+                └──────────┬──────────┘
+                           │
+             ┌─────────────┼─────────────┐
+             │             │             │
+             ▼             ▼             ▼
+        Insulation       Heater         PHP
+             │             │             │
+             └─────────────┼─────────────┘
+                           │
+                           ▼
+                   Thermal Structure
 
----
+The battery CAD section represents the physical packaging relationship rather than establishing battery performance values that are not available from the CAD model.
 
-## 14. CAD Drawings
+8. PHP CAD
 
-Technical drawings should contain, where applicable:
+The Pulsating Heat Pipe is represented as a dedicated thermal-management component.
 
-- Part name
-- Drawing number
-- Revision
-- Units
-- Dimensions
-- Material
-- Tolerances
-- Mounting information
-- Notes
-- Author/date
+The PHP CAD model provides the physical geometry used to represent its placement and integration with the thermal structure.
 
-Do not add dimensions that have not been verified.
+                 ┌──────────────────────┐
+                 │   PHP GEOMETRY       │
+                 └──────────┬───────────┘
+                            │
+                            ▼
+                 ┌──────────────────────┐
+                 │ Thermal Interface    │
+                 └──────────┬───────────┘
+                            │
+                            ▼
+                         Battery
 
----
+The CAD representation establishes the physical form and placement of the PHP.
 
-## 15. CAD-to-Prototype Traceability
+It does not by itself prove thermal performance or reproduce the internal pulsating two-phase flow of the PHP.
 
-The repository should make it possible to compare:
+9. PHP Thermal Integration
 
-```text
+The PHP is integrated with the HIFLY thermal architecture as a passive-assisted heat-transfer element.
+
+                 Heat Source / Thermal Region
+                              │
+                              ▼
+                       ┌─────────────┐
+                       │     PHP     │
+                       └──────┬──────┘
+                              │
+                              ▼
+                    Thermal Distribution
+                              │
+                              ▼
+                         Thermal Body
+
+The physical CAD model is used to represent:
+
+PHP placement
+PHP geometry
+interface with the surrounding structure
+relationship with the protected component
+
+The actual thermal performance of the PHP is evaluated separately through simulation and experimental evidence.
+
+10. Enclosure CAD
+
+The enclosure provides the mechanical boundary for the protected HIFLY hardware.
+
+The enclosure is associated with the environmental-protection concept and supports the physical arrangement of the internal components.
+
+             ┌────────────────────────────┐
+             │          ENCLOSURE         │
+             │                            │
+             │   ┌────────────────────┐   │
+             │   │ Internal Hardware  │   │
+             │   │                    │   │
+             │   │ Battery            │   │
+             │   │ Thermal System     │   │
+             │   │ Controller         │   │
+             │   │ Sensors             │   │
+             │   └────────────────────┘   │
+             │                            │
+             └────────────────────────────┘
+
+The enclosure geometry provides the physical packaging context for the internal subsystems.
+
+11. Protection Structure
+
+The physical protection architecture combines several mechanisms.
+
+             HIGH-ALTITUDE ENVIRONMENT
+                       │
+                       ▼
+                ┌─────────────┐
+                │  ENCLOSURE  │
+                └──────┬──────┘
+                       │
+                       ▼
+                ┌─────────────┐
+                │ INSULATION  │
+                └──────┬──────┘
+                       │
+                       ▼
+              Internal Components
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+          ▼            ▼            ▼
+       Battery        PHP        Electronics
+
+The physical design is intended to support the broader HIFLY protection architecture covering low-temperature conditions, low-pressure operation, thermal cycling, electrical protection, and environmental exposure.
+
+12. Flexible Silicone Protection
+
+Flexible silicone is included as part of the physical protection concept for regions exposed to thermal cycling and mechanical interfaces.
+
+Its role within the CAD architecture is represented as:
+
+Mechanical / Thermal Interface
+             │
+             ▼
+      Flexible Silicone
+             │
+      ┌──────┴──────┐
+      │             │
+      ▼             ▼
+ Thermal Isolation  Mechanical Flexibility
+
+The CAD model provides the physical placement and geometry of the flexible protection element.
+
+13. Lightweight Protective Layer
+
+The HIFLY design includes a lightweight protective layer as part of the environmental-protection concept.
+
+The CAD architecture represents this layer as a physical element surrounding or supporting the protected subsystem where applicable.
+
+          External Environment
+                  │
+                  ▼
+       Lightweight Protective Layer
+                  │
+                  ▼
+             Enclosure
+                  │
+                  ▼
+             Insulation
+                  │
+                  ▼
+          Protected Electronics
+
+The CAD model establishes the physical implementation of the layer.
+
+The CAD geometry alone does not establish a quantified radiation attenuation value.
+
+14. Antenna Protection
+
+The antenna and communication hardware require physical protection while maintaining the intended communication path.
+
+The CAD relationship is:
+
+              HIFLY Electronics
+                     │
+                     ▼
+               LoRa Module
+                     │
+                     ▼
+                  Antenna
+                     │
+                     ▼
+             Protective Structure
+                     │
+                     ▼
+                Environment
+
+The protection structure is represented physically in the CAD architecture without treating the protective layer as proof of a specific communication-performance value.
+
+15. Internal Component Arrangement
+
+The physical layout of HIFLY brings together thermal, electrical, and communication components.
+
+A conceptual arrangement is:
+
+┌────────────────────────────────────────────────┐
+│                 HIFLY ENCLOSURE                │
+│                                                │
+│  ┌──────────────────┐                          │
+│  │     BATTERY      │                          │
+│  │                  │                          │
+│  │  Thermal System  │                          │
+│  └────────┬─────────┘                          │
+│           │                                    │
+│      ┌────▼─────┐                              │
+│      │   PHP    │                              │
+│      └──────────┘                              │
+│                                                │
+│  ┌──────────────────┐  ┌────────────────────┐  │
+│  │   Controller     │  │   Power / MOSFET   │  │
+│  │      MCU         │  │      Section       │  │
+│  └──────────────────┘  └────────────────────┘  │
+│                                                │
+│  ┌──────────────────────────────────────────┐  │
+│  │          LoRa / Antenna Section          │  │
+│  └──────────────────────────────────────────┘  │
+│                                                │
+└────────────────────────────────────────────────┘
+
+The exact final physical placement is represented by the corresponding CAD assembly.
+
+16. Sensor Placement
+
+Temperature sensors are positioned as part of the thermal-monitoring architecture.
+
+The physical relationship is:
+
+Thermal Region
+      │
+      ▼
+Temperature Sensor
+      │
+      ▼
+Electrical Connection
+      │
+      ▼
+HIFLY Controller
+
+The CAD model provides the spatial context for the sensor relative to the battery and thermal-management components.
+
+17. Heater Placement
+
+The heating element is positioned so that its thermal input can contribute to the intended thermal-management region.
+
+                  Heater
+                    │
+                    ▼
+             Thermal Interface
+                    │
+          ┌─────────┴─────────┐
+          │                   │
+          ▼                   ▼
+       Battery               PHP
+          │                   │
+          └─────────┬─────────┘
+                    ▼
+             Thermal Structure
+
+The heater placement is therefore part of both the mechanical and thermal CAD design.
+
+18. CAD and Thermal Management
+
+The CAD model provides the geometry used by the thermal-management design.
+
+                  CAD Geometry
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+          ▼            ▼            ▼
+       Battery        PHP         Heater
+          │            │            │
+          └────────────┼────────────┘
+                       │
+                       ▼
+                 Thermal Model
+                       │
+                       ▼
+                  Simulation
+
+The geometry can therefore support later thermal analysis without treating the CAD model itself as a simulation result.
+
+19. CAD and Simulation
+
+The CAD geometry forms the physical basis for the thermal simulation workflow.
+
+The relationship is:
+
 CAD Model
-    ↓
-Fabricated Component
-    ↓
-Assembled Prototype
-    ↓
-Photograph
-    ↓
-Test Evidence
-```
+   │
+   ▼
+Geometry Preparation
+   │
+   ▼
+Thermal Simulation Model
+   │
+   ▼
+Thermal Evaluation
+   │
+   ├── Temperature Distribution
+   ├── Heat Flux
+   └── Thermal Comparison
 
-This helps demonstrate that the repository represents an actual development process rather than only a conceptual design.
+The simulation results are maintained separately from the CAD files so that geometry and analysis evidence remain distinguishable.
 
----
+20. PHP Simulation Relationship
 
-## 16. CAD Evidence
+A CAD model containing a PHP-assisted thermal architecture can be used for thermal evaluation.
 
-Recommended evidence includes:
+However, an ordinary steady-state thermal FEA model does not directly simulate the internal pulsating two-phase flow of a real PHP.
 
-### CAD Screenshots
+The appropriate interpretation is:
 
-Show:
+PHP CAD Geometry
+       │
+       ▼
+Thermal Evaluation
+       │
+       ▼
+PHP-Assisted Thermal Architecture
+       │
+       ├── Temperature Distribution
+       ├── Heat Flux
+       └── Comparative Thermal Behavior
 
-- Complete assembly
-- Battery integration
-- PHP placement
-- Heater placement
-- Protection chamber
-- Insulation
-- Sensor locations
+The simulation should therefore be described as a thermal evaluation of the PHP-assisted architecture rather than as a direct CFD reproduction of PHP pulsating flow unless a dedicated multiphase model is actually used.
 
-### Rendered Views
+21. CAD Evidence
 
-Where available:
+The HIFLY CAD section provides physical evidence for the proposed mechanical architecture.
 
-- Isometric view
-- Front view
-- Side view
-- Exploded view
-- Section view
+The evidence chain is:
 
-### Physical Comparison
-
-Where available:
-
-```text
-CAD View              Prototype View
----------             --------------
-[CAD image]           [Photo]
-```
-
-This comparison should only be added using actual project images.
-
----
-
-## 17. Thermal Analysis Connection
-
-The CAD geometry may be used as the basis for thermal analysis.
-
-The analysis workflow can be:
-
-```text
+System Concept
+     │
+     ▼
+Mechanical Architecture
+     │
+     ▼
 CAD Geometry
-     ↓
-Material Definition
-     ↓
-Boundary Conditions
-     ↓
-Thermal Analysis
-     ↓
-Temperature Distribution
-     ↓
-Heat Flux
-     ↓
-Design Evaluation
-```
+     │
+     ▼
+Assembly
+     │
+     ▼
+Prototype / Fabrication
+     │
+     ▼
+Physical Evidence
 
-For a PHP-assisted design, ordinary steady-state thermal analysis should be described as an evaluation of the thermal architecture.
+The CAD files therefore connect the conceptual solution with its physical implementation.
 
-It should not be presented as a direct numerical simulation of the PHP's internal pulsating two-phase flow unless an appropriate multiphase model has actually been performed.
+22. CAD and Prototype Relationship
 
----
+The CAD model represents the intended physical structure, while photographs and physical prototype evidence represent the fabricated or assembled system.
 
-## 18. Mechanical Design Checks
+                  DESIGN
+                    │
+                    ▼
+                   CAD
+                    │
+                    ▼
+              Physical Build
+                    │
+                    ▼
+                Prototype
+                    │
+                    ▼
+              Photos / Video
 
-Before fabrication, review:
+This separation allows the repository to distinguish between designed geometry and physically demonstrated hardware.
 
-- [ ] Overall dimensions
-- [ ] Component clearances
-- [ ] Battery fit
-- [ ] Heater fit
-- [ ] PHP routing
-- [ ] Insulation fit
-- [ ] Sensor placement
-- [ ] Cable routing
-- [ ] Enclosure closure
-- [ ] Antenna clearance
-- [ ] Mounting points
-- [ ] Service access
+23. CAD Documentation Structure
 
----
+The HIFLY CAD documentation is divided into five main areas:
 
-## 19. Prototype Inspection
+CAD Section	Main Content
+assembly/	Overall system assembly and component integration
+battery/	Battery geometry and packaging
+php/	Pulsating Heat Pipe geometry and integration
+enclosure/	Protection and enclosure geometry
+thermal_management/	Thermal-management structure and interfaces
 
-After fabrication, compare the physical prototype with the CAD model.
+Each section provides the physical context needed to understand its role within the complete HIFLY system.
 
-Check:
+24. Assembly Relationship
 
-- Component placement
-- Dimensions
-- Mounting
-- Cable routing
-- Insulation placement
-- PHP placement
-- Sensor placement
-- Enclosure fit
-- Antenna arrangement
+The CAD assembly connects the individual subsystem models.
 
-Document deviations between CAD and prototype when they occur.
+                ┌──────────────┐
+                │   Battery    │
+                └──────┬───────┘
+                       │
+                       ▼
+                ┌──────────────┐
+                │     PHP      │
+                └──────┬───────┘
+                       │
+                       ▼
+                ┌──────────────┐
+                │    Heater    │
+                └──────┬───────┘
+                       │
+                       ▼
+                ┌──────────────┐
+                │ Thermal Mgmt │
+                └──────┬───────┘
+                       │
+                       ▼
+                ┌──────────────┐
+                │  Enclosure   │
+                └──────┬───────┘
+                       │
+                       ▼
+                Complete Assembly
 
----
+The assembly provides the common reference for the mechanical relationship between the subsystems.
 
-## 20. Current CAD Status
+25. Thermal-Management CAD Relationship
 
-| Item | Status |
-|---|---|
-| Main System Concept | Design |
-| Battery Integration | Design / Prototype |
-| PHP Geometry | Design / Prototype |
-| Heating Element Placement | Design / Prototype |
-| Thermal Insulation | Design / Prototype |
-| Protection Chamber | Design |
-| Flexible Silicone Protection | Design |
-| Protective Layer | Design |
-| Sensor Placement | Design |
-| Antenna Protection | Design |
-| Full Assembly | Design / Prototype |
-| Fabrication Validation | Planned / In Progress |
+The thermal-management CAD section connects the physical components involved in heat generation, heat transfer, and thermal protection.
 
-Update the status using actual project evidence.
+Heat Source
+    │
+    ▼
+┌───────────────┐
+│   Heater      │
+└───────┬───────┘
+        │
+        ▼
+┌───────────────┐
+│ Thermal Body  │
+└───────┬───────┘
+        │
+   ┌────┴─────┐
+   │          │
+   ▼          ▼
+Battery      PHP
+   │          │
+   └────┬─────┘
+        │
+        ▼
+   Heat Transfer
+        │
+        ▼
+     Structure
 
----
+The CAD geometry supports the analysis and physical implementation of this thermal arrangement.
 
-## 21. Evidence Classification
+26. CAD and Electrical Integration
 
-Use the following terminology:
+Although CAD primarily represents physical geometry, the assembly also provides the mechanical context for electrical components.
 
-- **Concept** — initial mechanical idea
-- **Design** — CAD geometry developed
-- **Prototype** — physical component fabricated
-- **Tested** — physical component tested under a documented condition
-- **Validated** — design supported by defined evidence
+Electrical Components
+       │
+       ├── Battery
+       ├── Controller
+       ├── MOSFET
+       ├── Sensors
+       └── LoRa Module
+                │
+                ▼
+        Physical Packaging
+                │
+                ▼
+             CAD Model
 
-Do not claim CAD validation solely because a CAD model exists.
+This ensures that the electrical architecture is represented within the same physical system rather than existing only as a schematic.
 
----
+27. CAD and Communication System
 
-## 22. Recommended Future CAD Evidence
+The LoRa communication hardware is physically integrated into the HIFLY assembly.
 
-The repository should eventually contain:
+        HIFLY Controller
+               │
+               ▼
+         LilyGO T3-S3
+               │
+               ▼
+            Antenna
+               │
+               ▼
+      Protective Structure
+               │
+               ▼
+           Environment
 
-```text
-05_CAD/
-├── README.md
-├── assembly/
-│   ├── main_assembly
-│   └── exploded_view
-├── battery/
-├── php/
-├── enclosure/
-├── thermal_management/
-├── drawings/
-├── renders/
-└── screenshots/
-```
+The CAD model provides the physical placement and protection context for the communication subsystem.
 
-Add actual files as they become available.
+28. CAD and Environmental Protection
 
----
+The physical CAD architecture supports multiple environmental-protection concepts.
 
-## 23. Related Documentation
+              HIGH-ALTITUDE ENVIRONMENT
+                         │
+          ┌──────────────┼──────────────┐
+          │              │              │
+          ▼              ▼              ▼
+       Low Temp       Low Pressure    Radiation
+          │              │              │
+          ▼              ▼              ▼
+      Insulation      Enclosure     Protective Layer
+          │              │              │
+          └──────────────┼──────────────┘
+                         │
+                         ▼
+                   Protected System
 
-System architecture:
+The CAD model provides the physical geometry for these protective elements.
 
-```text
-02_Solution/system_architecture.md
-```
+29. CAD and Thermal Cycling
 
-Hardware overview:
+Thermal cycling can create repeated expansion and contraction across mechanical and electrical interfaces.
 
-```text
-03_Hardware/hardware_overview.md
-```
+The HIFLY CAD architecture includes flexible silicone protection as part of the physical response to this type of mechanical and thermal interface.
 
-Thermal control:
+Thermal Cycling
+      │
+      ▼
+Expansion / Contraction
+      │
+      ▼
+Mechanical Interface
+      │
+      ▼
+Flexible Silicone
+      │
+      ▼
+Protected Interface
 
-```text
-04_Software/control_logic/thermal_control.md
-```
+The CAD model represents the placement and geometry of the flexible protection element.
 
-Simulation:
+30. CAD Traceability
 
-```text
-06_Simulation/
-```
+The CAD repository is connected to the rest of HIFLY through a clear engineering chain.
 
-Testing:
+Problem Statement
+       │
+       ▼
+System Requirements
+       │
+       ▼
+Solution Architecture
+       │
+       ▼
+Hardware Architecture
+       │
+       ▼
+CAD
+       │
+       ├────────────► Simulation
+       │
+       └────────────► Prototype
+                            │
+                            ▼
+                         Testing
 
-```text
-07_Testing/
-```
+This structure allows the physical CAD design to be evaluated against the system-level problem and requirements.
 
-Media:
+31. CAD Design Evidence
 
-```text
-10_Media/
-```
+The HIFLY CAD evidence can represent:
 
-Documentation:
+complete system geometry
+subsystem geometry
+battery integration
+PHP geometry
+thermal-management structure
+enclosure geometry
+component placement
+mechanical interfaces
+antenna protection
+physical integration
 
-```text
-11_Documentation/
-```
+CAD geometry should be interpreted together with simulation and physical testing evidence when evaluating actual performance.
+
+32. CAD Status Representation
+
+The repository uses the following status concepts for engineering artifacts:
+
+Status	Meaning
+Concept	Design concept established
+Design	Geometry or architecture developed
+Simulated	Geometry used in analysis
+Prototype	Physical implementation exists
+Tested	Physical or software test performed
+Validated	Evidence supports the corresponding requirement
+Planned	Future implementation or analysis
+
+A CAD model is not automatically considered experimentally validated merely because the geometry is complete.
+
+33. CAD Evidence Chain
+                   CAD MODEL
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+          ▼            ▼            ▼
+       Geometry      Assembly      Interfaces
+          │            │            │
+          └────────────┼────────────┘
+                       │
+                       ▼
+                 Physical Build
+                       │
+              ┌────────┴────────┐
+              │                 │
+              ▼                 ▼
+          Prototype           Testing
+              │                 │
+              └────────┬────────┘
+                       ▼
+                  Engineering
+                    Evidence
+
+This approach keeps the repository focused on traceable engineering evidence.
+
+34. Overall HIFLY CAD System
+                         HIFLY CAD
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+        ▼                   ▼                   ▼
+     ASSEMBLY             BATTERY              PHP
+        │                   │                   │
+        │                   │                   │
+        └───────────────────┼───────────────────┘
+                            │
+                            ▼
+                  THERMAL MANAGEMENT
+                            │
+                 ┌──────────┼──────────┐
+                 │          │          │
+                 ▼          ▼          ▼
+              Heater       PHP      Insulation
+                 │          │          │
+                 └──────────┼──────────┘
+                            │
+                            ▼
+                       ENCLOSURE
+                            │
+                 ┌──────────┼──────────┐
+                 │          │          │
+                 ▼          ▼          ▼
+              Battery    Electronics  Antenna
+                            │
+                            ▼
+                       PROTECTION
+                            │
+                            ▼
+                      COMPLETE SYSTEM
+35. Final CAD Role in HIFLY
+
+The CAD system provides the physical representation of HIFLY's integrated architecture.
+
+It connects:
+
+the battery thermal-management system
+the Pulsating Heat Pipe
+the active heating system
+insulation
+protection structures
+flexible silicone protection
+electronics packaging
+LoRa communication hardware
+antenna protection
+the overall mechanical assembly
+
+The CAD models form the geometric foundation for physical integration, thermal simulation, fabrication, and prototype evidence while remaining distinct from measured performance results.
