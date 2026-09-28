@@ -1,716 +1,714 @@
-# HIFLY — Pulsating Heat Pipe (PHP) CAD
+# HIFLY Pulsating Heat Pipe (PHP) CAD Subsystem
 
-## 1. Purpose
+## 1. Overview
 
-This directory documents the Computer-Aided Design (CAD) representation and physical integration of the Pulsating Heat Pipe (PHP) used in the HIFLY thermal-management architecture.
+The Pulsating Heat Pipe (PHP) is a central component of the HIFLY thermal-management architecture.
 
-The PHP is intended to provide a passive thermal-transfer path within the thermal-management system.
+The PHP CAD subsystem defines the physical geometry, placement, interfaces, and integration of the PHP with the rest of the HIFLY system.
 
-This documentation covers:
+The PHP is intended to provide a passive thermal-management pathway for transferring heat from a heated region toward a suitable heat-rejection or heat-spreading region.
+
+The CAD representation focuses on:
 
 - PHP geometry
-- Routing
-- Battery interface
-- Evaporator region
-- Transport section
-- Condenser region
-- Mechanical support
-- Thermal interface
-- Assembly integration
-- CAD evidence
-- Prototype comparison
+- evaporator region
+- condenser region
+- connecting flow path
+- mounting and physical support
+- thermal interfaces
+- relationship with the battery and electronics
+- relationship with insulation
+- enclosure integration
+- compatibility with the high-altitude system architecture
+- CAD-to-simulation traceability
+- CAD-to-prototype traceability
+
+No unsupported PHP dimensions, working-fluid properties, thermal conductivity, heat-transfer coefficient, operating temperature, or measured performance are assigned in this document.
 
 ---
 
 ## 2. PHP Role in HIFLY
 
-The conceptual thermal-management path is:
+The first HIFLY environmental challenge is reduced cooling efficiency at high altitude.
+
+The PHP addresses this challenge through a passive thermal-transfer architecture.
 
 ```text
-Battery / Heat Source
-        ↓
-   Evaporator Region
-        ↓
-   PHP Transport Path
-        ↓
-   Condenser Region
-        ↓
- Heat Rejection / Transfer
+                 HIFLY THERMAL PROBLEM
+
+             High-Altitude Environment
+                       │
+                       ▼
+              Reduced Heat Rejection
+                       │
+                       ▼
+                Local Heat Build-Up
+                       │
+                       ▼
+                 ┌────────────┐
+                 │ PHP System │
+                 └─────┬──────┘
+                       │
+                       ▼
+               Thermal Redistribution
+                       │
+                       ▼
+              HIFLY Thermal Structure
 ```
 
-The PHP is integrated with the surrounding thermal-management architecture rather than being treated as an isolated component.
+The PHP is therefore integrated into the HIFLY architecture as a thermal-management component rather than as a standalone mechanical part.
 
----
+3. PHP CAD Architecture
 
-## 3. PHP CAD Objectives
+The PHP CAD model represents the physical thermal path between the heat-input region and the heat-transfer or heat-rejection region.
 
-The CAD model should support:
+                  PHP CAD ARCHITECTURE
 
-1. Definition of PHP geometry
-2. Identification of thermal interfaces
-3. Mechanical integration with the battery system
-4. Definition of routing
-5. Support and mounting
-6. Clearance verification
-7. Fabrication planning
-8. Thermal-analysis preparation
-9. CAD-to-prototype comparison
+          Heat Input Region
+                 │
+                 ▼
+        ┌─────────────────┐
+        │  Evaporator     │
+        │     Region      │
+        └────────┬────────┘
+                 │
+                 │ PHP Flow Path
+                 │
+        ┌────────┴────────┐
+        │                 │
+        │  PHP Channels   │
+        │  / Tubes        │
+        │                 │
+        └────────┬────────┘
+                 │
+                 ▼
+        ┌─────────────────┐
+        │   Condenser /   │
+        │ Thermal Output  │
+        │     Region      │
+        └─────────────────┘
 
----
+The final physical configuration is determined by the actual PHP Fusion 360 CAD model and the selected PHP construction.
 
-## 4. PHP Assembly Concept
+4. PHP Physical Structure
 
-```text
-             PHP ASSEMBLY
+The CAD representation separates the PHP into functional regions.
+
+PHP Region	CAD Function
+Evaporator region	Receives heat from the thermal source
+PHP channel/path	Provides the internal thermal-transfer geometry
+Bends/turns	Define the physical flow-path arrangement
+Condenser region	Provides the thermal-output interface
+Mounting interface	Connects the PHP to the surrounding assembly
+Thermal contact regions	Define contact with the heat source or receiving structure
+
+The CAD model establishes these regions geometrically without assigning unsupported thermal-performance values.
+
+5. Evaporator Region
+
+The evaporator region is positioned near the intended heat source.
+
+For HIFLY, the thermal source may include heat generated by electrical or electronic components that require thermal management.
+
+              HEAT SOURCE
+                  │
+                  │ Heat Transfer
+                  ▼
+        ┌───────────────────┐
+        │ PHP EVAPORATOR    │
+        │      REGION       │
+        └─────────┬─────────┘
+                  │
+                  │
+                  ▼
+             PHP PATH
+
+The CAD model establishes the physical contact or interface between the heat source and PHP evaporator according to the selected assembly configuration.
+
+6. Condenser Region
+
+The condenser region provides the corresponding thermal-output side of the PHP.
+
+             PHP FLOW PATH
                    │
-        ┌──────────┴──────────┐
-        │                     │
-        ↓                     ↓
- Evaporator Region       Condenser Region
-        │                     │
-        └──────────┬──────────┘
-                   │
-             Transport Path
-                   │
-                   ↓
-             Thermal System
-```
-
-The actual geometry should follow the finalized CAD model.
-
----
-
-## 5. PHP Main Components
-
-The CAD documentation should identify the following regions where applicable:
-
-```text
-PHP
-│
-├── Evaporator Region
-│
-├── Transport Section
-│
-├── Condenser Region
-│
-├── Bends / Turns
-│
-└── Mechanical Supports
-```
-
-The exact configuration depends on the fabricated PHP design.
-
----
-
-## 6. Evaporator Region
-
-The evaporator region is the portion of the PHP associated with the heat-input side.
-
-For HIFLY, it is positioned in relation to the battery or intended thermal source.
-
-Conceptually:
-
-```text
-Battery
-   │
-   ↓
-Thermal Interface
-   │
-   ↓
-PHP Evaporator
-   │
-   ↓
-PHP Transport Path
-```
-
-The CAD model should document:
-
-- Location
-- Contact area
-- Geometry
-- Mounting
-- Clearance
-- Thermal interface
-
-Actual dimensions should be taken from the finalized CAD model.
-
----
-
-## 7. Transport Section
-
-The transport section provides the physical path between the thermal regions.
-
-The CAD model should document:
-
-- Tube/path routing
-- Bends
-- Length
-- Supports
-- Clearance
-- Interface with surrounding structure
-
-Avoid unnecessary sharp bends where the physical PHP design does not permit them.
-
----
-
-## 8. Condenser Region
-
-The condenser region is associated with the heat-rejection or heat-transfer side of the PHP.
-
-Conceptually:
-
-```text
-Evaporator
-    │
-    ↓
-Transport Section
-    │
-    ↓
-Condenser
-    │
-    ↓
-Heat Transfer / Rejection
-```
-
-The CAD documentation should show its location and relationship to the surrounding structure.
-
----
-
-## 9. PHP Routing
-
-PHP routing should be designed to fit within the available mechanical envelope.
-
-Consider:
-
-- Battery dimensions
-- Insulation
-- Protection chamber
-- Mechanical supports
-- Wiring
-- Sensors
-- Antenna/electronics
-- Fabrication constraints
-
-Example:
-
-```text
-       ┌───────────────┐
-       │   Battery     │
-       │               │
-       └───────┬───────┘
-               │
-        PHP Evaporator
-               │
-        ╭──────┴──────╮
-        │             │
-        │ PHP Path    │
-        │             │
-        ╰──────┬──────╯
-               │
-          Condenser
-```
-
-This diagram is conceptual and is not a manufacturing drawing.
-
----
-
-## 10. PHP Dimensions
-
-Do not enter assumed dimensions.
-
-Document the actual CAD dimensions when available.
-
-| Parameter | Value |
-|---|---|
-| PHP overall length | TBD |
-| PHP overall width | TBD |
-| PHP overall height | TBD |
-| Tube/channel diameter | TBD |
-| Number of turns | TBD |
-| Evaporator length | TBD |
-| Condenser length | TBD |
-| Transport length | TBD |
-| Bend radius | TBD |
-| Total mass | TBD |
-
----
-
-## 11. PHP Material
-
-The material should be documented based on the actual fabricated PHP.
-
-| Parameter | Value |
-|---|---|
-| Tube/channel material | TBD |
-| Material grade | TBD |
-| Surface treatment | TBD |
-| Joining method | TBD |
-| Working-fluid specification | TBD |
-
-The working-fluid information should only be documented when confirmed from the actual PHP design.
-
----
-
-## 12. Thermal Interface
-
-The PHP must have a defined physical interface with the component from which it receives or transfers heat.
-
-The CAD model should identify:
-
-- Contact surface
-- Interface material
-- Contact geometry
-- Mechanical retention
-- Relative orientation
-
-Conceptually:
-
-```text
-Heat Source
-    ↓
-Thermal Interface
-    ↓
-PHP
-```
-
-Thermal performance must be established through analysis and/or testing rather than inferred from CAD geometry alone.
-
----
-
-## 13. Mechanical Support
-
-The PHP should be mechanically supported where required.
-
-Possible supports include:
-
-- Brackets
-- Clamps
-- Mounting plates
-- Printed supports
-- Silicone interfaces
-- Enclosure supports
-
-The selected support method should be documented in the CAD and hardware sections.
-
----
-
-## 14. PHP and Battery Clearance
-
-The assembly should maintain suitable clearance between the PHP and battery.
-
-Check:
-
-```text
-PHP ↔ Battery
-PHP ↔ Heater
-PHP ↔ Insulation
-PHP ↔ Wiring
-PHP ↔ Protection Structure
-PHP ↔ Sensors
-PHP ↔ Mechanical Supports
-```
-
-Any CAD interference should be recorded and corrected before fabrication where practical.
-
----
-
-## 15. PHP and Heater Integration
-
-Where the heating element is used for thermal testing or battery thermal management, the CAD model should show its relationship to the PHP.
-
-Conceptually:
-
-```text
-Heating Element
-       ↓
-Thermal Input
-       ↓
-PHP Evaporator
-       ↓
-Transport Section
-       ↓
-Condenser
-```
-
-The exact arrangement should match the physical prototype.
-
----
-
-## 16. PHP and Insulation
-
-Thermal insulation may be positioned around selected regions of the PHP and battery thermal-management system.
-
-The CAD model should distinguish between:
-
-- PHP geometry
-- Thermal interface
-- Insulation
-- External environment
-
-Example:
-
-```text
-┌─────────────────────────────┐
-│       Insulation            │
-│                             │
-│    ┌───────────────────┐    │
-│    │       PHP         │    │
-│    └───────────────────┘    │
-│                             │
-└─────────────────────────────┘
-```
-
-The actual coverage must follow the finalized design.
-
----
-
-## 17. PHP Protection
-
-The PHP should be protected against unintended mechanical damage during handling and operation.
-
-Potential protection may include:
-
-- Mechanical supports
-- Enclosure
-- Flexible silicone
-- Protective outer layer
-- Insulation
-
-The selected protection method should be documented with actual evidence.
-
----
-
-## 18. CAD Assembly Relationship
-
-The PHP should be referenced from the main assembly.
-
-```text
-05_CAD/
-│
-├── assembly/
-│   └── Main Assembly
-│
-├── battery/
-│   └── Battery CAD
-│
-└── php/
-    └── PHP CAD
-```
-
-The PHP model should use a consistent coordinate system and origin/reference scheme where practical.
-
----
-
-## 19. PHP CAD File Organization
-
-Recommended directory:
-
-```text
-05_CAD/php/
-│
-├── README.md
-├── cad/
-├── drawings/
-├── screenshots/
-└── prototype_comparison/
-```
-
-Add actual files only when they are available.
-
----
-
-## 20. Recommended PHP CAD Files
-
-Possible files include:
-
-```text
-HIFLY_PHP
-HIFLY_PHP_Assembly
-HIFLY_PHP_Evaporator
-HIFLY_PHP_Condenser
-HIFLY_PHP_Mount
-HIFLY_PHP_Drawing
-```
-
-Use the native CAD format and neutral exchange format where appropriate.
-
----
-
-## 21. CAD Screenshots
-
-Recommended screenshots include:
-
-### Complete PHP
-
-Shows the entire PHP geometry.
-
-### Battery Interface
-
-Shows the relationship between PHP and battery.
-
-### Evaporator
-
-Shows the thermal-input region.
-
-### Condenser
-
-Shows the heat-transfer/rejection region.
-
-### Assembly
-
-Shows the PHP installed in the HIFLY system.
-
-### Section View
-
-Shows the PHP relationship with insulation and surrounding structure.
-
-Only use screenshots from the actual CAD model.
-
----
-
-## 22. CAD-to-Prototype Comparison
-
-Where the physical PHP is available, compare:
-
-```text
-CAD Model
-    ↓
-Fabricated PHP
-    ↓
-Physical Assembly
-```
-
-Recommended comparison table:
-
-| Feature | CAD | Prototype | Difference |
-|---|---|---|---|
-| Overall geometry | Defined | TBD | TBD |
-| Evaporator location | Defined | TBD | TBD |
-| Condenser location | Defined | TBD | TBD |
-| Routing | Defined | TBD | TBD |
-| Supports | Defined | TBD | TBD |
-| Battery interface | Defined | TBD | TBD |
-
-Do not mark a feature as matching until it has been physically inspected.
-
----
-
-## 23. PHP Thermal Analysis
-
-The PHP CAD geometry can be used as part of thermal analysis.
-
-Possible workflow:
-
-```text
-PHP CAD
-   ↓
-Thermal Assembly
-   ↓
-Material Assignment
-   ↓
-Boundary Conditions
-   ↓
-Thermal Analysis
-   ↓
-Temperature Distribution
-   ↓
-Heat Flux
-```
-
-A conventional steady-state thermal analysis should be described as an evaluation of the PHP-assisted thermal architecture.
-
-It should not be presented as a direct simulation of internal PHP pulsating two-phase flow unless an appropriate multiphase simulation has actually been performed.
-
----
-
-## 24. Simulation Geometry Simplification
-
-The complete CAD model may contain small mechanical details that are unnecessary for thermal analysis.
-
-Possible simplifications include:
-
-- Removing small fasteners
-- Removing cosmetic geometry
-- Simplifying supports
-- Simplifying cable geometry
-- Simplifying enclosure details
-
-Any simplification should preserve the geometry relevant to the intended analysis.
-
----
-
-## 25. PHP Manufacturing Documentation
-
-If the PHP is fabricated specifically for HIFLY, record:
-
-- Material
-- Dimensions
-- Joining method
-- Bending/forming method
-- Working-fluid information where applicable
-- Sealing method
-- Inspection procedure
-
-Do not add unverified manufacturing details.
-
----
-
-## 26. PHP Inspection
-
-Before integration, inspect:
-
-- Geometry
-- Bends
-- Joints
-- Seals
-- Mounting points
-- Surface condition
-- Interfaces
-- Physical damage
-
-Record inspection results in the testing section.
-
----
-
-## 27. PHP Safety Considerations
-
-The PHP design should consider:
-
-- Mechanical integrity
-- Sealing
-- Working-fluid compatibility
-- Temperature exposure
-- Pressure-related considerations where applicable
-- Protection from external damage
-- Compatibility with surrounding materials
-
-Specific safety limits should be based on the actual PHP design and verified documentation.
-
----
-
-## 28. PHP Test Connection
-
-The PHP CAD documentation should connect to experimental testing.
-
-Suggested workflow:
-
-```text
-PHP CAD
-   ↓
-Fabricated PHP
-   ↓
-Integrated Prototype
-   ↓
-Thermal Test
-   ↓
-Temperature Measurements
-   ↓
-Data Analysis
-```
-
-Actual performance claims should be supported by recorded measurements.
-
----
-
-## 29. Evidence Required
-
-Recommended PHP evidence includes:
-
-- CAD model
-- CAD screenshots
-- Technical drawing
-- Physical PHP photograph
-- Integrated assembly photograph
-- Thermal test setup
-- Temperature data
-- Simulation results where available
-- Test report
-
-Do not label planned evidence as completed evidence.
-
----
-
-## 30. Current Status
-
-| Item | Status |
-|---|---|
-| PHP Concept | Design |
-| PHP CAD Geometry | Design / Prototype |
-| Evaporator Region | Design |
-| Transport Section | Design |
-| Condenser Region | Design |
-| Battery Integration | Design / Prototype |
-| Mechanical Support | Design |
-| Insulation Integration | Design |
-| CAD-to-Prototype Comparison | Planned |
-| Thermal Simulation | Planned / In Progress |
-| Thermal Testing | Planned / In Progress |
-| PHP Performance Validation | Planned |
-
-Update these statuses using actual project evidence.
-
----
-
-## 31. Evidence Classification
-
-Use:
-
-- **Concept** — proposed PHP arrangement
-- **Design** — CAD model developed
-- **Prototype** — physical PHP fabricated/integrated
-- **Tested** — tested under documented conditions
-- **Validated** — supported by defined experimental or analytical evidence
-
-A PHP CAD model alone does not demonstrate thermal performance.
-
----
-
-## 32. Related Files
-
-Main CAD documentation:
-
-```text
-05_CAD/README.md
-```
-
-Main assembly:
-
-```text
-05_CAD/assembly/README.md
-```
-
-Battery CAD:
-
-```text
-05_CAD/battery/README.md
-```
-
-Thermal-management CAD:
-
-```text
-05_CAD/thermal_management/README.md
-```
-
-Thermal control:
-
-```text
-04_Software/control_logic/thermal_control.md
-```
-
-Simulation:
-
-```text
-06_Simulation/
-```
-
-Testing:
-
-```text
-07_Testing/
-```
-
-Data:
-
-```text
-08_Data/
-```
+                   ▼
+        ┌───────────────────┐
+        │ PHP CONDENSER     │
+        │      REGION       │
+        └─────────┬─────────┘
+                  │
+                  ▼
+          Thermal Output /
+          Heat-Rejection Path
+
+The final condenser interface depends on the HIFLY assembly and the available thermal-management structure.
+
+No specific ambient temperature, heat-rejection rate, or condenser performance is assumed in this CAD document.
+
+7. PHP Channel Geometry
+
+The PHP CAD geometry provides the physical path required by the selected PHP configuration.
+
+       ┌─────────────────────────────┐
+       │                             │
+       │   ┌──────┐       ┌──────┐   │
+       │   │      │       │      │   │
+       │   │      └───────┘      │   │
+       │   │                     │   │
+       │   └─────────────────────┘   │
+       │                             │
+       └─────────────────────────────┘
+
+             Conceptual PHP Path
+
+The diagram is schematic. It does not define the actual tube diameter, bend radius, number of turns, length, or internal working-fluid volume.
+
+Those values belong to the physical CAD model and fabrication definition.
+
+8. PHP and Battery Relationship
+
+The battery is one of the thermally sensitive subsystems within HIFLY.
+
+The battery CAD therefore considers the PHP as part of the wider thermal architecture.
+
+              BATTERY REGION
+                    │
+                    │ Thermal Interface
+                    ▼
+          ┌───────────────────┐
+          │ Thermal Structure │
+          └─────────┬─────────┘
+                    │
+                    ▼
+              PHP Interface
+                    │
+                    ▼
+          PHP Thermal Path
+                    │
+                    ▼
+           Thermal Output
+
+The battery is not assumed to be directly connected to the PHP unless the physical assembly establishes that interface.
+
+The CAD architecture instead defines the relationship between the battery thermal region and the system-level thermal-management structure.
+
+9. PHP and Electronics Relationship
+
+Electronic components can generate heat during operation.
+
+The PHP subsystem provides a possible passive thermal path for transferring heat away from the relevant heat-generating region.
+
+        Electronic Heat Source
+                  │
+                  ▼
+        ┌───────────────────┐
+        │ Thermal Interface │
+        └─────────┬─────────┘
+                  │
+                  ▼
+        ┌───────────────────┐
+        │ PHP Evaporator    │
+        └─────────┬─────────┘
+                  │
+                  ▼
+              PHP Path
+                  │
+                  ▼
+        PHP Condenser Region
+
+The actual heat source and physical interface are determined by the implemented HIFLY electronics and mechanical assembly.
+
+10. PHP Mounting Architecture
+
+The PHP must remain mechanically supported while maintaining the intended thermal interfaces.
+
+The CAD assembly therefore considers:
+
+mounting points
+structural support
+thermal contact regions
+protection against unintended movement
+routing of the PHP through the available enclosure space
+interaction with insulation and surrounding components
+                HIFLY STRUCTURE
+                     │
+             ┌───────┴───────┐
+             │ PHP Support   │
+             └───────┬───────┘
+                     │
+                     ▼
+             ┌───────────────┐
+             │      PHP      │
+             └───────────────┘
+                     │
+             ┌───────┴───────┐
+             │ Thermal       │
+             │ Interface     │
+             └───────────────┘
+
+The exact mounting hardware and dimensions are determined from the final CAD assembly.
+
+11. PHP and Thermal Insulation
+
+Thermal insulation is part of the HIFLY thermal-management architecture.
+
+The PHP and insulation serve different but complementary functions.
+
+                  EXTERNAL ENVIRONMENT
+                           │
+                           ▼
+                 ┌──────────────────┐
+                 │ Protective Layer │
+                 ├──────────────────┤
+                 │ Thermal          │
+                 │ Insulation       │
+                 ├──────────────────┤
+                 │ PHP / Thermal    │
+                 │ Management       │
+                 ├──────────────────┤
+                 │ Heat Source      │
+                 └──────────────────┘
+
+The CAD arrangement considers where insulation should be placed relative to the intended PHP heat-transfer path.
+
+The model does not assume that every PHP surface should be insulated or exposed. That decision depends on the actual thermal design and intended heat-transfer path.
+
+12. PHP and Heater Relationship
+
+The HIFLY system contains a heating element for controlled thermal management.
+
+The heater and PHP have different functions:
+
+the heater provides controlled thermal input
+the PHP provides passive thermal-transfer capability
+                 HEATER
+                    │
+                    ▼
+           Controlled Heat Input
+                    │
+                    ▼
+              Thermal Region
+                    │
+             ┌──────┴──────┐
+             │             │
+             ▼             ▼
+          Battery         PHP
+          Thermal       Evaporator
+          Region           │
+                           ▼
+                       PHP Path
+                           │
+                           ▼
+                    Thermal Output
+
+The CAD architecture provides the physical context for maintaining these interfaces without assigning a specific heater power or PHP heat-transfer capacity.
+
+13. PHP and Temperature Sensing
+
+Temperature sensors are used to observe the thermal state of the HIFLY system.
+
+The PHP CAD model provides reference regions where temperature measurements can be associated with:
+
+heat-source region
+evaporator region
+condenser region
+surrounding structure
+battery region
+          Heat Source
+              │
+              ▼
+        ● T1 ──────────┐
+                       │
+                 PHP   │
+                       │
+        ● T2 ──────────┤
+                       │
+                 PHP   │
+                       │
+        ● T3 ──────────┘
+              │
+              ▼
+       Thermal Output
+
+The labels represent measurement locations conceptually and do not define the actual number or position of sensors in the final prototype.
+
+14. PHP Enclosure Integration
+
+The PHP is integrated within the overall HIFLY enclosure and protective structure.
+
+The CAD arrangement considers:
+
+available internal volume
+thermal interfaces
+component interference
+mechanical support
+insulation placement
+electrical routing
+access for assembly and inspection
+        ┌──────────────────────────────────┐
+        │          HIFLY ENCLOSURE         │
+        │                                  │
+        │  ┌────────────────────────────┐  │
+        │  │ Heat Source                │  │
+        │  └──────────────┬─────────────┘  │
+        │                 │                │
+        │                 ▼                │
+        │          ┌─────────────┐         │
+        │          │ PHP         │         │
+        │          │ Assembly    │         │
+        │          └──────┬──────┘         │
+        │                 │                │
+        │                 ▼                │
+        │          Thermal Output          │
+        │                                  │
+        └──────────────────────────────────┘
+
+The final enclosure geometry is determined by the complete HIFLY CAD assembly.
+
+15. PHP and Low-Pressure Protection Architecture
+
+The high-altitude environment introduces reduced-pressure conditions.
+
+The PHP itself and the electrical protection chamber are treated as separate functional elements within the system architecture.
+
+             HIGH-ALTITUDE ENVIRONMENT
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+          ▼                         ▼
+     Thermal Path             Electrical
+          │                    Protection
+          ▼                         │
+         PHP                        ▼
+          │                 Low-Pressure
+          │                 Protection
+          │                    Chamber
+          │                         │
+          └────────────┬────────────┘
+                       ▼
+                 HIFLY System
+
+The PHP CAD documentation does not claim that the PHP itself provides electrical insulation or low-pressure electrical protection.
+
+16. PHP and Flexible Silicone
+
+Flexible silicone is part of the HIFLY thermal-cycling protection architecture.
+
+The PHP CAD considers compliant interfaces where the PHP interacts mechanically with surrounding structures.
+
+          Rigid HIFLY Structure
+                    │
+                    ▼
+             ┌─────────────┐
+             │ Flexible    │
+             │ Silicone    │
+             │ Interface   │
+             └──────┬──────┘
+                    │
+                    ▼
+                 PHP
+                    │
+                    ▼
+             Thermal Structure
+
+This interface is intended to accommodate the mechanical relationship between the PHP and surrounding components without assuming a measured thermal-cycling lifetime.
+
+17. PHP and Lightweight Protective Layer
+
+The lightweight protective layer forms part of the external protection architecture.
+
+The PHP remains an internal thermal-management component while the protective layer provides environmental and mechanical separation from the external surroundings.
+
+          External Environment
+                  │
+                  ▼
+        ┌─────────────────────┐
+        │ Lightweight         │
+        │ Protective Layer    │
+        ├─────────────────────┤
+        │ Enclosure / Support │
+        ├─────────────────────┤
+        │ PHP Thermal System  │
+        ├─────────────────────┤
+        │ Heat Source         │
+        └─────────────────────┘
+
+No unsupported protective mass or shielding performance is assigned.
+
+18. PHP CAD Assembly
+
+The PHP is represented as one subsystem within the overall HIFLY mechanical assembly.
+
+                       HIFLY ASSEMBLY
+                             │
+              ┌──────────────┼──────────────┐
+              │              │              │
+              ▼              ▼              ▼
+           Battery        Electronics    Protection
+              │              │              │
+              └───────┬──────┴──────┬───────┘
+                      │             │
+                      ▼             ▼
+                 Thermal Sources   Insulation
+                      │             │
+                      └──────┬──────┘
+                             ▼
+                         PHP CAD
+                             │
+                    ┌────────┴────────┐
+                    │                 │
+                    ▼                 ▼
+                Evaporator        Condenser
+                    │                 │
+                    └────────┬────────┘
+                             ▼
+                    HIFLY Thermal Path
+
+This relationship enables the PHP geometry to be evaluated in the context of the complete assembly rather than independently.
+
+19. PHP CAD-to-Simulation Relationship
+
+The PHP CAD geometry can be used as the geometric basis for thermal simulation.
+
+The simulation workflow is:
+
+              PHP CAD MODEL
+                    │
+                    ▼
+           Geometry Preparation
+                    │
+                    ▼
+          Thermal Model Creation
+                    │
+                    ▼
+       ┌──────────────────────────┐
+       │ Thermal Simulation       │
+       └────────────┬─────────────┘
+                    │
+          ┌─────────┼──────────┐
+          │         │          │
+          ▼         ▼          ▼
+      Temperature  Heat Flux  Thermal
+      Distribution            Interfaces
+          │         │          │
+          └─────────┴──────────┘
+                    │
+                    ▼
+             Design Evaluation
+
+A conventional steady-state thermal simulation can evaluate the thermal behaviour of the CAD-represented PHP-assisted architecture.
+
+It should not be interpreted as a detailed simulation of the actual pulsating two-phase flow inside the PHP unless a dedicated multiphase model is used.
+
+20. Thermal Simulation Outputs
+
+Potential outputs from the thermal simulation include:
+
+Output	Purpose
+Maximum component temperature	Evaluate thermal exposure of the represented geometry
+Temperature distribution	Identify thermal gradients
+PHP-region temperature	Examine thermal behaviour around the PHP
+Heat flux	Examine heat-transfer paths
+Thermal interface behaviour	Examine contact regions
+Thermal distribution with PHP	Evaluate the integrated PHP-assisted architecture
+Thermal distribution without PHP	Provide a comparison architecture when both models are available
+
+No numerical simulation result is presented here without corresponding simulation data.
+
+21. PHP CAD-to-Prototype Relationship
+
+The CAD model provides the geometric reference for physical PHP fabrication and integration.
+
+                 PHP CAD
+                    │
+                    ▼
+           Fabrication Process
+                    │
+                    ▼
+             Physical PHP
+                    │
+                    ▼
+          HIFLY Assembly
+                    │
+                    ▼
+        Temperature Measurements
+                    │
+                    ▼
+           Thermal Evaluation
+                    │
+                    ▼
+             CAD Correlation
+
+The actual PHP Fusion 360 model and physical PHP assembly form the primary geometry-to-prototype evidence chain.
+
+22. PHP Fusion 360 Model
+
+The PHP subsystem is represented in the project's Fusion 360 CAD environment.
+
+The model provides the geometry required to examine:
+
+overall PHP shape
+thermal-source interface
+thermal-output interface
+routing of the PHP path
+mounting relationship
+interaction with the enclosure
+interaction with insulation
+interaction with adjacent HIFLY components
+
+The CAD geometry should be treated as the source of truth for dimensions rather than assigning dimensions in this README that are not independently documented.
+
+23. Mechanical Interface Considerations
+
+The PHP CAD subsystem interfaces with several mechanical elements.
+
+Interface	Design Relationship
+Heat source	Transfers heat toward the PHP evaporator region
+Thermal structure	Provides mechanical and thermal support
+Enclosure	Provides physical containment
+Insulation	Controls the surrounding thermal path
+Battery assembly	Provides a system-level thermal relationship where applicable
+Electronics assembly	Provides the heat-source relationship where applicable
+Silicone interface	Provides a compliant mechanical interface
+Protective layer	Provides external environmental protection
+24. PHP Thermal Path
+
+The conceptual thermal path through the CAD assembly is:
+
+                HEAT GENERATION
+                      │
+                      ▼
+               Heat Source
+                      │
+                      ▼
+             PHP Evaporator
+                      │
+                      ▼
+                PHP Path
+                      │
+                      ▼
+             PHP Condenser
+                      │
+                      ▼
+             Thermal Output
+                      │
+                      ▼
+            HIFLY Structure /
+          Available Heat-Rejection
+                 Interface
+
+The diagram describes the intended architecture rather than a measured heat-flow result.
+
+25. PHP Subsystem and HIFLY Challenges
+HIFLY Challenge	PHP CAD Contribution
+Reduced cooling efficiency	Provides the geometry for passive thermal transfer
+Battery thermal management	Provides a system-level thermal interface
+Thermal cycling	Provides a defined mechanical thermal path
+Electronics heat generation	Provides a potential passive heat-transfer pathway
+High-altitude operation	Provides a thermal-management architecture for evaluation under the intended environment
+Mechanical protection	Integrates PHP geometry into the protected assembly
+26. Design Boundaries
+
+The PHP CAD documentation defines the physical architecture but does not by itself establish:
+
+measured heat-transfer capacity
+operating temperature range
+working-fluid selection
+fill ratio
+internal pressure
+thermal resistance
+heat-transfer coefficient
+condenser effectiveness
+high-altitude qualification
+vibration qualification
+thermal-cycle lifetime
+
+These properties require corresponding engineering data, simulation, fabrication evidence, or experimental testing.
+
+27. Evidence Classification
+Evidence	What It Establishes
+PHP CAD model	Physical geometry and integration
+Thermal simulation	Computed thermal behaviour of the represented model
+Physical PHP	Fabricated subsystem
+Thermal test	Measured thermal response
+High-altitude test	Behaviour under the relevant environmental condition
+Validation	Comparison of evidence against defined requirements
+
+The CAD model is therefore not treated as a substitute for experimental validation.
+
+28. PHP Subsystem Status
+
+Subsystem: Pulsating Heat Pipe thermal-management architecture.
+
+Primary HIFLY challenge addressed: Reduced cooling efficiency at high altitude.
+
+Design representation: Fusion 360 CAD subsystem integrated with the HIFLY mechanical architecture.
+
+Current evidence represented here: CAD-level geometry and system integration concept.
+
+Not claimed by this document: Numerical thermal performance, heat-transfer capacity, environmental qualification, or experimentally measured PHP effectiveness.
+
+29. Integration with HIFLY Thermal Management
+
+The PHP connects the thermal-management elements of HIFLY into a common physical architecture.
+
+                       HIFLY THERMAL SYSTEM
+
+                           Heat Sources
+                               │
+                ┌──────────────┼──────────────┐
+                │              │              │
+                ▼              ▼              ▼
+             Battery       Electronics      Heater
+                │              │              │
+                └──────────────┼──────────────┘
+                               ▼
+                       Thermal Interfaces
+                               │
+                               ▼
+                         PHP Evaporator
+                               │
+                               ▼
+                           PHP Path
+                               │
+                               ▼
+                         PHP Condenser
+                               │
+                               ▼
+                     Thermal Output Region
+                               │
+                               ▼
+                     HIFLY Thermal Structure
+
+This architecture allows the PHP to be evaluated as part of the integrated thermal-management system.
+
+30. Overall PHP CAD Concept
+                 ┌────────────────────────┐
+                 │       HIFLY PHP        │
+                 │     CAD SUBSYSTEM      │
+                 └───────────┬────────────┘
+                             │
+          ┌──────────────────┼──────────────────┐
+          │                  │                  │
+          ▼                  ▼                  ▼
+      Evaporator          PHP Path          Condenser
+          │                  │                  │
+          │                  │                  │
+          ▼                  ▼                  ▼
+      Heat Input        Thermal Transfer    Thermal Output
+          │                  │                  │
+          └──────────────────┼──────────────────┘
+                             │
+                             ▼
+                     HIFLY Thermal System
+                             │
+          ┌──────────────────┼──────────────────┐
+          │                  │                  │
+          ▼                  ▼                  ▼
+       Battery          Electronics        Protection
+          │                  │                  │
+          └──────────────────┼──────────────────┘
+                             ▼
+                      Complete HIFLY CAD
+
+The PHP CAD subsystem provides the physical representation of HIFLY's passive thermal-management pathway and establishes its mechanical relationship with the battery, electronics, insulation, protection, and overall system assembly.
