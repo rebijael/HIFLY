@@ -1,840 +1,843 @@
-# HIFLY Thermal Control Logic
+# HIFLY Ground Control Station (GCS)
 
 ## 1. Overview
 
-The HIFLY thermal-control system is an onboard temperature-based control system designed to support reliable operation of the battery and associated electrical/electronic hardware under high-altitude thermal conditions.
+The HIFLY Ground Control Station (GCS) is the ground-side monitoring and supervisory interface for the HIFLY system.
 
-The thermal-control architecture combines:
+The GCS receives telemetry from the onboard controller through the LilyGO T3-S3 LoRa communication system and presents the thermal, electrical, communication, and safety condition of the system to the operator.
 
-- temperature sensing
-- thermal-state evaluation
-- active heating
-- MOSFET-based heater switching
-- passive thermal insulation
-- Pulsating Heat Pipe (PHP) thermal management
-- safety logic
-- onboard autonomous operation
-- telemetry to the Ground Control Station (GCS)
+The GCS also provides permitted supervisory commands for the onboard thermal-control system.
 
-The software controls the active thermal-management elements while the physical thermal architecture provides passive and passive-assisted heat-transfer functions.
+The GCS is therefore designed around two complementary functions:
+
+1. **Monitoring** — displaying the current condition of HIFLY.
+2. **Supervision** — providing controlled operator commands while the essential thermal and safety logic remains onboard.
 
 ```text
-                    HIFLY THERMAL SYSTEM
-
-                         Environment
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │ Thermal Conditions│
-                    └─────────┬────────┘
-                              │
-             ┌────────────────┼────────────────┐
-             │                │                │
-             ▼                ▼                ▼
-        Insulation          PHP            Heater
-             │                │                │
-             └────────────────┼────────────────┘
-                              │
-                              ▼
-                         Battery/System
-                              │
-                              ▼
-                       Temperature Sensor
-                              │
-                              ▼
-                       HIFLY Controller
-                              │
-                              ▼
-                    Thermal-Control Logic
-                              │
-                              ▼
-                         MOSFET Stage
-                              │
-                              ▼
-                            Heater
-                              │
-                              └──────────────► Feedback
+                         HIFLY ONBOARD SYSTEM
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │ Sensors / MCU   │
+                         └────────┬────────┘
+                                  │
+                                  ▼
+                           Telemetry Data
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │ LilyGO T3-S3    │
+                         │      LoRa       │
+                         └────────┬────────┘
+                                  │
+                               LoRa Link
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │      GCS        │
+                         └────────┬────────┘
+                                  │
+              ┌───────────────────┼───────────────────┐
+              │                   │                   │
+              ▼                   ▼                   ▼
+          Monitoring           Graphs              Alerts
+              │                   │                   │
+              └───────────────────┼───────────────────┘
+                                  │
+                                  ▼
+                         Operator Controls
+                                  │
+                                  ▼
+                              LoRa
+                                  │
+                                  ▼
+                           HIFLY Controller
 ```
-2. Thermal-Control Objective
+2. GCS Objectives
 
-The thermal-control software provides a controlled response to changing temperature conditions.
+The GCS is designed to provide a clear representation of the HIFLY system state.
 
-The primary objective is to maintain the system within the configured operating thermal condition while avoiding uncontrolled heater operation.
+The main objectives are:
 
-The control loop is therefore based on feedback:
+display battery temperature
+display ambient temperature
+display voltage
+display current
+display heater status
+display thermal status
+display LoRa communication status
+display AUTO/MANUAL operating mode
+display safety status
+provide temperature graphs
+provide system alerts
+provide permitted thermal-control commands
 
-Temperature
-     │
-     ▼
-Measurement
-     │
-     ▼
-Thermal Evaluation
-     │
-     ▼
-Control Decision
-     │
-     ▼
-Heater Command
-     │
-     ▼
-Thermal Response
-     │
-     ▼
-Temperature
-     │
-     └──────────────► Feedback
+The interface connects the physical HIFLY system with the operator without making the GCS the sole controller of essential thermal functions.
 
-The thermal-control software is one part of the complete HIFLY thermal-management architecture and does not replace the physical insulation, PHP, enclosure, or other thermal-protection elements.
+3. GCS Architecture
+┌──────────────────────────────────────────────────────────────┐
+│                    HIFLY GROUND CONTROL STATION              │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │                    TELEMETRY LAYER                     │  │
+│  │                                                        │  │
+│  │ Temperature • Voltage • Current • Heater • Safety     │  │
+│  └───────────────────────────┬────────────────────────────┘  │
+│                              │                               │
+│                              ▼                               │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │                 DATA PROCESSING                        │  │
+│  │                                                        │  │
+│  │ State Detection • Communication Status • Alerts       │  │
+│  └───────────────────────────┬────────────────────────────┘  │
+│                              │                               │
+│              ┌───────────────┼───────────────┐               │
+│              ▼               ▼               ▼               │
+│       ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
+│       │   STATUS    │ │   GRAPHS    │ │   ALERTS    │       │
+│       │   DISPLAY   │ │             │ │             │       │
+│       └─────────────┘ └─────────────┘ └─────────────┘       │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │                  CONTROL INTERFACE                     │  │
+│  │                                                        │  │
+│  │        AUTO • PRE-HEAT • HEATER OFF                   │  │
+│  └────────────────────────────────────────────────────────┘  │
+│                                                              │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+                               ▼
+                             LoRa
+                               │
+                               ▼
+                       HIFLY ONBOARD MCU
+4. Telemetry
 
-3. Thermal-Control Architecture
+The GCS receives telemetry generated by the onboard firmware.
 
-The HIFLY thermal-control architecture can be represented as four connected layers.
+The primary telemetry fields are:
 
-┌──────────────────────────────────────────────────────────┐
-│                  1. ENVIRONMENT                          │
-│                                                          │
-│        High-altitude temperature conditions              │
-└─────────────────────────┬────────────────────────────────┘
-                          │
-                          ▼
-┌──────────────────────────────────────────────────────────┐
-│                  2. PASSIVE PROTECTION                   │
-│                                                          │
-│        Thermal insulation / physical enclosure           │
-└─────────────────────────┬────────────────────────────────┘
-                          │
-                          ▼
-┌──────────────────────────────────────────────────────────┐
-│                  3. THERMAL MANAGEMENT                   │
-│                                                          │
-│        PHP + heating element + thermal paths             │
-└─────────────────────────┬────────────────────────────────┘
-                          │
-                          ▼
-┌──────────────────────────────────────────────────────────┐
-│                  4. CONTROL SYSTEM                       │
-│                                                          │
-│        Temperature sensor + MCU + safety logic           │
-└──────────────────────────────────────────────────────────┘
+Telemetry Field	GCS Representation
+Battery Temperature	Numeric value
+Ambient Temperature	Numeric value
+Voltage	Numeric value
+Current	Numeric value
+Heater Status	ON / OFF
+Thermal Status	Current thermal state
+LoRa Link	Communication state
+Operating Mode	AUTO / MANUAL
+Safety Status	Current safety state
 
-This layered approach combines passive thermal protection with active temperature-based control.
+These values allow the operator to observe the relationship between thermal behavior, electrical operation, heater activity, and communication status.
 
-4. Temperature Feedback
+5. Main GCS Dashboard
 
-Temperature is the primary feedback variable used by the thermal-control logic.
+The primary GCS dashboard is organized around the current system condition.
 
-The firmware continuously reads the available temperature measurement and evaluates the current thermal state.
+┌─────────────────────────────────────────────────────────────────┐
+│                         HIFLY GCS                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  BATTERY TEMP     AMBIENT TEMP       VOLTAGE       CURRENT      │
+│  ┌────────────┐   ┌────────────┐   ┌──────────┐  ┌──────────┐ │
+│  │            │   │            │   │          │  │          │ │
+│  │   TEMP     │   │   TEMP     │   │  VOLTAGE │  │ CURRENT  │ │
+│  │            │   │            │   │          │  │          │ │
+│  └────────────┘   └────────────┘   └──────────┘  └──────────┘ │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  HEATER STATUS       THERMAL STATUS       LoRa LINK             │
+│  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐       │
+│  │              │   │              │   │              │       │
+│  │   ON / OFF   │   │    STATE     │   │   CONNECTED  │       │
+│  │              │   │              │   │   / LOST     │       │
+│  └──────────────┘   └──────────────┘   └──────────────┘       │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  OPERATING MODE              SAFETY STATUS                      │
+│  ┌───────────────────┐       ┌──────────────────────────────┐  │
+│  │ AUTO / MANUAL     │       │                              │  │
+│  └───────────────────┘       │          SAFETY STATE        │  │
+│                              │                              │  │
+│                              └──────────────────────────────┘  │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│                       TEMPERATURE GRAPH                         │
+│                                                                 │
+│             Temperature vs. Time / Reading Index                │
+│                                                                 │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ ALERTS                                                          │
+│                                                                 │
+│  • Low Temperature                                              │
+│  • Over-temperature                                             │
+│  • Sensor Fault                                                 │
+│  • Communication Lost                                           │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ CONTROLS                                                        │
+│                                                                 │
+│       [ AUTO ]       [ PRE-HEAT ]       [ HEATER OFF ]          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+6. Battery Temperature Display
 
-        ┌─────────────────────┐
-        │ Temperature Sensor  │
-        └──────────┬──────────┘
-                   │
-                   ▼
-        ┌─────────────────────┐
-        │ Temperature Reading │
-        └──────────┬──────────┘
-                   │
-                   ▼
-        ┌─────────────────────┐
-        │ Data Validation     │
-        └──────────┬──────────┘
-                   │
-                   ▼
-        ┌─────────────────────┐
-        │ Thermal Evaluation  │
-        └──────────┬──────────┘
-                   │
-                   ▼
-        ┌─────────────────────┐
-        │ Heater Decision     │
-        └─────────────────────┘
+The battery-temperature field provides the primary thermal measurement for the battery thermal-management system.
 
-The same temperature information can also be transmitted to the GCS for monitoring.
+The GCS displays the received value so the operator can observe:
 
-5. Thermal States
+current battery temperature
+changes in temperature
+thermal response during heater operation
+thermal condition during different operating states
 
-The software represents the thermal condition using logical states.
+The value is received from the onboard sensing and firmware layer.
 
-┌─────────────────────┐
-│       NORMAL        │
-└──────────┬──────────┘
-           │
-           │ Thermal support required
-           ▼
-┌─────────────────────┐
-│      HEATING        │
-└──────────┬──────────┘
-           │
-           │ Thermal condition restored
-           ▼
-┌─────────────────────┐
-│       NORMAL        │
-└─────────────────────┘
+Battery
+   │
+   ▼
+Temperature Sensor
+   │
+   ▼
+MCU
+   │
+   ▼
+LoRa Telemetry
+   │
+   ▼
+GCS
+   │
+   ▼
+Battery Temperature Display
+7. Ambient Temperature Display
 
-Unsafe condition / sensor fault
-           │
-           ▼
-┌─────────────────────┐
-│   SAFETY / FAULT    │
-└─────────────────────┘
-
-The numerical thresholds associated with these states depend on the implemented configuration and validated operating requirements.
-
-No unsupported fixed temperature threshold is assumed by this document.
-
-6. Automatic Thermal Control
-
-AUTO mode allows the onboard controller to operate the heater based on the measured thermal condition.
-
-The control sequence is:
-
-START
-  │
-  ▼
-Read Temperature
-  │
-  ▼
-Validate Reading
-  │
-  ▼
-Evaluate Thermal State
-  │
-  ├───────────────┐
-  │               │
-  ▼               ▼
-Heating Required  Normal
-  │               │
-  ▼               ▼
-Heater ON      Heater OFF
-  │               │
-  └───────┬───────┘
-          ▼
-   Safety Evaluation
-          │
-          ▼
-   Telemetry Update
-          │
-          ▼
-      Next Cycle
-
-The controller repeatedly performs this process while the system is operating in automatic mode.
-
-7. Heater-Control Path
-
-The software does not drive the heating element directly.
-
-The controller generates a heater-control signal that is passed through the MOSFET switching stage.
-
-Thermal-State Decision
-          │
-          ▼
-   Heater Command
-          │
-          ▼
-      MCU Output
-          │
-          ▼
-   MOSFET Switch
-          │
-          ▼
-   Heating Element
-          │
-          ▼
-    Thermal System
-          │
-          ▼
- Temperature Sensor
-          │
-          └────────────► Feedback
-
-This separates low-power controller logic from the electrical switching path used by the heater.
-
-8. Heater States
-
-The software represents the heater using a simple operational state.
-
-HEATER OFF
-     │
-     │ Heating required
-     ▼
-HEATER ON
-     │
-     │ Thermal condition no longer requires heating
-     ▼
-HEATER OFF
-
-A safety or fault condition can also cause the control system to enter a safe heater state according to the implemented firmware logic.
-
-9. Temperature-Based Decision Flow
-
-The thermal decision process is:
-
-                  Temperature Reading
-                          │
-                          ▼
-                  ┌───────────────┐
-                  │ Valid Reading?│
-                  └───────┬───────┘
-                          │
-                    ┌─────┴─────┐
-                    │           │
-                   YES          NO
-                    │           │
-                    ▼           ▼
-             Thermal State   Sensor Fault
-               Evaluation       │
-                    │           ▼
-                    │      Safety Logic
-                    │
-          ┌─────────┼─────────┐
-          │         │         │
-          ▼         ▼         ▼
-       Heating     Normal   Unsafe
-       Required   Condition Condition
-          │         │         │
-          ▼         ▼         ▼
-       Heater ON  Heater OFF Safety Logic
-
-This structure keeps sensor validation and safety evaluation within the control path.
-
-10. Thermal Control and PHP
-
-The Pulsating Heat Pipe is a physical thermal-management element within HIFLY.
-
-The PHP provides a passive-assisted heat-transfer path, while the software-controlled heater provides active thermal input where required.
+Ambient temperature provides environmental context for the battery temperature.
 
 The relationship is:
 
-                  Thermal Input
-                       │
-              ┌────────┴────────┐
-              │                 │
-              ▼                 ▼
-          Heating Element       PHP
-              │                 │
-              │                 │
-              └────────┬────────┘
-                       │
-                       ▼
-                Thermal Structure
-                       │
-                       ▼
-                    Battery
-                       │
-                       ▼
-                Temperature Sensor
-                       │
-                       ▼
-                  Controller
+Ambient Temperature
+        │
+        ▼
+       GCS
+        │
+        ├──────────────► Environmental Reference
+        │
+        ▼
+Battery Temperature
+        │
+        ▼
+Thermal Condition
 
-The firmware does not directly control the internal pulsating behavior of the PHP.
+Displaying both measurements allows the operator to distinguish the battery thermal state from the surrounding environmental condition.
 
-The PHP is therefore treated as a physical thermal-management subsystem, while the firmware controls the active heating function.
+8. Voltage Display
 
-11. PHP-Assisted Thermal Architecture
+The GCS displays the measured system voltage received through telemetry.
 
-The complete thermal path can be represented as:
+Voltage Sensor
+      │
+      ▼
+Onboard MCU
+      │
+      ▼
+LoRa Telemetry
+      │
+      ▼
+GCS Voltage Display
 
-       ┌───────────────────────────────────┐
-       │        High-Altitude Environment  │
-       └──────────────────┬────────────────┘
-                          │
-                          ▼
-                ┌─────────────────┐
-                │    Insulation   │
-                └────────┬────────┘
+Voltage monitoring provides visibility into the electrical state of the system during thermal operation.
+
+9. Current Display
+
+The GCS displays the measured current received from the onboard controller.
+
+Current Sensor
+      │
+      ▼
+Onboard MCU
+      │
+      ▼
+LoRa Telemetry
+      │
+      ▼
+GCS Current Display
+
+Current information is particularly relevant when the heating element is active because heater operation contributes to the electrical load.
+
+10. Heater Status
+
+The GCS provides a direct indication of the current heater state.
+
+The primary states are:
+
+HEATER ON
+HEATER OFF
+
+The displayed heater state is based on the onboard control state rather than only the command sent from the GCS.
+
+Thermal Control
+      │
+      ▼
+Heater State
+      │
+      ├──────────────► Heater ON
+      │
+      └──────────────► Heater OFF
                          │
                          ▼
-              ┌──────────────────────┐
-              │ PHP Thermal Structure│
-              └──────────┬───────────┘
+                     Telemetry
                          │
                          ▼
-                  ┌─────────────┐
-                  │   Battery   │
-                  └──────┬──────┘
-                         │
-                         ▼
-                Temperature Sensor
-                         │
-                         ▼
-                  HIFLY Controller
-                         │
-                         ▼
-                   Heater Control
-                         │
-                         ▼
-                     MOSFET
-                         │
-                         ▼
-                      Heater
+                         GCS
 
-The PHP and insulation operate as physical thermal-management elements, while the controller provides active temperature-based support.
+This allows the operator to observe the actual reported control state.
 
-12. Thermal Control During Low-Temperature Conditions
+11. Thermal Status
 
-When the measured thermal condition indicates that additional heating is required, the controller can command the heating element.
+The thermal-status field provides a software-level representation of the current thermal condition.
 
-The sequence is:
+Representative states are:
 
-Low / Cold Thermal Condition
-            │
-            ▼
-    Temperature Measurement
-            │
-            ▼
-     Thermal-State Evaluation
-            │
-            ▼
-       Heating Required
-            │
-            ▼
-         Heater ON
-            │
-            ▼
-     Thermal Response
-            │
-            ▼
-    Temperature Measurement
-            │
-            ▼
-      Updated State
+NORMAL
+HEATING
+SAFETY / FAULT
 
-The actual thermal response depends on the physical thermal design, environmental conditions, battery characteristics, heater characteristics, insulation, and PHP behavior.
-
-13. Thermal Control During Normal Conditions
-
-When the measured thermal condition is within the configured operating state, active heating is not required by the automatic control logic.
-
-Normal Thermal Condition
-            │
-            ▼
-    Temperature Measurement
-            │
-            ▼
-      Thermal Evaluation
-            │
-            ▼
-       Heating Not Required
-            │
-            ▼
-         Heater OFF
-            │
-            ▼
-      Continue Monitoring
-
-The controller continues monitoring rather than terminating the thermal-control loop.
-
-14. Thermal Safety
-
-Thermal safety is evaluated independently from the normal heating command.
-
-The safety path is:
+The GCS receives this state from the onboard firmware.
 
 Temperature
      │
      ▼
 Thermal Evaluation
      │
-     ├──────────────► Normal
+     ▼
+Thermal State
      │
-     ├──────────────► Heating
+     ▼
+Telemetry
      │
-     └──────────────► Unsafe
-                           │
-                           ▼
-                     Safety Response
+     ▼
+GCS Thermal Status
 
-This prevents normal heating logic from being treated as the only thermal decision mechanism.
+The exact numerical boundaries between states are determined by the implemented thermal-control configuration.
 
-15. Over-Temperature Handling
+12. LoRa Link Status
 
-An over-temperature condition is treated as a safety condition.
+The GCS displays the status of the communication link between the ground station and the onboard HIFLY system.
 
-The conceptual response is:
+The basic communication states are:
 
-Temperature Measurement
-          │
-          ▼
-Thermal Evaluation
-          │
-          ▼
-Unsafe / Over-temperature
-          │
-          ▼
-Safety State
-          │
-          ▼
-Heater Safety Response
-          │
-          ▼
-GCS Alert / Telemetry
+LINK AVAILABLE
+LINK LOST
 
-The exact numerical over-temperature limit belongs to the validated system configuration and is not fixed by this architecture document.
+The communication path is:
 
-16. Sensor Fault Handling
+HIFLY MCU
+    │
+    ▼
+LilyGO T3-S3
+    │
+    ▼
+   LoRa
+    │
+    ▼
+GCS Receiver
+    │
+    ▼
+Link Status
 
-A temperature sensor fault is important because the thermal-control loop depends on temperature feedback.
+A communication-loss condition is displayed as an alert while the onboard thermal-control system remains capable of local operation.
 
-The software therefore follows a separate fault path:
+13. Operating Mode
 
-Temperature Sensor
-        │
-        ▼
-Measurement
-        │
-        ▼
-Validity Check
-        │
-   ┌────┴────┐
-   │         │
- Valid     Invalid
-   │         │
-   ▼         ▼
-Normal     Sensor Fault
-Control       │
-              ▼
-        Safety Evaluation
-              │
-              ▼
-        Safe Response
+The GCS displays the current operating mode.
 
-The system should not interpret an invalid sensor reading as a normal thermal measurement.
-
-17. Communication Loss and Thermal Control
-
-Thermal control is designed to remain onboard even if the LoRa communication link is unavailable.
-
-                  NORMAL OPERATION
-                         │
-                         ▼
-                    LoRa Link
-                         │
-                  ┌──────┴──────┐
-                  │             │
-              Available        Lost
-                  │             │
-                  ▼             ▼
-             GCS Telemetry   Link Fault
-                  │             │
-                  │             ▼
-                  │       Local Thermal
-                  │          Control
-                  │             │
-                  └──────┬──────┘
-                         │
-                         ▼
-                    Safety Logic
-
-This prevents communication loss from automatically disabling the onboard thermal-management decision loop.
-
-18. AUTO / MANUAL Relationship
-
-The thermal-control architecture supports both autonomous and supervised operating concepts.
+The primary modes are:
 
 AUTO
-Temperature
-     │
-     ▼
-Thermal Logic
-     │
-     ▼
-Heater Decision
-     │
-     ▼
-MOSFET
-     │
-     ▼
-Heater
 MANUAL
-GCS
- │
- ▼
-Operator Command
- │
- ▼
-LoRa
- │
- ▼
-Onboard Validation
- │
- ▼
-Thermal / Safety Logic
- │
- ▼
-Heater Control
+AUTO
 
-The onboard safety layer remains active in both cases.
+In AUTO mode, the onboard controller manages the heater using the temperature-based thermal-control logic.
 
-19. PRE-HEAT Control
+MANUAL
 
-PRE-HEAT provides a supervised method for initiating thermal conditioning.
+In MANUAL mode, the operator can issue permitted thermal-control commands through the GCS.
 
-GCS
- │
- ▼
-PRE-HEAT
- │
- ▼
-LoRa Command
- │
- ▼
-Onboard Command Validation
- │
- ▼
-Safety Evaluation
- │
- ▼
-Thermal Control
- │
- ▼
-Heater
+The onboard safety logic remains active in both modes.
 
-The resulting temperature is monitored through the same feedback system used during automatic operation.
+14. Safety Status
 
-20. Heater OFF Control
+The safety-status field provides an overall indication of whether the onboard firmware has detected a safety-related condition.
 
-The HEATER OFF command provides a direct operator command to disable active heating.
+Representative states are:
 
-GCS
- │
- ▼
-HEATER OFF
- │
- ▼
-LoRa
- │
- ▼
+NORMAL
+FAULT
+
+The GCS receives this information through telemetry.
+
+Sensors
+  │
+  ▼
 Firmware
- │
- ▼
-Command Validation
- │
- ▼
-Heater OFF
- │
- ▼
-Continue Temperature Monitoring
+  │
+  ▼
+Safety Evaluation
+  │
+  ├──────────► NORMAL
+  │
+  └──────────► FAULT
+                  │
+                  ▼
+               Telemetry
+                  │
+                  ▼
+                 GCS
+15. Temperature Graph
 
-The thermal-control system continues operating after the heater is switched off.
+The temperature graph provides a visual representation of thermal behavior.
 
-21. Thermal-Control Feedback Loop
+The graph can represent:
 
-The complete feedback loop is:
+battery temperature
+ambient temperature
+temperature change during heating
+temperature response after heater operation
+thermal behavior during experimental operation
 
-                ┌──────────────────────┐
-                │     HEATING ELEMENT  │
-                └──────────┬───────────┘
+A conceptual graph structure is:
+
+Temperature
+    │
+    │             ●
+    │          ●     ●
+    │       ●           ●
+    │    ●
+    │ ●
+    └──────────────────────────────►
+       Time / Reading Index
+
+Where timestamped data is available, the horizontal axis can represent time.
+
+Where timestamps are not available, the available HIFLY sample data is represented by reading index rather than an invented time scale.
+
+16. Temperature Data Display
+
+The GCS temperature graph is connected to the same telemetry stream used by the numerical temperature display.
+
+                    Temperature Sensor
                            │
                            ▼
-                ┌──────────────────────┐
-                │    THERMAL SYSTEM    │
-                │                      │
-                │ Battery + PHP +      │
-                │ Insulation + Thermal │
-                │ Structure            │
-                └──────────┬───────────┘
+                     Onboard Firmware
                            │
                            ▼
-                ┌──────────────────────┐
-                │ TEMPERATURE SENSOR   │
-                └──────────┬───────────┘
+                     Telemetry Packet
                            │
                            ▼
-                ┌──────────────────────┐
-                │ HIFLY CONTROLLER     │
-                │                      │
-                │ Thermal Evaluation   │
-                │ Safety Logic         │
-                └──────────┬───────────┘
+                          LoRa
                            │
                            ▼
-                ┌──────────────────────┐
-                │ MOSFET CONTROL       │
-                └──────────┬───────────┘
-                           │
-                           └──────────────► Heater
+                           GCS
+                      ┌────┴────┐
+                      │         │
+                      ▼         ▼
+                Numeric Value   Graph
 
-This feedback arrangement allows the active heater to respond to measured temperature rather than operating as an uncontrolled continuous load.
+This ensures that the numerical display and graph originate from the same telemetry data source.
 
-22. Thermal and Electrical Monitoring
+17. GCS Alerts
 
-Thermal control is linked with electrical monitoring because heater operation affects system power consumption.
+The GCS provides operator-facing alerts for important system conditions.
+
+The primary alert categories are:
+
+┌──────────────────────────────────────┐
+│              HIFLY ALERTS            │
+├──────────────────────────────────────┤
+│                                      │
+│  LOW TEMPERATURE                     │
+│                                      │
+│  OVER-TEMPERATURE                    │
+│                                      │
+│  SENSOR FAULT                        │
+│                                      │
+│  COMMUNICATION LOST                  │
+│                                      │
+└──────────────────────────────────────┘
+
+The alerts are generated from onboard telemetry and status information.
+
+18. Low-Temperature Alert
+
+The low-temperature alert indicates that the measured thermal condition requires attention according to the configured thermal-control logic.
 
 Temperature
      │
      ▼
-Thermal Control
+Thermal Evaluation
+     │
+     ▼
+Low-Temperature Condition
+     │
+     ├──────────────► Thermal Control
+     │
+     └──────────────► GCS Alert
+
+The alert does not replace the onboard thermal-control decision.
+
+19. Over-Temperature Alert
+
+An over-temperature condition is treated as a safety-related event.
+
+Temperature
+     │
+     ▼
+Thermal Evaluation
+     │
+     ▼
+Over-temperature Condition
+     │
+     ├──────────────► Safety Logic
+     │
+     └──────────────► GCS Alert
+
+The GCS communicates the condition to the operator while the onboard controller handles the local safety response.
+
+20. Sensor-Fault Alert
+
+A sensor-fault alert indicates that a monitored measurement cannot be treated as valid according to the onboard firmware's data-validation logic.
+
+Sensor
+  │
+  ▼
+Measurement
+  │
+  ▼
+Validation
+  │
+  ▼
+Invalid
+  │
+  ├──────────────► Onboard Safety Logic
+  │
+  └──────────────► GCS SENSOR FAULT
+
+This alert is important because the thermal-control system depends on valid temperature measurements.
+
+21. Communication-Lost Alert
+
+A communication-lost alert is generated when the GCS no longer receives the expected communication from the onboard system according to the implemented link-monitoring logic.
+
+LoRa Link
+   │
+   ▼
+Communication Monitor
+   │
+   ▼
+No Valid Link
+   │
+   ├──────────────► GCS COMMUNICATION LOST
+   │
+   └──────────────► Onboard Autonomous Control
+
+The onboard thermal-control system continues operating independently of the GCS display.
+
+22. Control Interface
+
+The GCS provides three primary operator controls:
+
+┌──────────────┐
+│     AUTO     │
+└──────────────┘
+
+┌──────────────┐
+│   PRE-HEAT   │
+└──────────────┘
+
+┌──────────────┐
+│  HEATER OFF  │
+└──────────────┘
+
+These commands are transmitted to the onboard controller through LoRa.
+
+The onboard firmware validates and processes the commands before affecting the physical heater.
+
+23. AUTO Button
+
+The AUTO control requests automatic temperature-based thermal control.
+
+Operator
+   │
+   ▼
+AUTO
+   │
+   ▼
+GCS
+   │
+   ▼
+LoRa
+   │
+   ▼
+Onboard Controller
+   │
+   ▼
+AUTO Mode
+   │
+   ▼
+Temperature-Based Control
+
+Once AUTO mode is active, the onboard controller performs the thermal-control loop.
+
+24. PRE-HEAT Button
+
+The PRE-HEAT control requests the configured pre-heating function.
+
+Operator
+   │
+   ▼
+PRE-HEAT
+   │
+   ▼
+GCS
+   │
+   ▼
+LoRa
+   │
+   ▼
+Onboard Controller
+   │
+   ▼
+Command Validation
+   │
+   ▼
+Thermal / Safety Logic
+   │
+   ▼
+Heater
+
+The onboard controller remains responsible for applying the command within the active safety logic.
+
+25. HEATER OFF Button
+
+The HEATER OFF control requests that active heating be disabled.
+
+Operator
+   │
+   ▼
+HEATER OFF
+   │
+   ▼
+GCS
+   │
+   ▼
+LoRa
+   │
+   ▼
+Onboard Controller
+   │
+   ▼
+Command Validation
+   │
+   ▼
+Heater OFF
+
+Temperature monitoring continues after the heater is disabled.
+
+26. Command Validation
+
+The GCS is not directly connected to the heater.
+
+All commands follow the communication and onboard-validation path.
+
+GCS Command
+     │
+     ▼
+LoRa Packet
+     │
+     ▼
+Onboard Receiver
+     │
+     ▼
+Command Validation
+     │
+     ▼
+Safety Evaluation
+     │
+     ▼
+Control Action
+
+This architecture keeps safety decisions within the onboard system.
+
+27. Telemetry Packet Concept
+
+The GCS can receive a telemetry packet containing the following logical fields:
+
+HIFLY TELEMETRY
+├── Battery Temperature
+├── Ambient Temperature
+├── Voltage
+├── Current
+├── Heater Status
+├── Thermal Status
+├── Operating Mode
+├── Safety Status
+└── LoRa / Communication Status
+
+The actual packet encoding depends on the implemented firmware and communication interface.
+
+28. GCS Data Flow
+              HIFLY ONBOARD SYSTEM
+                       │
+                       ▼
+                    Sensors
+                       │
+                       ▼
+                  MCU Firmware
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+          ▼            ▼            ▼
+       Thermal       Power        Safety
+       Status        Data          State
+          │            │            │
+          └────────────┼────────────┘
+                       │
+                       ▼
+                   Telemetry
+                       │
+                       ▼
+                  LilyGO T3-S3
+                       │
+                       ▼
+                      LoRa
+                       │
+                       ▼
+                     GCS
+                       │
+       ┌───────────────┼───────────────┐
+       ▼               ▼               ▼
+    Display          Graphs           Alerts
+       │               │               │
+       └───────────────┼───────────────┘
+                       │
+                       ▼
+                  Operator
+                       │
+                       ▼
+                   Commands
+                       │
+                       ▼
+                     LoRa
+                       │
+                       ▼
+                 HIFLY Firmware
+29. GCS and Autonomous Operation
+
+The GCS is a supervisory interface rather than the sole source of thermal-control decisions.
+
+The system hierarchy is:
+
+                 HIFLY ONBOARD
+                       │
+            ┌──────────┼──────────┐
+            │          │          │
+            ▼          ▼          ▼
+         Sensors    Thermal     Safety
+                    Control      Logic
+            │          │          │
+            └──────────┼──────────┘
+                       │
+                       ▼
+                    LoRa
+                       │
+                       ▼
+                      GCS
+                       │
+          ┌────────────┼────────────┐
+          ▼            ▼            ▼
+       Monitor       Alert        Command
+
+Essential thermal control remains onboard.
+
+30. Communication-Loss Behavior
+
+When communication is lost, the GCS cannot display current telemetry until the link is restored.
+
+The onboard controller continues local sensing and thermal-control operation.
+
+                 NORMAL LINK
+                     │
+                     ▼
+             Telemetry Received
+                     │
+                     ▼
+                    GCS
+                     │
+                     │
+                Link Lost
+                     │
+                     ▼
+            GCS Communication
+                 Lost Alert
+                     │
+                     │
+             ┌───────┴───────┐
+             │               │
+             ▼               ▼
+        GCS Waiting      Onboard System
+        for Recovery     Continues Local
+                         Thermal Control
+             │               │
+             └───────┬───────┘
+                     │
+              Link Restored
+                     │
+                     ▼
+             Telemetry Resumes
+31. GCS Thermal Monitoring During Testing
+
+The GCS can be used as the operator-facing interface during controlled thermal experiments.
+
+The monitored relationship is:
+
+Thermal Input
      │
      ▼
 Heater State
      │
      ▼
-Electrical Load
+Temperature Response
      │
- ┌───┴──────────────┐
- ▼                  ▼
-Voltage            Current
- │                  │
- └────────┬─────────┘
-          ▼
-      Power Data
-          │
-          ▼
-       Telemetry
+     ▼
+Voltage / Current
+     │
+     ▼
+LoRa Telemetry
+     │
+     ▼
+GCS
+     │
+     ├── Temperature
+     ├── Heater Status
+     ├── Voltage
+     ├── Current
+     ├── Thermal Status
+     └── Alerts
 
-This allows thermal operation to be observed together with electrical behavior.
+This provides a common interface for observing thermal and electrical behavior during experiments.
 
-23. Thermal Control and Energy Management
+32. GCS and Experimental Data
 
-The active heater contributes to the system's electrical energy consumption.
+The available HIFLY sample data contains current, voltage, and temperature measurements.
 
-The control architecture therefore connects thermal decisions with power monitoring:
-
-Thermal Requirement
-        │
-        ▼
-    Heater State
-        │
-        ▼
-   Electrical Load
-        │
-        ▼
- Voltage / Current
-        │
-        ▼
-   Power Monitoring
-        │
-        ▼
-      Telemetry
-        │
-        ▼
-       GCS
-
-This relationship is important for evaluating the trade-off between thermal support and available mission energy.
-
-24. Thermal Control and Battery Protection
-
-The battery is both an energy source and a temperature-sensitive component of the system.
-
-The HIFLY architecture therefore connects:
-
-Battery
-  │
-  ├── Electrical Monitoring
-  │       │
-  │       ├── Voltage
-  │       └── Current
-  │
-  └── Thermal Monitoring
-          │
-          ├── Battery Temperature
-          ├── Heating
-          ├── Insulation
-          └── PHP-Assisted Thermal Path
-
-The firmware coordinates the active heating function while the physical design provides the supporting thermal environment.
-
-25. Thermal Control State Machine
-
-A simplified state-machine representation is:
-
-                    ┌─────────────┐
-                    │   STARTUP   │
-                    └──────┬──────┘
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │    NORMAL   │
-                    └──────┬──────┘
-                           │
-                Heating required
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │   HEATING   │
-                    └──────┬──────┘
-                           │
-                  Thermal condition
-                       restored
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │    NORMAL   │
-                    └─────────────┘
-
-Sensor fault / unsafe condition
-                │
-                ▼
-         ┌─────────────┐
-         │ SAFETY/FAULT│
-         └──────┬──────┘
-                │
-          Safe recovery
-                │
-                ▼
-         Thermal Monitoring
-
-The exact transition conditions are determined by the implemented firmware configuration.
-
-26. Control-Loop Relationship With GCS
-
-The GCS provides remote visibility and permitted commands, but it does not replace the onboard feedback loop.
-
-                  ONBOARD SYSTEM
-                       │
-                       ▼
-                 Temperature
-                       │
-                       ▼
-                 Thermal Logic
-                       │
-                       ▼
-                    Heater
-                       │
-                       ▼
-                  Temperature
-                       │
-                       └──────────► Feedback
-
-                       ▲
-                       │
-                  GCS Commands
-                       │
-                       │
-                      LoRa
-                       │
-                       ▼
-                  ONBOARD MCU
-
-The onboard controller therefore remains the central element of the thermal-control loop.
-
-27. Thermal-Control Data
-
-The thermal-control system can generate data suitable for later analysis.
-
-Relevant fields include:
-
-Data	Use
-Battery temperature	Thermal response
-Ambient temperature	Environmental reference
-Heater status	Control-state correlation
-Voltage	Electrical operating state
-Current	Heater/system load
-Thermal status	Software control state
-Safety status	Fault/state correlation
-Communication state	Link-condition correlation
-
-When timestamps are available, these values can be plotted against time.
-
-When timestamps are not available, measurements can still be represented by reading index for experimental inspection.
-
-28. Relationship to Experimental Data
-
-HIFLY includes temperature, voltage, and current measurements that can be used to examine the relationship between electrical operation and thermal response.
-
-The available sample measurements are:
+The supplied readings are:
 
 Reading Index	Current	Voltage	Temperature
 1	0.00	0.0	16
@@ -847,257 +850,320 @@ Reading Index	Current	Voltage	Temperature
 8	0.60	5.3	35
 9	0.00	0.0	36
 
-These measurements are represented by reading index because timestamps are not available in the supplied dataset.
+The dataset does not contain timestamps.
 
-The dataset does not by itself establish a time-dependent thermal-performance curve or a validated thermal-control threshold.
+Therefore, if this data is plotted in the GCS/data-analysis layer without additional timing information, the horizontal axis should be identified as Reading Index rather than time.
 
-29. Control-System Limitations of the Available Data
+33. GCS Power Information
 
-The available sample data provides measured current, voltage, and temperature values but does not contain timestamps or a complete record of operating conditions.
+Where voltage and current are available in the same telemetry record, the GCS or data-processing layer can derive electrical power using:
 
-Therefore, the data can support:
+Power = Voltage × Current
 
-inspection of measured electrical values
-inspection of measured temperature values
-reading-index plots
-calculation of instantaneous power from corresponding voltage and current readings
+For example, the recorded pair:
 
-The data alone does not establish:
+Voltage = 12.0
+Current = 1.54
 
-heating rate per unit time
-cooling rate per unit time
-steady-state thermal performance
-validated temperature-control thresholds
-long-duration endurance
-PHP performance improvement
-mission-level energy consumption
+corresponds to an instantaneous calculated electrical power of:
 
-Such conclusions require appropriately timestamped and controlled experimental measurements.
+Power = 12.0 × 1.54
+      = 18.48
 
-30. Thermal-Control Verification Path
+The calculated value represents the product of the recorded voltage and current at that reading. It should not be interpreted as total energy consumption without time information.
 
-The thermal-control system can be evaluated through a staged verification process.
+34. GCS State Relationships
 
-Firmware Logic
-      │
-      ▼
-Sensor Reading
-      │
-      ▼
-Control Decision
-      │
-      ▼
-Heater Command
-      │
-      ▼
-Electrical Response
-      │
-      ▼
-Thermal Response
-      │
-      ▼
-Measured Temperature
-      │
-      ▼
-Recorded Data
-      │
-      ▼
-Analysis
+The dashboard combines multiple system states into one operator view.
 
-The software architecture is therefore connected directly to measurable physical behavior.
+                 HIFLY STATE
+                     │
+      ┌──────────────┼──────────────┐
+      │              │              │
+      ▼              ▼              ▼
+   Thermal         Electrical    Communication
+      │              │              │
+      ▼              ▼              ▼
+ Battery Temp     Voltage        LoRa Link
+ Ambient Temp     Current
+ Heater State     Power
+      │              │              │
+      └──────────────┼──────────────┘
+                     │
+                     ▼
+                   GCS
+                     │
+          ┌──────────┼──────────┐
+          ▼          ▼          ▼
+       Display     Graphs     Alerts
 
-31. Fault and Safety Relationship
+This provides a unified view of the system rather than treating thermal and electrical behavior as isolated measurements.
 
-The thermal-control system treats faults as separate from ordinary thermal states.
+35. GCS Safety Relationship
 
-                 SENSOR DATA
+The GCS displays safety information but does not replace the onboard safety system.
+
+             ONBOARD SAFETY LOGIC
+                      │
+             ┌────────┼────────┐
+             │        │        │
+             ▼        ▼        ▼
+          Thermal   Sensor   Communication
+           Fault     Fault      Fault
+             │        │        │
+             └────────┼────────┘
                       │
                       ▼
-               ┌──────────────┐
-               │   VALIDATE   │
-               └──────┬───────┘
+                  Telemetry
                       │
-               ┌──────┴──────┐
-               │             │
-             VALID         INVALID
-               │             │
-               ▼             ▼
-        Thermal Control   Sensor Fault
-               │             │
-               ▼             ▼
-        Heater Decision   Safety Logic
-               │             │
-               └──────┬──────┘
                       ▼
-                 System State
+                     GCS
+                      │
+                      ▼
+                   Alert
 
-This structure avoids treating a faulty sensor measurement as an ordinary thermal-control input.
+The GCS therefore acts as the operator notification layer while the onboard controller remains responsible for local fault handling.
 
-32. Thermal Control With Communication Recovery
+36. GCS Interface With Thermal Control
 
-When communication is restored after a communication-loss event, the system resumes telemetry while the onboard controller continues operating from its current local state.
+The complete relationship between the GCS and thermal-control system is:
 
-Communication Lost
-       │
-       ▼
-Local Thermal Control
-       │
-       ▼
-Safety Monitoring
-       │
-       ▼
-LoRa Link Restored
-       │
-       ▼
-Telemetry Resumes
-       │
-       ▼
-GCS Displays Current State
-
-The communication layer therefore reconnects to the onboard control system rather than becoming the source of thermal control itself.
-
-33. Overall Thermal-Control Flow
-                         START
-                           │
-                           ▼
-                 Initialize Controller
-                           │
-                           ▼
-                  Initialize Sensors
-                           │
-                           ▼
-                 Initialize Heater I/O
-                           │
-                           ▼
-                    Initialize LoRa
-                           │
-                           ▼
-                  ┌────────────────┐
-                  │  READ SENSOR   │
-                  └───────┬────────┘
-                          │
-                          ▼
-                  ┌────────────────┐
-                  │ VALIDATE DATA  │
-                  └───────┬────────┘
-                          │
-                          ▼
-                 ┌──────────────────┐
-                 │ THERMAL EVALUATE │
-                 └────────┬─────────┘
-                          │
-              ┌───────────┼───────────┐
-              │           │           │
-              ▼           ▼           ▼
-          HEATING       NORMAL      UNSAFE
-          REQUIRED      STATE        STATE
-              │           │           │
-              ▼           ▼           ▼
-          HEATER ON    HEATER OFF  SAFETY LOGIC
-              │           │           │
-              └───────────┼───────────┘
-                          │
-                          ▼
-                  POWER MONITORING
-                          │
-                          ▼
-                  COMMUNICATION CHECK
-                          │
-                          ▼
-                    TELEMETRY
-                          │
-                          ▼
-                    NEXT CYCLE
-34. Design Principles
-
-The HIFLY thermal-control logic follows these principles:
-
-Temperature-based control
-Heater operation is based on measured thermal condition.
-Local autonomy
-Essential thermal-control logic remains onboard.
-Feedback control
-The heater is operated using measured temperature rather than an uncontrolled fixed command.
-Hardware/software separation
-The firmware controls the MOSFET switching stage while the hardware handles the corresponding electrical power path.
-Safety separation
-Safety evaluation remains distinct from normal thermal-control decisions.
-Communication independence
-Loss of LoRa communication does not inherently terminate local thermal control.
-Electrical awareness
-Voltage and current monitoring provide visibility into the electrical cost of active thermal management.
-Physical and software integration
-The software operates together with insulation, PHP, heating, sensing, and protection hardware as one thermal-management system.
-35. Final Thermal-Control Architecture
-                 HIGH-ALTITUDE ENVIRONMENT
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │     INSULATION  │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │      PHP        │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │     BATTERY     │
-                  └────────┬────────┘
-                           │
-                           ▼
-                 TEMPERATURE SENSOR
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ HIFLY FIRMWARE  │
-                  │                 │
-                  │ Sensor Check    │
-                  │ Thermal State   │
-                  │ Safety Logic    │
-                  │ Mode Handling   │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ HEATER CONTROL  │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ MOSFET SWITCH   │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ HEATING ELEMENT │
-                  └────────┬────────┘
-                           │
-                           └──────────────► Thermal Feedback
-
-
-        VOLTAGE / CURRENT
-               │
-               ▼
-        POWER MONITORING
-               │
-               ▼
-           TELEMETRY
-               │
-               ▼
-             LoRa
-               │
-               ▼
-              GCS
-               │
-       ┌───────┼────────┐
-       ▼       ▼        ▼
-    Display   Graphs   Alerts
+                     OPERATOR
                          │
                          ▼
-                      Commands
+                       GCS
                          │
-                         └──────────────► LoRa
+              ┌──────────┼──────────┐
+              │          │          │
+              ▼          ▼          ▼
+             AUTO     PRE-HEAT   HEATER OFF
+              │          │          │
+              └──────────┼──────────┘
+                         │
+                         ▼
+                       LoRa
+                         │
+                         ▼
+                 Onboard Controller
+                         │
+                         ▼
+                  Command Validation
+                         │
+                         ▼
+                   Safety Evaluation
+                         │
+                         ▼
+                  Thermal-Control Logic
+                         │
+                         ▼
+                       MOSFET
+                         │
+                         ▼
+                       Heater
+                         │
+                         ▼
+                     Temperature
+                         │
+                         ▼
+                      Telemetry
+                         │
+                         ▼
+                        LoRa
+                         │
+                         ▼
+                         GCS
 
-The HIFLY thermal-control system therefore combines physical thermal management, temperature feedback, active heating, electrical monitoring, onboard safety logic, and LoRa-based ground supervision into a single integrated control architecture.
+This creates a complete bidirectional monitoring and supervisory path.
+
+37. GCS Interface With Power Monitoring
+
+The electrical-monitoring path is:
+
+Voltage Sensor ───────┐
+                      │
+                      ▼
+                   MCU
+                      │
+Current Sensor ───────┤
+                      │
+                      ▼
+                 Telemetry
+                      │
+                      ▼
+                     LoRa
+                      │
+                      ▼
+                     GCS
+                      │
+             ┌────────┼────────┐
+             ▼        ▼        ▼
+          Voltage   Current   Power
+
+The GCS can therefore associate electrical measurements with the thermal state and heater state.
+
+38. GCS Interface With Experimental Validation
+
+The GCS provides a practical interface between the HIFLY prototype and recorded system evidence.
+
+Prototype
+   │
+   ▼
+Sensors
+   │
+   ▼
+Firmware
+   │
+   ▼
+LoRa Telemetry
+   │
+   ▼
+GCS
+   │
+   ├── Live Status
+   ├── Temperature Graph
+   ├── Alerts
+   └── Operating Controls
+   │
+   ▼
+Experimental Record
+
+The software interface and the experimental evidence remain separate: displaying a value does not by itself establish system performance or validation.
+
+39. GCS Design Principles
+
+The HIFLY GCS follows the following principles:
+
+Clear monitoring
+Important thermal and electrical information is visible in one interface.
+Thermal awareness
+Battery and ambient temperature are treated as primary system variables.
+Electrical awareness
+Voltage and current are displayed alongside thermal information.
+Communication awareness
+LoRa link status is explicitly represented.
+Safety visibility
+Safety and fault conditions are shown to the operator.
+Supervised control
+AUTO, PRE-HEAT, and HEATER OFF functions provide a clear operator interface.
+Onboard autonomy
+The GCS does not replace onboard thermal and safety logic.
+Data traceability
+Displayed information originates from onboard measurements and firmware states.
+40. GCS Functional Summary
+GCS Function	HIFLY Implementation Concept
+Battery temperature	Numeric telemetry display
+Ambient temperature	Numeric telemetry display
+Voltage	Electrical telemetry display
+Current	Electrical telemetry display
+Heater status	ON / OFF status
+Thermal status	Thermal-state display
+LoRa link	Communication-state display
+AUTO/MANUAL	Operating-mode display
+Safety status	Safety-state display
+Temperature graph	Thermal trend visualization
+Low-temperature alert	Operator warning
+Over-temperature alert	Safety warning
+Sensor-fault alert	Measurement warning
+Communication-lost alert	Link warning
+AUTO control	Automatic onboard thermal control
+PRE-HEAT control	Supervised heating command
+HEATER OFF control	Supervised heater-disable command
+41. Overall GCS Data and Control Flow
+                         HIFLY SYSTEM
+                              │
+                              ▼
+                         ┌──────────┐
+                         │ Sensors  │
+                         └────┬─────┘
+                              │
+                              ▼
+                         ┌──────────┐
+                         │ Firmware │
+                         └────┬─────┘
+                              │
+            ┌─────────────────┼─────────────────┐
+            │                 │                 │
+            ▼                 ▼                 ▼
+        Thermal            Power             Safety
+         State              Data              State
+            │                 │                 │
+            └─────────────────┼─────────────────┘
+                              │
+                              ▼
+                         ┌──────────┐
+                         │Telemetry │
+                         └────┬─────┘
+                              │
+                              ▼
+                         ┌──────────┐
+                         │  LoRa    │
+                         └────┬─────┘
+                              │
+                              ▼
+                         ┌──────────┐
+                         │   GCS    │
+                         └────┬─────┘
+                              │
+             ┌────────────────┼────────────────┐
+             │                │                │
+             ▼                ▼                ▼
+          Display           Graphs           Alerts
+             │                │                │
+             └────────────────┼────────────────┘
+                              │
+                              ▼
+                           Operator
+                              │
+                              ▼
+                    AUTO / PRE-HEAT /
+                       HEATER OFF
+                              │
+                              ▼
+                             LoRa
+                              │
+                              ▼
+                        HIFLY Firmware
+42. Final GCS Architecture
+┌──────────────────────────────────────────────────────────────┐
+│                         HIFLY GCS                            │
+│                                                              │
+│  ┌──────────────┐ ┌──────────────┐ ┌─────────────────────┐  │
+│  │ Battery Temp │ │ Ambient Temp │ │ Voltage / Current   │  │
+│  └──────────────┘ └──────────────┘ └─────────────────────┘  │
+│                                                              │
+│  ┌──────────────┐ ┌──────────────┐ ┌─────────────────────┐  │
+│  │ Heater State │ │ Thermal State│ │ LoRa Link           │  │
+│  └──────────────┘ └──────────────┘ └─────────────────────┘  │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │                 TEMPERATURE GRAPH                      │  │
+│  └────────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │                       ALERTS                           │  │
+│  │                                                        │  │
+│  │ Low Temperature • Over-temperature • Sensor Fault     │  │
+│  │ Communication Lost                                     │  │
+│  └────────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │                     CONTROLS                           │  │
+│  │                                                        │  │
+│  │      AUTO       PRE-HEAT       HEATER OFF              │  │
+│  └────────────────────────────────────────────────────────┘  │
+│                                                              │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+                               ▼
+                             LoRa
+                               │
+                               ▼
+                     HIFLY ONBOARD CONTROLLER
+                               │
+             ┌─────────────────┼─────────────────┐
+             │                 │                 │
+             ▼                 ▼                 ▼
+          Sensors          Thermal            Safety
+                            Control             Logic
+
+The HIFLY GCS therefore serves as the operator-facing layer for telemetry, thermal visualization, electrical monitoring, alerts, and supervised commands while maintaining a clear separation between ground supervision and onboard autonomous thermal-control functions.
