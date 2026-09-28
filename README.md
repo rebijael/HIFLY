@@ -3,10 +3,6 @@ Integrated High-Altitude UAV Reliability System for HAA/SHAA operations — ther
 
 A modular engineering architecture designed to improve the reliability of electrical, electronic and energy systems operating in High-Altitude Areas (HAA) and Super High-Altitude Areas (SHAA).
 
-# HIFLY
-
-## Integrated High-Altitude UAV Reliability System
-
 HIFLY is an integrated engineering system designed to improve the reliability of UAV electrical, electronic, thermal and energy systems operating in High-Altitude Areas (HAA) and Super High-Altitude Areas (SHAA).
 
 The system addresses multiple environmental challenges through modular protection and control mechanisms covering thermal management, battery operation, electrical protection, thermal cycling, environmental exposure, communication reliability and mission energy management.
