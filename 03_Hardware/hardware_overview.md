@@ -1,472 +1,688 @@
 # HIFLY — Hardware Overview
 
-## 1. Hardware Architecture
+## 1. Hardware System Overview
 
-HIFLY combines sensing, thermal management, power monitoring, control, communication and physical protection hardware into a modular onboard architecture.
+HIFLY is built around a combination of thermal-management hardware, battery hardware, environmental-protection structures, sensing electronics, control electronics, switching hardware, and communication hardware.
 
-The main hardware elements are:
+The hardware architecture provides the physical implementation for the seven high-altitude reliability challenges addressed by the HIFLY system.
 
-- Li-ion battery pack
-- Temperature sensor
-- Voltage sensor/monitoring circuit
-- Current sensor/monitoring circuit
-- Heating element
-- MOSFET driver
-- Thermal insulation
-- LilyGO T3-S3 LoRa controller
-- Pulsating Heat Pipe
-- Low-pressure protection chamber
-- Flexible silicone protection
-- Lightweight protective layer
-- Antenna/radome protection
+The major hardware groups are:
 
----
+| Hardware Group | Major Elements | Primary Function |
+|---|---|---|
+| Thermal Management | Pulsating Heat Pipe, thermal insulation, heating element | Thermal transport and temperature control |
+| Battery System | Li-ion battery pack, battery protection and thermal elements | Electrical energy storage and battery thermal management |
+| Sensing | Temperature, voltage, current measurement | System-state measurement |
+| Control | ESP32-based controller | Processing and control |
+| Switching | MOSFET switching stage | Heater power control |
+| Environmental Protection | Protection chamber, enclosure, flexible silicone, protective layer | Environmental and mechanical protection |
+| Communication | LilyGO T3-S3, LoRa, antenna arrangement | Wireless telemetry |
+| Ground Interface | GCS communication hardware | System monitoring and operator interaction |
 
-## 2. Hardware Block Diagram
+The overall hardware relationship is:
 
 ```text
+                    HIGH-ALTITUDE ENVIRONMENT
+                              │
+                              ↓
+                 ┌─────────────────────────┐
+                 │ ENVIRONMENTAL PROTECTION│
+                 │                         │
+                 │ Enclosure               │
+                 │ Insulation              │
+                 │ Protection Chamber      │
+                 │ Flexible Silicone       │
+                 │ Protective Layer        │
+                 └────────────┬────────────┘
+                              │
+                              ↓
+                 ┌─────────────────────────┐
+                 │ THERMAL MANAGEMENT      │
+                 │                         │
+                 │ PHP                     │
+                 │ Heating Element         │
+                 │ Thermal Insulation      │
+                 └────────────┬────────────┘
+                              │
+                              ↓
+                 ┌─────────────────────────┐
+                 │ BATTERY SYSTEM           │
+                 │                         │
+                 │ Li-ion Battery          │
+                 │ Thermal Management      │
+                 │ Electrical Monitoring   │
+                 └────────────┬────────────┘
+                              │
+                              ↓
+                 ┌─────────────────────────┐
+                 │ SENSOR SYSTEM            │
+                 │                         │
+                 │ Temperature             │
+                 │ Voltage                 │
+                 │ Current                 │
+                 └────────────┬────────────┘
+                              │
+                              ↓
+                 ┌─────────────────────────┐
+                 │ ESP32 CONTROL SYSTEM     │
+                 │                         │
+                 │ Thermal Control         │
+                 │ Power Monitoring        │
+                 │ Safety Logic             │
+                 └────────────┬────────────┘
+                              │
+                    ┌─────────┴─────────┐
+                    ↓                   ↓
+             MOSFET / HEATER       LilyGO T3-S3
+             CONTROL SYSTEM             │
+                                        ↓
+                                      LoRa
+                                        │
+                                        ↓
+                                       GCS
+```
+2. Thermal Management Hardware
+2.1 Pulsating Heat Pipe
+
+The Pulsating Heat Pipe is a central component of the passive thermal-management architecture.
+
+The PHP provides a thermal pathway between the heat-source region and the heat-rejection region.
+
+Its functional arrangement is:
+
+                    HEAT SOURCE
+                         │
+                         ↓
+                ┌────────────────┐
+                │ PHP EVAPORATOR │
+                └───────┬────────┘
+                        │
+                        │ Heat Transport
+                        ↓
+                ┌────────────────┐
+                │ PHP CONDENSER  │
+                └───────┬────────┘
+                        │
+                        ↓
+                  HEAT REJECTION
+
+The PHP is integrated with the thermal structure rather than functioning as an isolated component.
+
+The PHP hardware works together with the enclosure, insulation, heat-source interface, and thermal-management geometry.
+
+2.2 Heating Element
+
+The heating element provides active thermal correction.
+
+The heater is controlled through an electronic switching stage connected to the ESP32 controller.
+
+ESP32
+  │
+  ↓
+Control Signal
+  │
+  ↓
+MOSFET Switching Stage
+  │
+  ↓
+Heating Element
+  │
+  ↓
+Protected Thermal Region
+
+The heating element forms the active part of the thermal-management system.
+
+Its operation is controlled using temperature information from the sensing system.
+
+2.3 Thermal Insulation
+
+Thermal insulation surrounds the appropriate protected regions of the system.
+
+Its purpose is to reduce unwanted heat transfer between the protected electronics and the external environment.
+
+       EXTERNAL ENVIRONMENT
+                │
+                ↓
+        ┌───────────────┐
+        │ Insulation    │
+        │ Layer         │
+        └───────┬───────┘
+                │
+                ↓
+       Protected Electronics
+
+The insulation works together with the heater and PHP.
+
+The combined thermal architecture is:
+```
+
+                 THERMAL SYSTEM
+                       │
+          ┌────────────┴────────────┐
+          ↓                         ↓
+     Passive Control           Active Control
+          │                         │
+     ┌────┴────┐                    │
+     ↓         ↓                    ↓
+ Insulation   PHP                Heater
+     │         │                    │
+     └─────────┴──────────┬─────────┘
+                          ↓
+                   Thermal Condition
+```
+3. Battery Hardware
+3.1 Li-ion Battery Pack
+
+The Li-ion battery pack provides the electrical energy required by the HIFLY system.
+
+The battery supplies power to:
+
+ESP32 controller
+Temperature sensors
+Voltage and current monitoring
+Heating element
+LoRa communication hardware
+Other connected electrical loads
+
+The battery is also part of the thermal-management system because its operating condition is affected by temperature.
+
+3.2 Battery Thermal Management
+
+The battery thermal subsystem combines physical thermal protection with active monitoring and heating.
+
+                    LI-ION BATTERY
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+          ↓                ↓                ↓
+     Temperature        Voltage          Current
+       Sensor           Monitor           Monitor
+          │                │                │
+          └────────────────┼────────────────┘
+                           ↓
+                    ESP32 CONTROLLER
+                           │
+                           ↓
+                    THERMAL CONTROL
+                           │
+                           ↓
+                     HEATER CONTROL
+                           │
+                           ↓
+                  BATTERY THERMAL STATE
+
+This arrangement allows the battery to be evaluated using thermal and electrical measurements.
+
+4. Sensing Hardware
+4.1 Temperature Sensing
+
+Temperature sensors provide the primary thermal feedback for HIFLY.
+
+Temperature information is used by the ESP32 controller to determine the thermal condition of the protected system.
+
+The measurement path is:
+
+Thermal Region
+      │
+      ↓
+Temperature Sensor
+      │
+      ↓
+ESP32
+      │
+      ↓
+Thermal Control Logic
+      │
+      ↓
+Heater
+
+Temperature measurements are also transmitted through the telemetry system for GCS monitoring.
+
+4.2 Voltage Monitoring
+
+Voltage monitoring provides information about the electrical supply condition.
+
+Battery
+  │
+  ↓
+Voltage Measurement
+  │
+  ↓
+ESP32
+  │
+  ├── Power Monitoring
+  └── Telemetry
+
+Voltage information is available to the control and monitoring architecture.
+
+4.3 Current Monitoring
+
+Current monitoring provides information about electrical load.
+
+Battery / Load
+      │
+      ↓
+Current Measurement
+      │
+      ↓
+ESP32
+      │
+      ├── Load Monitoring
+      ├── Power Monitoring
+      └── Telemetry
+
+Current measurement is particularly relevant when the heater is operating because active thermal control introduces an electrical load.
+
+4.4 Combined Sensor Architecture
+
+The three primary measurements are integrated into the central controller.
+
+Temperature ────────┐
+                    │
+Voltage ────────────┤
+                    │
+Current ────────────┤
+                    ↓
+             ESP32 CONTROLLER
+                    │
+        ┌───────────┼───────────┐
+        ↓           ↓           ↓
+     Thermal      Power       Safety
+     Control    Monitoring     Logic
+        │           │           │
+        └───────────┼───────────┘
+                    ↓
+              LoRa Telemetry
+5. Control Hardware
+5.1 ESP32 Controller
+
+The ESP32-based controller is the central processing unit of the HIFLY hardware architecture.
+
+It receives:
+
+Temperature measurements
+Voltage measurements
+Current measurements
+Operating commands
+Communication information
+
+It provides:
+
+Thermal-control decisions
+Heater-control signals
+Power-state information
+Safety-state information
+Telemetry data
+
+The controller architecture is:
+```
+
+                 SENSOR INPUTS
+                      │
+        ┌─────────────┼─────────────┐
+        ↓             ↓             ↓
+   Temperature     Voltage       Current
+        │             │             │
+        └─────────────┼─────────────┘
+                      ↓
+                ESP32 CONTROLLER
+                      │
+          ┌───────────┼───────────┐
+          ↓           ↓           ↓
+       Thermal       Power       Safety
+       Control     Monitoring     Logic
+          │           │           │
+          └───────────┼───────────┘
+                      ↓
+             Communication System
+```
+5.2 MOSFET Switching Stage
+
+The MOSFET switching stage provides the electrical interface between the low-power controller and the heating element.
+
+ESP32 GPIO
+    │
+    ↓
+Control Signal
+    │
+    ↓
+MOSFET
+    │
+    ↓
+Heating Element
+    │
+    ↓
+Battery Power
+
+The MOSFET stage allows the ESP32 to control the heater without directly supplying the heater load from a microcontroller output.
+
+6. Environmental Protection Hardware
+6.1 Protection Chamber
+
+The protection chamber provides a physical enclosure for sensitive electrical and electronic components.
+
+The chamber forms part of the low-pressure and environmental-protection architecture.
+
+             EXTERNAL ENVIRONMENT
+                      │
+                      ↓
+              Protective Structure
+                      │
+                      ↓
+             ┌──────────────────┐
+             │ Protected Chamber│
+             │                  │
+             │ ESP32            │
+             │ Sensors          │
+             │ Power Electronics│
+             │ Communication    │
+             └──────────────────┘
+
+The protected chamber is integrated with thermal insulation and other enclosure elements.
+
+6.2 Flexible Silicone Protection
+
+Flexible silicone protection is incorporated around selected interfaces.
+
+It provides a compliant layer between rigid components and sensitive interfaces.
+
+Rigid Structure
+      │
+      ↓
+Flexible Silicone
+      │
+      ↓
+Protected Interface
+      │
+      ↓
+Electronic Assembly
+
+This element forms part of the protection strategy against repeated thermal expansion and contraction.
+
+6.3 Lightweight Protective Layer
+
+A lightweight protective layer forms part of the environmental protection surrounding sensitive electronics.
+
+External Environment
+        │
+        ↓
+Lightweight Protective Layer
+        │
+        ↓
+Enclosure / Structural Layer
+        │
+        ↓
+Thermal Protection
+        │
+        ↓
+Sensitive Electronics
+
+The protective layer is integrated into the physical architecture while remaining compatible with the requirements of an airborne platform.
+
+No unsupported quantitative radiation-shielding performance is assigned to the material.
+
+7. Communication Hardware
+7.1 LilyGO T3-S3
+
+The LilyGO T3-S3 provides the LoRa-based communication interface used by HIFLY.
+
+The module connects the onboard controller to the wireless telemetry system.
+
+ESP32 / Onboard Controller
+          │
+          ↓
+     LilyGO T3-S3
+          │
+          ↓
+       LoRa Link
+          │
+          ↓
+    Ground Receiver
+          │
+          ↓
+         GCS
+
+The communication subsystem provides telemetry for system monitoring.
+
+7.2 Antenna and Protection
+
+The communication hardware includes an antenna arrangement integrated with the physical protection architecture.
+
+The antenna system is positioned to maintain the required wireless communication path while remaining compatible with the enclosure and environmental-protection structure.
+
+The relationship is:
+
+LilyGO T3-S3
+      │
+      ↓
+Antenna Connection
+      │
+      ↓
+Protected Antenna Arrangement
+      │
+      ↓
+Wireless LoRa Link
+8. Power Distribution
+
+The battery provides the primary electrical source for the onboard hardware.
+
+The power architecture can be represented as:
+```
+
+                       LI-ION BATTERY
+                              │
+                              ↓
+                    POWER DISTRIBUTION
+                              │
+       ┌──────────────────────┼──────────────────────┐
+       │                      │                      │
+       ↓                      ↓                      ↓
+    ESP32                 Sensors               Heater
+       │                      │                      │
+       │                      │                      │
+       ↓                      ↓                      ↓
+  Control System       Measurements          Thermal Control
+       │
+       ↓
+  LilyGO T3-S3
+       │
+       ↓
+   LoRa System
+```
+
+The current and voltage monitoring system provides electrical-state information from the power architecture.
+
+9. Hardware Interconnection
+
+The major hardware components are connected through the following system structure:
+
+                         LI-ION BATTERY
+                                │
+                ┌───────────────┼───────────────┐
+                │               │               │
+                ↓               ↓               ↓
+             ESP32          Heater Power     Sensors
+                │               │               │
+                │               ↓               │
+                │          MOSFET Stage        │
+                │               │               │
+                │               ↓               │
+                │          Heating Element      │
+                │                               │
+                └───────────────┬───────────────┘
+                                │
+                                ↓
+                         Thermal System
+                                │
+                         ┌──────┴──────┐
+                         ↓             ↓
+                        PHP       Insulation
+                         │             │
+                         └──────┬──────┘
+                                │
+                                ↓
+                      Protected Electronics
+                                │
+                                ↓
+                         LilyGO T3-S3
+                                │
+                                ↓
+                             LoRa
+                                │
+                                ↓
+                              GCS
+10. Thermal Hardware Arrangement
+
+The main thermal hardware is organized around the protected electronics.
+
+                 EXTERNAL ENVIRONMENT
+                          │
+                          ↓
+                 ┌─────────────────┐
+                 │ Protective Layer│
+                 └────────┬────────┘
+                          │
+                          ↓
+                 ┌─────────────────┐
+                 │ Enclosure       │
+                 └────────┬────────┘
+                          │
+                          ↓
+                 ┌─────────────────┐
+                 │ Insulation      │
+                 └────────┬────────┘
+                          │
+             ┌────────────┴────────────┐
+             │                         │
+             ↓                         ↓
+      Protected Electronics           PHP
+             │                         │
+             │                         ↓
+             │                   Thermal Path
+             │
+             ↓
+       Temperature Sensor
+             │
+             ↓
+            ESP32
+             │
+             ↓
+       MOSFET Switching
+             │
+             ↓
+        Heating Element
+
+This arrangement connects passive thermal management, active heating, sensing, and control.
+
+11. Hardware Functional Mapping
+Hardware Component	Function	Connected Subsystem
+Li-ion Battery	Electrical energy storage	Power / BTMS
+Pulsating Heat Pipe	Passive heat transfer	Thermal Management
+Thermal Insulation	Reduces heat transfer	Thermal Management
+Heating Element	Active heating	Thermal Management
+Temperature Sensor	Thermal measurement	Sensing / Control
+Voltage Monitor	Supply measurement	Power Monitoring
+Current Monitor	Load measurement	Power Monitoring
+MOSFET	Heater switching	Control / Power
+ESP32	Central processing	Control
+Protection Chamber	Environmental protection	Mechanical / Electrical
+Flexible Silicone	Interface protection	Mechanical / Thermal
+Lightweight Protective Layer	Environmental protection	Structural
+LilyGO T3-S3	LoRa communication	Communication
+Antenna	Wireless transmission	Communication
+GCS Receiver	Telemetry reception	Ground System
+12. Hardware Support for the Seven Subproblems
+High-Altitude Subproblem	Hardware Response
+Reduced cooling efficiency	Pulsating Heat Pipe
+Insulation breakdown and electrical arcing	Protection chamber and protected electrical architecture
+Battery degradation	Li-ion battery thermal-management hardware
+Thermal cycling damage	Flexible silicone protection
+Increased radiation exposure	Lightweight protective layer
+Communication system effects	LilyGO T3-S3, LoRa, antenna protection
+Mission energy and endurance	Battery, voltage/current monitoring, controlled heater
+
+13. Hardware–Software Boundary
+
+The hardware provides physical measurements and executes the commands generated by the control software.
+```
+
+                    HARDWARE
+                       │
+       ┌───────────────┼────────────────┐
+       │               │                │
+       ↓               ↓                ↓
+   Sensors          Power          Communication
+       │               │                │
+       └───────────────┼────────────────┘
+                       ↓
+                  ESP32 SOFTWARE
+                       │
+       ┌───────────────┼────────────────┐
+       ↓               ↓                ↓
+ Thermal Control   Power Logic      Safety Logic
+       │               │                │
+       └───────────────┼────────────────┘
+                       ↓
+                    HARDWARE
+                       │
+          ┌────────────┴────────────┐
+          ↓                         ↓
+       Heater                   Telemetry
+```
+
+The hardware and software therefore form a closed control system.
+
+14. Physical System Architecture
+
+The complete physical arrangement can be represented as:
+```
+
                          HIFLY HARDWARE
                               │
-             ┌────────────────┼────────────────┐
-             │                │                │
-          BATTERY          CONTROLLER       PROTECTION
-             │                │                │
-        ┌────┼────┐           │          ┌─────┼─────┐
-        │    │    │           │          │     │     │
-      Temp  Volt Current   LilyGO T3-S3  Chamber Silicone
-     Sensor Monitor Monitor      │       Layer   Layer
-        │    │    │              │
-        └────┼────┘              │
-             │                   │
-             └──────────┬────────┘
-                        │
-                  Thermal Logic
-                        │
-                      MOSFET
-                        │
-                  Heating Element
-                        
-             PHP → Processor Cooling
-             
-             Radome → Antenna Protection
-             
-             LoRa → GCS Communication
+          ┌───────────────────┼───────────────────┐
+          │                   │                   │
+          ↓                   ↓                   ↓
+     THERMAL SYSTEM       POWER SYSTEM      COMMUNICATION
+          │                   │                   │
+     ┌────┼────┐         ┌────┼────┐         ┌────┴────┐
+     ↓    ↓    ↓         ↓    ↓    ↓         ↓         ↓
+    PHP Ins. Heater    Battery Volt Current LilyGO   Antenna
+                              │
+                              ↓
+                       ESP32 CONTROLLER
+                              │
+                    ┌─────────┼─────────┐
+                    ↓         ↓         ↓
+                 Sensors    Heater    LoRa
+                              │         │
+                              ↓         ↓
+                         Thermal      GCS
+                         Control
 ```
-
----
-
-## 3. Li-ion Battery Pack
-
-The Li-ion battery pack serves as the primary electrical energy source for the onboard system.
-
-### Role
-
-The battery provides power for:
-
-- Onboard controller
-- Sensors
-- Heating system
-- Communication hardware
-- Other connected electrical loads
-
-### Monitoring
-
-The battery subsystem is monitored using:
-
-- Temperature
-- Voltage
-- Current
-
-Battery photographs and physical documentation are maintained separately in the project media directory.
-
----
-
-## 4. Temperature Sensing
-
-Temperature sensing is used as a key input for the thermal-management system.
-
-### Primary Function
-
-The temperature sensor provides battery temperature information to the onboard controller.
-
-### Application
-
-The measured temperature is used by the thermal-control logic to determine the required heater state.
-
-```text
-Battery
-   ↓
-Temperature Sensor
-   ↓
-Onboard Controller
-   ↓
-Thermal Control Logic
-   ↓
-Heater Control
-```
-
-The exact sensor model and measurement characteristics should be documented once the final hardware configuration is confirmed.
-
----
-
-## 5. Voltage Monitoring
-
-Battery voltage monitoring provides information about the electrical state of the power source.
-
-### Purpose
-
-Voltage data can be used for:
-
-- Battery-state monitoring
-- Power analysis
-- Energy analysis
-- System-status monitoring
-
-The exact sensing circuit and component specification should be documented according to the implemented hardware.
-
----
-
-## 6. Current Monitoring
-
-Current monitoring measures electrical current drawn by the system.
-
-### Purpose
-
-Current measurements support:
-
-- Power calculation
-- Heater power analysis
-- Energy-consumption analysis
-- Mission-level energy assessment
-
-Electrical power can be calculated from measured voltage and current:
-
-```text
-Power = Voltage × Current
-```
-
-Measured values should be stored as raw data before processing and graph generation.
-
----
-
-## 7. Heating Element
-
-The heating element provides controlled thermal energy to the battery system.
-
-### Function
-
-The heater is used to support battery temperature management during low-temperature operation.
-
-### Control
-
-```text
-Temperature Sensor
-        ↓
-Controller
-        ↓
-Thermal Control Logic
-        ↓
-MOSFET Driver
-        ↓
-Heating Element
-        ↓
-Battery
-```
-
-The heater should operate according to the implemented thermal-control logic rather than remaining continuously active.
-
----
-
-## 8. MOSFET Driver
-
-The MOSFET switching stage provides electrical control of the heating element.
-
-### Function
-
-The controller produces the required control signal, while the MOSFET switching stage handles the heater's electrical load.
-
-```text
-LilyGO T3-S3
-      │
-      ↓
-Control Signal
-      │
-      ↓
-MOSFET
-      │
-      ↓
-Heating Element
-```
-
-The final MOSFET and driver specifications should be documented according to the actual hardware used in the prototype.
-
----
-
-## 9. Thermal Insulation
-
-Thermal insulation is used around the battery thermal-management assembly to reduce unwanted heat transfer to the surrounding environment.
-
-### Intended Functions
-
-- Reduce heat loss
-- Support battery thermal management
-- Improve heater effectiveness
-- Reduce unnecessary thermal energy demand
-
-The actual insulation material, thickness and measured thermal performance should be added once confirmed through the prototype documentation.
-
----
-
-## 10. LilyGO T3-S3 LoRa
-
-The LilyGO T3-S3 LoRa acts as the onboard controller and communication platform.
-
-### Main Functions
-
-- Sensor acquisition
-- Thermal-control logic
-- Heater control
-- Voltage/current monitoring
-- System-status monitoring
-- LoRa communication
-- Autonomous operation
-- Fail-safe functions
-
-### Communication
-
-```text
-Onboard Sensors
-       ↓
-LilyGO T3-S3
-       ↓
-LoRa
-       ↓
-Ground Control Station
-```
-
-The exact firmware implementation is documented in the software section of the repository.
-
----
-
-## 11. Pulsating Heat Pipe
-
-The Pulsating Heat Pipe is a passive cooling mechanism proposed for processor/electronics thermal management.
-
-### Main Function
-
-The PHP transfers heat from the processor/electronics region toward a heat-rejection region.
-
-```text
-Processor
-   ↓
-Heat Input
-   ↓
-PHP
-   ↓
-Heat Transport
-   ↓
-Condenser / Heat-Rejection Region
-```
-
-The PHP hardware/design is documented separately in:
-
-```text
-05_CAD/php/
-```
-
-and its simulation work is maintained in:
-
-```text
-06_Simulation/
-```
-
----
-
-## 12. Low-Pressure Protection Chamber
-
-The protection chamber is intended to protect sensitive electrical/electronic components under reduced-pressure operating conditions.
-
-### Design Considerations
-
-- Electrical insulation
-- Physical separation
-- Creepage and clearance
-- Component accessibility
-- Enclosure geometry
-- Weight and space constraints
-
-The chamber is currently treated as a design/prototype-development element until appropriate validation is completed.
-
----
-
-## 13. Flexible Silicone Protection
-
-Flexible silicone protection is considered for selected electronic assemblies exposed to repeated thermal changes.
-
-### Intended Functions
-
-- Provide an additional protective layer
-- Accommodate thermal expansion and contraction
-- Reduce direct environmental exposure
-- Support thermal-cycle durability
-
-The material specification and final application method should be documented after confirmation through the actual prototype.
-
----
-
-## 14. Lightweight Protective Layer
-
-A lightweight protective layer is proposed around selected sensitive electronic areas.
-
-### Design Considerations
-
-- Protection effectiveness
-- Weight
-- Available space
-- Thermal behaviour
-- Component accessibility
-- Integration with the UAV structure
-
-The final material and performance should be supported by appropriate testing or simulation before performance claims are made.
-
----
-
-## 15. Antenna and Radome Protection
-
-The communication subsystem uses an antenna protection concept involving:
-
-- Hydrophobic surface protection
-- RF-transparent radome
-- Protection against water/ice accumulation
-
-The purpose is to reduce environmental effects on the exposed antenna while maintaining communication performance.
-
-Actual communication performance must be established through testing.
-
----
-
-## 16. Ground Control Station Hardware Interface
-
-The onboard hardware provides data to the Ground Control Station through the LoRa communication link.
-
-The GCS can be used to monitor:
-
-- Battery temperature
-- Ambient temperature
-- Voltage
-- Current
-- Heater status
-- Thermal status
-- Communication status
-- Safety status
-
-Where implemented, operator controls may include:
-
-- AUTO
-- PRE-HEAT
-- HEATER OFF
-- Manual override
-
----
-
-## 17. Hardware-to-Software Interaction
-
-```text
-              HARDWARE
-                 │
-     ┌───────────┼───────────┐
-     │           │           │
-   Sensors     Battery     Heater
-     │           │           │
-     └───────────┼───────────┘
-                 │
-                 ↓
-          LilyGO T3-S3
-                 │
-        ┌────────┼────────┐
-        │        │        │
-     Thermal    Power    System
-      Logic    Monitor   Status
-        │        │        │
-        └────────┼────────┘
-                 │
-                 ↓
-                LoRa
-                 │
-                 ↓
-                GCS
-```
-
----
-
-## 18. Hardware Development Status
-
-| Hardware | Current Status |
-|---|---|
-| Li-ion Battery Pack | Prototype |
-| Temperature Monitoring | Prototype |
-| Voltage Monitoring | Prototype |
-| Current Monitoring | Prototype |
-| Heating Element | Prototype |
-| MOSFET Heater Control | Prototype / Development |
-| Thermal Insulation | Prototype |
-| LilyGO T3-S3 LoRa | Prototype |
-| Pulsating Heat Pipe | CAD / Simulation |
-| Low-Pressure Protection Chamber | Design |
-| Flexible Silicone Protection | Design |
-| Lightweight Protective Layer | Concept / Design |
-| Antenna/Radome Protection | Design / Prototype |
-| GCS Hardware Interface | Development |
-
-> Status should be updated whenever a subsystem moves from design to prototype, testing or validation.
-
----
-
-## 19. Hardware Documentation
-
-Detailed hardware evidence should be stored in the following repository locations:
-
-```text
-03_Hardware/
-├── hardware_overview.md
-├── bill_of_materials.md
-├── wiring/
-├── pcb/
-└── datasheets/
-```
-
-CAD files are maintained separately:
-
-```text
-05_CAD/
-```
-
-Prototype photographs are maintained in:
-
-```text
-10_Media/
-```
-
-Experimental measurements are maintained in:
-
-```text
-07_Testing/
-08_Data/
-```
-
----
-
-## 20. Hardware Evidence Principle
-
-Every hardware component should eventually be supported by appropriate documentation such as:
-
-- Component photograph
-- Part number
-- Datasheet
-- Electrical specification
-- CAD model, where applicable
-- Wiring information
-- Prototype evidence
-- Test results, where applicable
-
-Only the hardware actually used or confirmed for the HIFLY prototype should be marked as implemented.
+15. Hardware Architecture Summary
+
+The HIFLY hardware system combines thermal, electrical, environmental, sensing, control, and communication components into one integrated platform.
+
+The main hardware chain is:
+
+ENVIRONMENT
+    ↓
+PROTECTION STRUCTURE
+    ↓
+THERMAL MANAGEMENT
+    ↓
+BATTERY / POWER SYSTEM
+    ↓
+SENSORS
+    ↓
+ESP32 CONTROLLER
+    ↓
+MOSFET / HEATER CONTROL
+    ↓
+LILYGO T3-S3 / LoRa
+    ↓
+GROUND CONTROL SYSTEM
+
+The hardware architecture supports the complete HIFLY reliability concept by connecting passive thermal protection, active heating, battery management, environmental protection, system sensing, autonomous control, electrical monitoring, and communication.
+
+The resulting hardware platform provides the physical foundation for the HIFLY software, CAD, simulation, testing, data, and GCS systems.
