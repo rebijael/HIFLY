@@ -1,146 +1,374 @@
-# HIFLY Problem Statement
+# HIFLY — Problem Statement
 
-## 1. Overview
+## 1. Background
 
-High-Altitude Area (HAA) and Super High-Altitude Area (SHAA) operation creates challenging environmental conditions for UAV electrical, electronic, thermal and energy systems.
+High-altitude operation places electrical and electronic systems in an environment that differs significantly from conventional ground-level operation.
 
-Reduced temperature, reduced atmospheric pressure, thermal cycling, radiation exposure and environmental effects can influence the reliability and performance of onboard systems.
+As altitude increases, the surrounding environment can expose equipment to:
 
-HIFLY addresses these challenges through an integrated, modular reliability architecture.
-
----
-
-## 2. Target Operating Environment
-
-HIFLY is designed around the environmental challenges associated with:
-
-- High-Altitude Area (HAA) operation
-- Super High-Altitude Area (SHAA) operation
-- Sub-zero temperatures
+- Low temperature
 - Reduced atmospheric pressure
-- Reduced heat-transfer efficiency
+- Reduced effectiveness of conventional air-based heat transfer
 - Repeated thermal cycling
 - Increased radiation exposure
-- Environmental effects on communication systems
-- Limited available energy for long-duration UAV missions
+- Environmental effects on communication hardware
+- Increased constraints on available electrical energy
+
+These conditions become important when batteries, processors, sensors, power electronics and communication systems are required to operate reliably for extended periods.
 
 ---
 
-## 3. Identified Environmental Challenges
+## 2. Core Problem
 
-### 3.1 Reduced Cooling Efficiency
+The central problem addressed by HIFLY is the **reliable operation of temperature-sensitive electrical and electronic systems in high-altitude environments**.
 
-Reduced atmospheric conditions can affect the way heat is transferred from electronic components to their surroundings.
+A conventional system may be designed around normal atmospheric conditions, but high-altitude operation introduces multiple interacting constraints.
 
-This creates a thermal-management challenge for processors and other heat-generating electronics.
+For example, low temperature can affect battery behaviour while the same environment also changes heat-transfer conditions. Providing active heating can improve thermal conditions but consumes electrical energy. Electronic components may require environmental protection while still needing access to sensors, power connections and communication systems.
 
----
+Therefore, the problem is not limited to heating a battery.
 
-### 3.2 Insulation Breakdown & Electrical Arcing
+It is an integrated reliability problem involving:
 
-Reduced atmospheric pressure can increase the risk of electrical discharge between conductors and across insulation systems.
-
-Sensitive electrical and electronic components therefore require appropriate insulation and protection.
+**thermal management + battery behaviour + environmental protection + electrical safety + communication + energy consumption.**
 
 ---
 
-### 3.3 Battery Degradation
+## 3. Thermal Challenge
 
-Low temperatures can negatively affect battery operation and available energy.
+At high altitude, the surrounding air becomes less dense and the effectiveness of conventional convective heat transfer can change.
 
-Maintaining the battery within an appropriate operating-temperature range is therefore important for reliable UAV operation.
+This creates a thermal-management challenge for electronic systems.
 
----
+A system designed around normal atmospheric convection cannot automatically be assumed to provide the same thermal behaviour at high altitude.
 
-### 3.4 Thermal Cycling Damage
+HIFLY addresses this challenge through a combination of:
 
-Repeated changes between heating and cooling can produce thermal expansion and contraction in electronic assemblies and protective materials.
+- Pulsating Heat Pipe based passive thermal management
+- Thermal insulation
+- Temperature sensing
+- Controlled heating
+- Thermal monitoring
 
-Over repeated cycles, this can contribute to mechanical and material stress.
-
----
-
-### 3.5 Increased Radiation Exposure
-
-High-altitude operation can increase environmental exposure of sensitive electronic systems to radiation.
-
-Sensitive electronics therefore require consideration of appropriate protective measures.
+The objective is to provide a thermal-management architecture that does not depend solely on conventional atmospheric convection.
 
 ---
 
-### 3.6 Effects on Communication Systems
+## 4. Battery Temperature Challenge
 
-Environmental conditions such as low temperature, moisture and ice accumulation can affect exposed communication hardware and antenna operation.
+Battery performance is affected by temperature.
 
-Maintaining reliable communication is important for UAV monitoring and control.
+At low temperatures, electrochemical processes within batteries can be affected, which can influence usable performance and electrical behaviour.
 
----
+For a high-altitude system that depends on stored electrical energy, this creates an important reliability concern.
 
-### 3.7 Mission Energy & Endurance
+HIFLY therefore treats the battery as a monitored thermal component rather than only as a power source.
 
-UAV operation at high altitude is constrained by available battery energy and the power required by onboard systems.
-
-Thermal-management loads and other electrical loads must therefore be considered together with available energy and mission requirements.
-
----
-
-## 4. Problem Definition
-
-The core problem addressed by HIFLY is:
-
-> **How can the reliability of UAV electrical, electronic, thermal and energy systems be improved under the environmental conditions associated with HAA and SHAA operation?**
-
-Instead of addressing only one subsystem, HIFLY investigates an integrated architecture covering multiple environmental challenges.
-
----
-
-## 5. Seven-Problem Framework
-
-| No. | Environmental Challenge | Reliability Concern |
-|---|---|---|
-| 1 | Reduced Cooling Efficiency | Electronic thermal management |
-| 2 | Insulation Breakdown & Electrical Arcing | Electrical safety and insulation reliability |
-| 3 | Battery Degradation | Battery temperature and energy availability |
-| 4 | Thermal Cycling Damage | Mechanical/material stress |
-| 5 | Increased Radiation Exposure | Sensitive electronic protection |
-| 6 | Communication System Effects | Reliable communication |
-| 7 | Mission Energy & Endurance | Available energy and operating duration |
-
----
-
-## 6. Project Scope
-
-HIFLY focuses on developing and integrating mitigation mechanisms for the identified environmental challenges.
-
-The project includes:
-
-- Battery thermal management
-- Passive processor/electronics cooling
-- Electrical protection
-- Thermal-cycle protection
-- Environmental protection
-- Communication protection
-- Power and energy monitoring
-- Ground Control Station integration
-- Autonomous and fail-safe control
-
-The architecture is modular so that individual protection mechanisms can be developed and validated independently before system-level integration.
-
----
-
-## 7. Validation Approach
-
-HIFLY follows a progressive validation approach:
+The battery thermal-management system combines:
 
 ```text
-Individual Component Testing
-          ↓
-Subsystem Testing
-          ↓
-Thermal / Electrical / Communication Validation
-          ↓
-Integrated System Testing
-          ↓
-UAV Integration
-          ↓
-HAA / SHAA Environmental Validation
+Temperature Sensing
+        ↓
+Thermal Evaluation
+        ↓
+Controlled Heating
+        ↓
+Thermal Monitoring
+        ↓
+Voltage / Current Monitoring
+```
+
+This allows battery temperature and electrical behaviour to be considered together.
+
+---
+
+## 5. Thermal Cycling Challenge
+
+High-altitude equipment can experience repeated changes between different thermal conditions.
+
+Repeated temperature variation can affect:
+
+- Material interfaces
+- Adhesive joints
+- Electrical connections
+- Protective materials
+- Mechanical interfaces
+- Electronic assemblies
+
+HIFLY incorporates flexible silicone protection around selected interfaces to provide a flexible protective layer within the overall system.
+
+The purpose is to complement rigid mechanical protection with a flexible material interface.
+
+---
+
+## 6. Reduced-Pressure Challenge
+
+Atmospheric pressure decreases with altitude.
+
+Reduced pressure changes the environment surrounding electrical and electronic components and can affect electrical insulation behaviour.
+
+HIFLY incorporates a low-pressure protection chamber into the environmental-protection architecture.
+
+The chamber is intended to provide a controlled physical environment for selected components and to reduce direct exposure to the external pressure environment.
+
+The pressure-related performance of the chamber is treated as an engineering parameter that requires measurement rather than being assumed from the enclosure design alone.
+
+---
+
+## 7. Radiation Exposure
+
+High-altitude systems can experience greater environmental radiation exposure than systems operating near ground level.
+
+Radiation can become a consideration for sensitive electronic systems and long-duration high-altitude operation.
+
+HIFLY incorporates a lightweight protective layer as part of its environmental-protection approach.
+
+The layer is intended to provide additional protection while maintaining the overall system's weight constraints.
+
+No specific radiation attenuation performance is claimed without corresponding material analysis or experimental evidence.
+
+---
+
+## 8. Communication Challenge
+
+Communication hardware operates as part of the same high-altitude system and is itself exposed to the operating environment.
+
+The antenna and associated communication hardware require physical protection while maintaining their intended communication function.
+
+HIFLY uses a LoRa-based communication architecture with hydrophobic antenna protection.
+
+The onboard controller communicates telemetry to a Ground Control Station.
+
+The telemetry architecture provides visibility of parameters including:
+
+- Battery temperature
+- Ambient temperature where available
+- Voltage
+- Current
+- Heater status
+- Thermal status
+- Operating mode
+- Safety status
+- Communication status
+
+---
+
+## 9. Energy Challenge
+
+Thermal management can consume electrical energy.
+
+An active heating element therefore introduces an additional load into a system where available energy may already be limited.
+
+HIFLY addresses this by combining temperature-based heater control with electrical monitoring.
+
+The system measures:
+
+- Voltage
+- Current
+- Temperature
+- Heater state
+
+Electrical power can be calculated from measured voltage and current:
+
+```text
+P = V × I
+```
+
+The resulting measurements provide a basis for evaluating the relationship between thermal support and electrical energy consumption.
+
+---
+
+## 10. Integrated Nature of the Problem
+
+The challenges addressed by HIFLY are interconnected.
+
+```text
+          HIGH ALTITUDE
+                │
+     ┌──────────┼───────────┐
+     ↓          ↓           ↓
+Low Temp    Low Pressure  Radiation
+     │          │           │
+     ↓          ↓           ↓
+ Battery     Electrical   Electronic
+ Behaviour   Protection   Exposure
+     │
+     ↓
+Thermal Management
+     │
+     ├───────────────┐
+     ↓               ↓
+Heating          Passive
+                 Thermal
+                 Transfer
+     │
+     ↓
+Energy Consumption
+     │
+     ↓
+Power Monitoring
+     │
+     └───────────────┐
+                     ↓
+               System Reliability
+                     ↑
+                     │
+              Communication
+                     ↑
+                     │
+                   GCS
+```
+
+The system therefore requires coordination between thermal management, electrical monitoring, protection and communication rather than a single isolated solution.
+
+---
+
+# 11. HIFLY Problem Definition
+
+HIFLY addresses the following engineering problem:
+
+> **How can temperature-sensitive electrical and electronic systems maintain reliable operation in high-altitude environments while managing low-temperature effects, reduced-pressure conditions, thermal cycling, environmental exposure, communication requirements and the additional energy demand associated with active thermal control?**
+
+HIFLY approaches this problem through an integrated system combining passive thermal management, active temperature-based heating, environmental protection, electrical monitoring and LoRa telemetry.
+
+---
+
+# 12. Engineering Requirements Derived from the Problem
+
+The problem leads to the following system-level requirements.
+
+### Thermal Monitoring
+
+The system must measure the temperature of the battery thermal-management system.
+
+### Thermal Control
+
+The system must provide controlled operation of the heating element based on measured temperature.
+
+### Passive Thermal Management
+
+The architecture must incorporate a passive thermal-management mechanism through the PHP.
+
+### Electrical Monitoring
+
+The system must monitor electrical parameters associated with the battery and thermal-management system.
+
+### Environmental Protection
+
+The system must incorporate physical protection for selected electrical and electronic components.
+
+### Communication
+
+The system must provide a wireless telemetry path between the onboard controller and the Ground Control Station.
+
+### Autonomous Operation
+
+Essential thermal-control behaviour must remain onboard so that loss of the ground communication link does not by itself terminate local thermal monitoring and control.
+
+### Energy Awareness
+
+Thermal-management operation must be evaluated together with its electrical energy requirement.
+
+---
+
+# 13. HIFLY's Integrated Approach
+
+The HIFLY architecture connects the identified problems to specific engineering mechanisms.
+
+| Problem | HIFLY Response |
+|---|---|
+| Low-temperature operation | Temperature monitoring and controlled heating |
+| Reduced cooling effectiveness | PHP-assisted passive thermal management |
+| Reduced atmospheric pressure | Low-pressure protection chamber |
+| Thermal cycling | Flexible silicone protection |
+| Radiation exposure | Lightweight protective layer |
+| Communication/environmental exposure | Hydrophobic antenna protection and LoRa |
+| Additional heater energy demand | Voltage/current monitoring and temperature-based control |
+
+This integration forms the basis of the HIFLY system.
+
+---
+
+# 14. Scope of the Problem
+
+The project focuses on the reliability of electrical and electronic systems operating in high-altitude conditions.
+
+The current implementation is centered on a UAV-oriented high-altitude application, while the underlying engineering challenges are relevant to other temperature-sensitive electrical and electronic systems exposed to similar environmental conditions.
+
+Potential applicability to other systems is treated as a design consideration rather than as a demonstrated deployment result.
+
+---
+
+# 15. Expected Engineering Outcome
+
+The intended outcome of HIFLY is an integrated prototype that demonstrates:
+
+- Temperature monitoring
+- Temperature-based thermal control
+- Battery thermal-management integration
+- PHP-assisted thermal management
+- Electrical power monitoring
+- Environmental protection
+- LoRa telemetry
+- Ground-based monitoring
+- Onboard fail-safe thermal operation
+
+The performance of individual functions is evaluated through CAD, simulation, experimental data and prototype testing as the project progresses.
+
+---
+
+# 16. Evidence-Based Evaluation
+
+HIFLY distinguishes between the engineering concept and demonstrated performance.
+
+A proposed design is not treated as experimental evidence.
+
+Similarly:
+
+- CAD geometry demonstrates physical design.
+- Simulation demonstrates the behaviour represented by the selected simulation model.
+- Measured data demonstrates observed prototype behaviour.
+- Test results demonstrate behaviour under the documented test conditions.
+- A validated requirement requires corresponding evidence.
+
+This distinction is maintained throughout the project documentation.
+
+---
+
+# 17. Problem Statement Summary
+
+High-altitude operation creates a combination of thermal, electrical, environmental and communication challenges for sensitive electronic systems.
+
+The key difficulty is that solving one problem can introduce another.
+
+For example:
+
+```text
+Low Temperature
+      ↓
+Need for Heating
+      ↓
+Higher Electrical Load
+      ↓
+Higher Energy Consumption
+      ↓
+Reduced Available Mission Energy
+```
+
+At the same time:
+
+```text
+High Altitude
+      ↓
+Reduced Pressure + Changed Thermal Environment
+      ↓
+Electrical / Thermal Reliability Challenges
+      ↓
+Need for Environmental Protection
+```
+
+HIFLY addresses these interconnected effects through a single integrated architecture combining:
+
+**PHP thermal management + battery thermal control + environmental protection + electrical monitoring + LoRa communication + Ground Control Station monitoring.**
+
+The project therefore treats high-altitude reliability as a system-level engineering problem rather than as an isolated battery, thermal or communication problem.
