@@ -1,587 +1,1103 @@
-# HIFLY — Thermal Control Logic
+# HIFLY Thermal Control Logic
 
 ## 1. Overview
 
-The HIFLY thermal-control system uses battery temperature as the primary control input for regulating the battery heating element.
+The HIFLY thermal-control system is an onboard temperature-based control system designed to support reliable operation of the battery and associated electrical/electronic hardware under high-altitude thermal conditions.
 
-The control system combines:
+The thermal-control architecture combines:
 
-- Temperature sensing
-- Onboard processing
-- Temperature-based control logic
-- MOSFET switching
-- Heating element
-- Battery thermal insulation
-- System monitoring
-- Optional GCS monitoring and control
+- temperature sensing
+- thermal-state evaluation
+- active heating
+- MOSFET-based heater switching
+- passive thermal insulation
+- Pulsating Heat Pipe (PHP) thermal management
+- safety logic
+- onboard autonomous operation
+- telemetry to the Ground Control Station (GCS)
 
----
-
-## 2. Control Architecture
+The software controls the active thermal-management elements while the physical thermal architecture provides passive and passive-assisted heat-transfer functions.
 
 ```text
-Battery
-   │
-   ↓
-Temperature Sensor
-   │
-   ↓
-LilyGO T3-S3
-   │
-   ↓
-Temperature-Based Control Logic
-   │
-   ├───────────────┐
-   │               │
-   ↓               ↓
-Heater ON       Heater OFF
-   │               │
-   ↓               ↓
-MOSFET          MOSFET
-   │               │
-   ↓               ↓
-Heating Element    No Heating
-   │
-   ↓
-Battery Temperature
-   │
-   └──────────→ Feedback
+                    HIFLY THERMAL SYSTEM
+
+                         Environment
+                              │
+                              ▼
+                    ┌──────────────────┐
+                    │ Thermal Conditions│
+                    └─────────┬────────┘
+                              │
+             ┌────────────────┼────────────────┐
+             │                │                │
+             ▼                ▼                ▼
+        Insulation          PHP            Heater
+             │                │                │
+             └────────────────┼────────────────┘
+                              │
+                              ▼
+                         Battery/System
+                              │
+                              ▼
+                       Temperature Sensor
+                              │
+                              ▼
+                       HIFLY Controller
+                              │
+                              ▼
+                    Thermal-Control Logic
+                              │
+                              ▼
+                         MOSFET Stage
+                              │
+                              ▼
+                            Heater
+                              │
+                              └──────────────► Feedback
 ```
+2. Thermal-Control Objective
 
-The measured temperature provides feedback to the control system.
+The thermal-control software provides a controlled response to changing temperature conditions.
 
----
+The primary objective is to maintain the system within the configured operating thermal condition while avoiding uncontrolled heater operation.
 
-## 3. Control Objective
+The control loop is therefore based on feedback:
 
-The primary objective is to provide controlled thermal support to the battery during low-temperature operation.
-
-The controller should:
-
-- Monitor battery temperature
-- Determine whether heating is required
-- Activate the heating element when required
-- Stop heating when heating is no longer required
-- Continue monitoring during operation
-- Provide system status to the GCS where communication is available
-
----
-
-## 4. Basic Control Sequence
-
-```text
-START
-  ↓
-Initialize System
-  ↓
-Read Battery Temperature
-  ↓
-Validate Temperature Reading
-  ↓
-Evaluate Thermal Condition
-  ↓
-Is Heating Required?
-  │
-  ├── YES → Heater ON
-  │           ↓
-  │      Continue Monitoring
-  │
-  └── NO  → Heater OFF
-              ↓
-         Continue Monitoring
-              ↓
-          Repeat Cycle
-```
-
----
-
-## 5. Temperature Feedback
-
-Temperature feedback is used to determine the current thermal state of the battery.
-
-```text
-Temperature Measurement
-          ↓
-     Controller
-          ↓
-   Thermal Evaluation
-          ↓
-      Heater State
-          ↓
-   Battery Temperature
-          ↓
-      New Reading
-```
-
-This creates a closed monitoring and control loop.
-
----
-
-## 6. Control Thresholds
-
-The final firmware should define the temperature conditions used to control the heater.
-
-The exact values are intentionally not specified in this document until they are confirmed from:
-
-- Battery specifications
-- Actual prototype requirements
-- Experimental testing
-- Final firmware implementation
-
-### Required Parameters
-
-| Parameter | Value |
-|---|---|
-| Heating ON threshold | TBD |
-| Heating OFF threshold | TBD |
-| Hysteresis | TBD |
-| Sensor sampling interval | TBD |
-| Maximum allowed battery temperature | TBD |
-| Fault temperature threshold | TBD |
-
-> Do not replace TBD values with assumed values. Enter the actual values once the control system has been finalized.
-
----
-
-## 7. Hysteresis
-
-If hysteresis is implemented, separate temperature conditions should be used for heater activation and heater deactivation.
-
-Conceptually:
-
-```text
 Temperature
-     ↑
      │
- ON  ├──────── Heating Required
+     ▼
+Measurement
      │
+     ▼
+Thermal Evaluation
      │
- OFF ├──────── Heating Not Required
+     ▼
+Control Decision
      │
-     └────────────────────────→ Time
-```
+     ▼
+Heater Command
+     │
+     ▼
+Thermal Response
+     │
+     ▼
+Temperature
+     │
+     └──────────────► Feedback
 
-The purpose of hysteresis is to prevent unnecessary rapid switching of the heater around a single temperature threshold.
+The thermal-control software is one part of the complete HIFLY thermal-management architecture and does not replace the physical insulation, PHP, enclosure, or other thermal-protection elements.
 
-The actual hysteresis value must be documented from the implemented firmware.
+3. Thermal-Control Architecture
 
----
+The HIFLY thermal-control architecture can be represented as four connected layers.
 
-## 8. Heater Switching
+┌──────────────────────────────────────────────────────────┐
+│                  1. ENVIRONMENT                          │
+│                                                          │
+│        High-altitude temperature conditions              │
+└─────────────────────────┬────────────────────────────────┘
+                          │
+                          ▼
+┌──────────────────────────────────────────────────────────┐
+│                  2. PASSIVE PROTECTION                   │
+│                                                          │
+│        Thermal insulation / physical enclosure           │
+└─────────────────────────┬────────────────────────────────┘
+                          │
+                          ▼
+┌──────────────────────────────────────────────────────────┐
+│                  3. THERMAL MANAGEMENT                   │
+│                                                          │
+│        PHP + heating element + thermal paths             │
+└─────────────────────────┬────────────────────────────────┘
+                          │
+                          ▼
+┌──────────────────────────────────────────────────────────┐
+│                  4. CONTROL SYSTEM                       │
+│                                                          │
+│        Temperature sensor + MCU + safety logic           │
+└──────────────────────────────────────────────────────────┘
 
-The controller does not directly provide the heating element's power.
+This layered approach combines passive thermal protection with active temperature-based control.
 
-Instead, the controller provides a control signal to the MOSFET switching stage.
+4. Temperature Feedback
 
-```text
-LilyGO T3-S3
-      │
-      ↓
-Control Signal
-      │
-      ↓
-MOSFET
-      │
-      ↓
-Heating Element
-      │
-      ↓
-Battery Thermal System
-```
+Temperature is the primary feedback variable used by the thermal-control logic.
 
-The exact MOSFET and driver configuration must match the physical prototype.
+The firmware continuously reads the available temperature measurement and evaluates the current thermal state.
 
----
+        ┌─────────────────────┐
+        │ Temperature Sensor  │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │ Temperature Reading │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │ Data Validation     │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │ Thermal Evaluation  │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │ Heater Decision     │
+        └─────────────────────┘
 
-## 9. Thermal Insulation
+The same temperature information can also be transmitted to the GCS for monitoring.
 
-Thermal insulation supports the heater by reducing unwanted heat transfer from the battery thermal-management assembly to the surrounding environment.
+5. Thermal States
 
-```text
-Heating Element
-       ↓
-Battery
-       ↓
-Thermal Insulation
-       ↓
-External Environment
-```
+The software represents the thermal condition using logical states.
 
-The actual insulation material, thickness and measured thermal performance should be documented separately.
+┌─────────────────────┐
+│       NORMAL        │
+└──────────┬──────────┘
+           │
+           │ Thermal support required
+           ▼
+┌─────────────────────┐
+│      HEATING        │
+└──────────┬──────────┘
+           │
+           │ Thermal condition restored
+           ▼
+┌─────────────────────┐
+│       NORMAL        │
+└─────────────────────┘
 
----
+Unsafe condition / sensor fault
+           │
+           ▼
+┌─────────────────────┐
+│   SAFETY / FAULT    │
+└─────────────────────┘
 
-## 10. Power-Aware Thermal Management
+The numerical thresholds associated with these states depend on the implemented configuration and validated operating requirements.
 
-The heater is an electrical load and therefore contributes to overall energy consumption.
+No unsupported fixed temperature threshold is assumed by this document.
 
-HIFLY monitors:
+6. Automatic Thermal Control
 
-- Battery voltage
-- Battery current
-- Heater status
-- Battery temperature
+AUTO mode allows the onboard controller to operate the heater based on the measured thermal condition.
 
-The resulting measurements can be used to analyze the relationship between thermal support and electrical energy consumption.
+The control sequence is:
 
-```text
-Battery Temperature
-        ↓
-Thermal Requirement
-        ↓
-Heater Operation
-        ↓
-Electrical Power
-        ↓
-Energy Consumption
-```
+START
+  │
+  ▼
+Read Temperature
+  │
+  ▼
+Validate Reading
+  │
+  ▼
+Evaluate Thermal State
+  │
+  ├───────────────┐
+  │               │
+  ▼               ▼
+Heating Required  Normal
+  │               │
+  ▼               ▼
+Heater ON      Heater OFF
+  │               │
+  └───────┬───────┘
+          ▼
+   Safety Evaluation
+          │
+          ▼
+   Telemetry Update
+          │
+          ▼
+      Next Cycle
 
-This allows thermal management to be considered together with mission energy requirements.
+The controller repeatedly performs this process while the system is operating in automatic mode.
 
----
+7. Heater-Control Path
 
-## 11. GCS Interaction
+The software does not drive the heating element directly.
 
-The Ground Control Station can provide visibility of the thermal-control system.
+The controller generates a heater-control signal that is passed through the MOSFET switching stage.
 
-### Displayed Information
+Thermal-State Decision
+          │
+          ▼
+   Heater Command
+          │
+          ▼
+      MCU Output
+          │
+          ▼
+   MOSFET Switch
+          │
+          ▼
+   Heating Element
+          │
+          ▼
+    Thermal System
+          │
+          ▼
+ Temperature Sensor
+          │
+          └────────────► Feedback
 
-- Battery temperature
-- Heater status
-- Thermal status
-- Voltage
-- Current
-- Operating mode
-- Communication status
-- Safety status
+This separates low-power controller logic from the electrical switching path used by the heater.
 
-### Possible Controls
+8. Heater States
 
-Where implemented:
+The software represents the heater using a simple operational state.
 
-```text
-AUTO
-PRE-HEAT
 HEATER OFF
-MANUAL OVERRIDE
-```
+     │
+     │ Heating required
+     ▼
+HEATER ON
+     │
+     │ Thermal condition no longer requires heating
+     ▼
+HEATER OFF
 
-The GCS should not be treated as the sole thermal-control mechanism.
+A safety or fault condition can also cause the control system to enter a safe heater state according to the implemented firmware logic.
 
-Essential onboard control remains available through the embedded system.
+9. Temperature-Based Decision Flow
 
----
+The thermal decision process is:
 
-## 12. Autonomous Operation
+                  Temperature Reading
+                          │
+                          ▼
+                  ┌───────────────┐
+                  │ Valid Reading?│
+                  └───────┬───────┘
+                          │
+                    ┌─────┴─────┐
+                    │           │
+                   YES          NO
+                    │           │
+                    ▼           ▼
+             Thermal State   Sensor Fault
+               Evaluation       │
+                    │           ▼
+                    │      Safety Logic
+                    │
+          ┌─────────┼─────────┐
+          │         │         │
+          ▼         ▼         ▼
+       Heating     Normal   Unsafe
+       Required   Condition Condition
+          │         │         │
+          ▼         ▼         ▼
+       Heater ON  Heater OFF Safety Logic
 
-The thermal-control logic is implemented onboard.
+This structure keeps sensor validation and safety evaluation within the control path.
 
-```text
+10. Thermal Control and PHP
+
+The Pulsating Heat Pipe is a physical thermal-management element within HIFLY.
+
+The PHP provides a passive-assisted heat-transfer path, while the software-controlled heater provides active thermal input where required.
+
+The relationship is:
+
+                  Thermal Input
+                       │
+              ┌────────┴────────┐
+              │                 │
+              ▼                 ▼
+          Heating Element       PHP
+              │                 │
+              │                 │
+              └────────┬────────┘
+                       │
+                       ▼
+                Thermal Structure
+                       │
+                       ▼
+                    Battery
+                       │
+                       ▼
+                Temperature Sensor
+                       │
+                       ▼
+                  Controller
+
+The firmware does not directly control the internal pulsating behavior of the PHP.
+
+The PHP is therefore treated as a physical thermal-management subsystem, while the firmware controls the active heating function.
+
+11. PHP-Assisted Thermal Architecture
+
+The complete thermal path can be represented as:
+
+       ┌───────────────────────────────────┐
+       │        High-Altitude Environment  │
+       └──────────────────┬────────────────┘
+                          │
+                          ▼
+                ┌─────────────────┐
+                │    Insulation   │
+                └────────┬────────┘
+                         │
+                         ▼
+              ┌──────────────────────┐
+              │ PHP Thermal Structure│
+              └──────────┬───────────┘
+                         │
+                         ▼
+                  ┌─────────────┐
+                  │   Battery   │
+                  └──────┬──────┘
+                         │
+                         ▼
+                Temperature Sensor
+                         │
+                         ▼
+                  HIFLY Controller
+                         │
+                         ▼
+                   Heater Control
+                         │
+                         ▼
+                     MOSFET
+                         │
+                         ▼
+                      Heater
+
+The PHP and insulation operate as physical thermal-management elements, while the controller provides active temperature-based support.
+
+12. Thermal Control During Low-Temperature Conditions
+
+When the measured thermal condition indicates that additional heating is required, the controller can command the heating element.
+
+The sequence is:
+
+Low / Cold Thermal Condition
+            │
+            ▼
+    Temperature Measurement
+            │
+            ▼
+     Thermal-State Evaluation
+            │
+            ▼
+       Heating Required
+            │
+            ▼
+         Heater ON
+            │
+            ▼
+     Thermal Response
+            │
+            ▼
+    Temperature Measurement
+            │
+            ▼
+      Updated State
+
+The actual thermal response depends on the physical thermal design, environmental conditions, battery characteristics, heater characteristics, insulation, and PHP behavior.
+
+13. Thermal Control During Normal Conditions
+
+When the measured thermal condition is within the configured operating state, active heating is not required by the automatic control logic.
+
+Normal Thermal Condition
+            │
+            ▼
+    Temperature Measurement
+            │
+            ▼
+      Thermal Evaluation
+            │
+            ▼
+       Heating Not Required
+            │
+            ▼
+         Heater OFF
+            │
+            ▼
+      Continue Monitoring
+
+The controller continues monitoring rather than terminating the thermal-control loop.
+
+14. Thermal Safety
+
+Thermal safety is evaluated independently from the normal heating command.
+
+The safety path is:
+
+Temperature
+     │
+     ▼
+Thermal Evaluation
+     │
+     ├──────────────► Normal
+     │
+     ├──────────────► Heating
+     │
+     └──────────────► Unsafe
+                           │
+                           ▼
+                     Safety Response
+
+This prevents normal heating logic from being treated as the only thermal decision mechanism.
+
+15. Over-Temperature Handling
+
+An over-temperature condition is treated as a safety condition.
+
+The conceptual response is:
+
+Temperature Measurement
+          │
+          ▼
+Thermal Evaluation
+          │
+          ▼
+Unsafe / Over-temperature
+          │
+          ▼
+Safety State
+          │
+          ▼
+Heater Safety Response
+          │
+          ▼
+GCS Alert / Telemetry
+
+The exact numerical over-temperature limit belongs to the validated system configuration and is not fixed by this architecture document.
+
+16. Sensor Fault Handling
+
+A temperature sensor fault is important because the thermal-control loop depends on temperature feedback.
+
+The software therefore follows a separate fault path:
+
+Temperature Sensor
+        │
+        ▼
+Measurement
+        │
+        ▼
+Validity Check
+        │
+   ┌────┴────┐
+   │         │
+ Valid     Invalid
+   │         │
+   ▼         ▼
+Normal     Sensor Fault
+Control       │
+              ▼
+        Safety Evaluation
+              │
+              ▼
+        Safe Response
+
+The system should not interpret an invalid sensor reading as a normal thermal measurement.
+
+17. Communication Loss and Thermal Control
+
+Thermal control is designed to remain onboard even if the LoRa communication link is unavailable.
+
+                  NORMAL OPERATION
+                         │
+                         ▼
+                    LoRa Link
+                         │
+                  ┌──────┴──────┐
+                  │             │
+              Available        Lost
+                  │             │
+                  ▼             ▼
+             GCS Telemetry   Link Fault
+                  │             │
+                  │             ▼
+                  │       Local Thermal
+                  │          Control
+                  │             │
+                  └──────┬──────┘
+                         │
+                         ▼
+                    Safety Logic
+
+This prevents communication loss from automatically disabling the onboard thermal-management decision loop.
+
+18. AUTO / MANUAL Relationship
+
+The thermal-control architecture supports both autonomous and supervised operating concepts.
+
+AUTO
+Temperature
+     │
+     ▼
+Thermal Logic
+     │
+     ▼
+Heater Decision
+     │
+     ▼
+MOSFET
+     │
+     ▼
+Heater
+MANUAL
+GCS
+ │
+ ▼
+Operator Command
+ │
+ ▼
+LoRa
+ │
+ ▼
+Onboard Validation
+ │
+ ▼
+Thermal / Safety Logic
+ │
+ ▼
+Heater Control
+
+The onboard safety layer remains active in both cases.
+
+19. PRE-HEAT Control
+
+PRE-HEAT provides a supervised method for initiating thermal conditioning.
+
+GCS
+ │
+ ▼
+PRE-HEAT
+ │
+ ▼
+LoRa Command
+ │
+ ▼
+Onboard Command Validation
+ │
+ ▼
+Safety Evaluation
+ │
+ ▼
+Thermal Control
+ │
+ ▼
+Heater
+
+The resulting temperature is monitored through the same feedback system used during automatic operation.
+
+20. Heater OFF Control
+
+The HEATER OFF command provides a direct operator command to disable active heating.
+
+GCS
+ │
+ ▼
+HEATER OFF
+ │
+ ▼
+LoRa
+ │
+ ▼
+Firmware
+ │
+ ▼
+Command Validation
+ │
+ ▼
+Heater OFF
+ │
+ ▼
+Continue Temperature Monitoring
+
+The thermal-control system continues operating after the heater is switched off.
+
+21. Thermal-Control Feedback Loop
+
+The complete feedback loop is:
+
+                ┌──────────────────────┐
+                │     HEATING ELEMENT  │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │    THERMAL SYSTEM    │
+                │                      │
+                │ Battery + PHP +      │
+                │ Insulation + Thermal │
+                │ Structure            │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │ TEMPERATURE SENSOR   │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │ HIFLY CONTROLLER     │
+                │                      │
+                │ Thermal Evaluation   │
+                │ Safety Logic         │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │ MOSFET CONTROL       │
+                └──────────┬───────────┘
+                           │
+                           └──────────────► Heater
+
+This feedback arrangement allows the active heater to respond to measured temperature rather than operating as an uncontrolled continuous load.
+
+22. Thermal and Electrical Monitoring
+
+Thermal control is linked with electrical monitoring because heater operation affects system power consumption.
+
+Temperature
+     │
+     ▼
+Thermal Control
+     │
+     ▼
+Heater State
+     │
+     ▼
+Electrical Load
+     │
+ ┌───┴──────────────┐
+ ▼                  ▼
+Voltage            Current
+ │                  │
+ └────────┬─────────┘
+          ▼
+      Power Data
+          │
+          ▼
+       Telemetry
+
+This allows thermal operation to be observed together with electrical behavior.
+
+23. Thermal Control and Energy Management
+
+The active heater contributes to the system's electrical energy consumption.
+
+The control architecture therefore connects thermal decisions with power monitoring:
+
+Thermal Requirement
+        │
+        ▼
+    Heater State
+        │
+        ▼
+   Electrical Load
+        │
+        ▼
+ Voltage / Current
+        │
+        ▼
+   Power Monitoring
+        │
+        ▼
+      Telemetry
+        │
+        ▼
+       GCS
+
+This relationship is important for evaluating the trade-off between thermal support and available mission energy.
+
+24. Thermal Control and Battery Protection
+
+The battery is both an energy source and a temperature-sensitive component of the system.
+
+The HIFLY architecture therefore connects:
+
+Battery
+  │
+  ├── Electrical Monitoring
+  │       │
+  │       ├── Voltage
+  │       └── Current
+  │
+  └── Thermal Monitoring
+          │
+          ├── Battery Temperature
+          ├── Heating
+          ├── Insulation
+          └── PHP-Assisted Thermal Path
+
+The firmware coordinates the active heating function while the physical design provides the supporting thermal environment.
+
+25. Thermal Control State Machine
+
+A simplified state-machine representation is:
+
+                    ┌─────────────┐
+                    │   STARTUP   │
+                    └──────┬──────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │    NORMAL   │
+                    └──────┬──────┘
+                           │
+                Heating required
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │   HEATING   │
+                    └──────┬──────┘
+                           │
+                  Thermal condition
+                       restored
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │    NORMAL   │
+                    └─────────────┘
+
+Sensor fault / unsafe condition
+                │
+                ▼
+         ┌─────────────┐
+         │ SAFETY/FAULT│
+         └──────┬──────┘
+                │
+          Safe recovery
+                │
+                ▼
+         Thermal Monitoring
+
+The exact transition conditions are determined by the implemented firmware configuration.
+
+26. Control-Loop Relationship With GCS
+
+The GCS provides remote visibility and permitted commands, but it does not replace the onboard feedback loop.
+
+                  ONBOARD SYSTEM
+                       │
+                       ▼
+                 Temperature
+                       │
+                       ▼
+                 Thermal Logic
+                       │
+                       ▼
+                    Heater
+                       │
+                       ▼
+                  Temperature
+                       │
+                       └──────────► Feedback
+
+                       ▲
+                       │
+                  GCS Commands
+                       │
+                       │
+                      LoRa
+                       │
+                       ▼
+                  ONBOARD MCU
+
+The onboard controller therefore remains the central element of the thermal-control loop.
+
+27. Thermal-Control Data
+
+The thermal-control system can generate data suitable for later analysis.
+
+Relevant fields include:
+
+Data	Use
+Battery temperature	Thermal response
+Ambient temperature	Environmental reference
+Heater status	Control-state correlation
+Voltage	Electrical operating state
+Current	Heater/system load
+Thermal status	Software control state
+Safety status	Fault/state correlation
+Communication state	Link-condition correlation
+
+When timestamps are available, these values can be plotted against time.
+
+When timestamps are not available, measurements can still be represented by reading index for experimental inspection.
+
+28. Relationship to Experimental Data
+
+HIFLY includes temperature, voltage, and current measurements that can be used to examine the relationship between electrical operation and thermal response.
+
+The available sample measurements are:
+
+Reading Index	Current	Voltage	Temperature
+1	0.00	0.0	16
+2	0.60	5.3	17
+3	0.80	7.6	21
+4	1.26	10.1	25
+5	1.54	12.0	28
+6	1.23	10.1	33
+7	0.86	7.1	34
+8	0.60	5.3	35
+9	0.00	0.0	36
+
+These measurements are represented by reading index because timestamps are not available in the supplied dataset.
+
+The dataset does not by itself establish a time-dependent thermal-performance curve or a validated thermal-control threshold.
+
+29. Control-System Limitations of the Available Data
+
+The available sample data provides measured current, voltage, and temperature values but does not contain timestamps or a complete record of operating conditions.
+
+Therefore, the data can support:
+
+inspection of measured electrical values
+inspection of measured temperature values
+reading-index plots
+calculation of instantaneous power from corresponding voltage and current readings
+
+The data alone does not establish:
+
+heating rate per unit time
+cooling rate per unit time
+steady-state thermal performance
+validated temperature-control thresholds
+long-duration endurance
+PHP performance improvement
+mission-level energy consumption
+
+Such conclusions require appropriately timestamped and controlled experimental measurements.
+
+30. Thermal-Control Verification Path
+
+The thermal-control system can be evaluated through a staged verification process.
+
+Firmware Logic
+      │
+      ▼
+Sensor Reading
+      │
+      ▼
+Control Decision
+      │
+      ▼
+Heater Command
+      │
+      ▼
+Electrical Response
+      │
+      ▼
+Thermal Response
+      │
+      ▼
+Measured Temperature
+      │
+      ▼
+Recorded Data
+      │
+      ▼
+Analysis
+
+The software architecture is therefore connected directly to measurable physical behavior.
+
+31. Fault and Safety Relationship
+
+The thermal-control system treats faults as separate from ordinary thermal states.
+
+                 SENSOR DATA
+                      │
+                      ▼
+               ┌──────────────┐
+               │   VALIDATE   │
+               └──────┬───────┘
+                      │
+               ┌──────┴──────┐
+               │             │
+             VALID         INVALID
+               │             │
+               ▼             ▼
+        Thermal Control   Sensor Fault
+               │             │
+               ▼             ▼
+        Heater Decision   Safety Logic
+               │             │
+               └──────┬──────┘
+                      ▼
+                 System State
+
+This structure avoids treating a faulty sensor measurement as an ordinary thermal-control input.
+
+32. Thermal Control With Communication Recovery
+
+When communication is restored after a communication-loss event, the system resumes telemetry while the onboard controller continues operating from its current local state.
+
+Communication Lost
+       │
+       ▼
+Local Thermal Control
+       │
+       ▼
+Safety Monitoring
+       │
+       ▼
+LoRa Link Restored
+       │
+       ▼
+Telemetry Resumes
+       │
+       ▼
+GCS Displays Current State
+
+The communication layer therefore reconnects to the onboard control system rather than becoming the source of thermal control itself.
+
+33. Overall Thermal-Control Flow
+                         START
+                           │
+                           ▼
+                 Initialize Controller
+                           │
+                           ▼
+                  Initialize Sensors
+                           │
+                           ▼
+                 Initialize Heater I/O
+                           │
+                           ▼
+                    Initialize LoRa
+                           │
+                           ▼
+                  ┌────────────────┐
+                  │  READ SENSOR   │
+                  └───────┬────────┘
+                          │
+                          ▼
+                  ┌────────────────┐
+                  │ VALIDATE DATA  │
+                  └───────┬────────┘
+                          │
+                          ▼
+                 ┌──────────────────┐
+                 │ THERMAL EVALUATE │
+                 └────────┬─────────┘
+                          │
+              ┌───────────┼───────────┐
+              │           │           │
+              ▼           ▼           ▼
+          HEATING       NORMAL      UNSAFE
+          REQUIRED      STATE        STATE
+              │           │           │
+              ▼           ▼           ▼
+          HEATER ON    HEATER OFF  SAFETY LOGIC
+              │           │           │
+              └───────────┼───────────┘
+                          │
+                          ▼
+                  POWER MONITORING
+                          │
+                          ▼
+                  COMMUNICATION CHECK
+                          │
+                          ▼
+                    TELEMETRY
+                          │
+                          ▼
+                    NEXT CYCLE
+34. Design Principles
+
+The HIFLY thermal-control logic follows these principles:
+
+Temperature-based control
+Heater operation is based on measured thermal condition.
+Local autonomy
+Essential thermal-control logic remains onboard.
+Feedback control
+The heater is operated using measured temperature rather than an uncontrolled fixed command.
+Hardware/software separation
+The firmware controls the MOSFET switching stage while the hardware handles the corresponding electrical power path.
+Safety separation
+Safety evaluation remains distinct from normal thermal-control decisions.
+Communication independence
+Loss of LoRa communication does not inherently terminate local thermal control.
+Electrical awareness
+Voltage and current monitoring provide visibility into the electrical cost of active thermal management.
+Physical and software integration
+The software operates together with insulation, PHP, heating, sensing, and protection hardware as one thermal-management system.
+35. Final Thermal-Control Architecture
+                 HIGH-ALTITUDE ENVIRONMENT
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │     INSULATION  │
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │      PHP        │
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │     BATTERY     │
+                  └────────┬────────┘
+                           │
+                           ▼
+                 TEMPERATURE SENSOR
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │ HIFLY FIRMWARE  │
+                  │                 │
+                  │ Sensor Check    │
+                  │ Thermal State   │
+                  │ Safety Logic    │
+                  │ Mode Handling   │
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │ HEATER CONTROL  │
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │ MOSFET SWITCH   │
+                  └────────┬────────┘
+                           │
+                           ▼
+                  ┌─────────────────┐
+                  │ HEATING ELEMENT │
+                  └────────┬────────┘
+                           │
+                           └──────────────► Thermal Feedback
+
+
+        VOLTAGE / CURRENT
+               │
+               ▼
+        POWER MONITORING
+               │
+               ▼
+           TELEMETRY
+               │
+               ▼
+             LoRa
+               │
+               ▼
               GCS
                │
-               │ LoRa
-               ↓
-        Monitoring / Commands
-               │
-               ↓
-        Onboard Controller
-               │
-               ↓
-       Thermal Control Logic
-               │
-               ↓
-             Heater
-```
-
-The onboard controller can continue its implemented thermal-control behaviour when the GCS communication link is unavailable.
-
----
-
-## 13. Communication-Loss Behaviour
-
-The intended behaviour during communication loss is:
-
-```text
-Communication Lost
-        ↓
-Onboard Controller Detects Loss
-        ↓
-Continue Temperature Monitoring
-        ↓
-Continue Implemented Thermal Logic
-        ↓
-Maintain Safe Heater Behaviour
-        ↓
-Communication Restored
-        ↓
-Resume GCS Communication
-```
-
-The exact communication-loss timeout and recovery behaviour must be documented after implementation.
-
----
-
-## 14. Fault Handling
-
-Potential thermal-control faults include:
-
-### Sensor Fault
-
-If the temperature sensor provides an invalid or unavailable reading, the system should enter the defined safe state.
-
-### Over-Temperature
-
-If the measured temperature exceeds the defined safe limit, the heater should be disabled according to the implemented safety logic.
-
-### Communication Loss
-
-Loss of GCS communication should not prevent essential onboard thermal monitoring and control.
-
-### Abnormal Electrical Conditions
-
-Voltage and current measurements can be monitored for abnormal operating conditions.
-
-The exact fault thresholds and responses must be defined in the final firmware.
-
----
-
-## 15. Thermal Control State Concept
-
-The control system can be represented using the following states:
-
-```text
-          ┌──────────────┐
-          │ INITIALIZE   │
-          └──────┬───────┘
-                 ↓
-          ┌──────────────┐
-          │   MONITOR    │
-          └──────┬───────┘
-                 ↓
-       ┌─────────┴─────────┐
-       ↓                   ↓
-Heating Required       No Heating
-       ↓                   ↓
-┌──────────────┐     ┌──────────────┐
-│ HEATER ON    │     │ HEATER OFF   │
-└──────┬───────┘     └──────┬───────┘
-       │                     │
-       └──────────┬──────────┘
-                  ↓
-              MONITOR
-```
-
-Additional fault and fail-safe states may be added during firmware development.
-
----
-
-## 16. Pseudocode Concept
-
-The following represents the control concept rather than the final firmware implementation:
-
-```text
-START
-
-Initialize sensors
-Initialize controller
-Initialize heater control
-Initialize communication
-
-LOOP
-
-Read battery temperature
-Read battery voltage
-Read battery current
-
-Validate sensor readings
-
-IF temperature reading is invalid:
-    Apply defined safe state
-
-ELSE:
-
-    Evaluate battery temperature
-
-    IF heating is required:
-        Heater = ON
-
-    ELSE:
-        Heater = OFF
-
-    Monitor voltage and current
-    Calculate power where required
-    Update system status
-    Transmit data to GCS where communication is available
-
-    Check communication status
-
-    IF communication is lost:
-        Continue onboard thermal control
-
-REPEAT
-```
-
-The final firmware may use a different implementation while maintaining the same functional requirements.
-
----
-
-## 17. Data Required for Validation
-
-Thermal-control validation should record at minimum:
-
-- Time or sample index
-- Battery temperature
-- Voltage
-- Current
-- Heater state
-- Operating mode
-- Ambient temperature, where available
-- Communication status
-
-Example data structure:
-
-| Sample | Temperature (°C) | Voltage (V) | Current (A) | Heater | Mode |
-|---:|---:|---:|---:|---|---|
-| 1 | TBD | TBD | TBD | OFF | AUTO |
-| 2 | TBD | TBD | TBD | ON | AUTO |
-| 3 | TBD | TBD | TBD | ON | AUTO |
-| 4 | TBD | TBD | TBD | OFF | AUTO |
-
-Replace the example values with actual recorded measurements.
-
----
-
-## 18. Validation Procedure
-
-A basic thermal-control validation sequence can be:
-
-```text
-Prepare Battery System
-        ↓
-Connect Sensors
-        ↓
-Verify Electrical Connections
-        ↓
-Record Initial Temperature
-        ↓
-Start Data Logging
-        ↓
-Enable Thermal Control
-        ↓
-Record Temperature Response
-        ↓
-Record Voltage / Current
-        ↓
-Record Heater State
-        ↓
-Evaluate Control Behaviour
-        ↓
-Repeat Under Defined Conditions
-```
-
-Testing conditions must be documented for every experiment.
-
----
-
-## 19. Required Validation Outputs
-
-The following outputs should be generated from actual testing:
-
-### Temperature Response
-
-Battery temperature versus time or sample index.
-
-### Heater Behaviour
-
-Heater ON/OFF state versus temperature.
-
-### Electrical Behaviour
-
-Voltage and current during thermal-management operation.
-
-### Power Consumption
-
-Electrical power associated with heater operation.
-
-### Energy Consumption
-
-Energy used by the thermal-management system over the defined test period.
-
----
-
-## 20. Validation Status
-
-| Feature | Status |
-|---|---|
-| Temperature Sensing | Prototype |
-| Heater Control | Prototype / Development |
-| Temperature-Based Logic | Development |
-| Voltage Monitoring | Prototype |
-| Current Monitoring | Prototype |
-| Power Monitoring | Development |
-| GCS Monitoring | Development |
-| Autonomous Thermal Control | Development |
-| Communication-Loss Handling | Development |
-| Full Thermal Validation | Planned / In Progress |
-
-Update the status according to the actual prototype and test evidence.
-
----
-
-## 21. Evidence Rule
-
-The thermal-control system should not be described as validated until the corresponding measurements have been recorded and documented.
-
-Required evidence may include:
-
-- Prototype photographs
-- Firmware source code
-- Temperature data
-- Voltage/current data
-- Heater-state data
-- Graphs
-- Test conditions
-- Test setup photographs
-- Validation results
-
-All raw measurements should be preserved in the project repository.
-
----
-
-## 22. Related Files
-
-Firmware overview:
-
-```text
-04_Software/README.md
-```
-
-Firmware documentation:
-
-```text
-04_Software/firmware/README.md
-```
-
-Hardware overview:
-
-```text
-03_Hardware/hardware_overview.md
-```
-
-Wiring:
-
-```text
-03_Hardware/wiring/README.md
-```
-
-Testing:
-
-```text
-07_Testing/
-```
-
-Data:
-
-```text
-08_Data/
-```
+       ┌───────┼────────┐
+       ▼       ▼        ▼
+    Display   Graphs   Alerts
+                         │
+                         ▼
+                      Commands
+                         │
+                         └──────────────► LoRa
+
+The HIFLY thermal-control system therefore combines physical thermal management, temperature feedback, active heating, electrical monitoring, onboard safety logic, and LoRa-based ground supervision into a single integrated control architecture.
