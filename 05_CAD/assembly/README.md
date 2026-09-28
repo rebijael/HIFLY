@@ -1,711 +1,875 @@
-# HIFLY — Main CAD Assembly
+# HIFLY CAD — Overall Assembly
 
-## 1. Purpose
+## 1. Assembly Overview
 
-This directory contains the documentation for the main HIFLY mechanical assembly.
+The HIFLY overall assembly represents the physical integration of the thermal, electrical, sensing, communication, and environmental-protection subsystems into a common mechanical architecture.
 
-The assembly combines the major physical elements of the thermal-management system into a single CAD representation.
+The assembly brings together:
 
-The assembly is intended to show:
-
-- Battery integration
-- Heating-element placement
-- Pulsating Heat Pipe (PHP) integration
-- Thermal insulation
-- Protection structure
-- Sensor placement
-- Electrical routing
-- Antenna arrangement
-- Mechanical supports
-
----
-
-## 2. Main Assembly
-
-The main assembly should represent the physical relationship between the major HIFLY components.
-
-Conceptual structure:
+- battery system
+- Pulsating Heat Pipe (PHP)
+- heating element
+- thermal insulation
+- temperature sensing
+- controller electronics
+- MOSFET switching stage
+- voltage and current monitoring
+- LilyGO T3-S3 LoRa hardware
+- antenna
+- enclosure
+- flexible protection
+- lightweight protective structure
 
 ```text
-HIFLY MAIN ASSEMBLY
-│
-├── Battery Pack
-│
-├── Heating Element
-│
-├── Pulsating Heat Pipe
-│
-├── Thermal Insulation
-│
-├── Protection Chamber
-│
-├── Flexible Silicone Protection
-│
-├── Protective Layer
-│
-├── Temperature Sensors
-│
-├── Electrical Monitoring
-│
-├── Mechanical Supports
-│
-└── Antenna / Protection
+                         HIFLY OVERALL ASSEMBLY
+                                  │
+          ┌───────────────────────┼───────────────────────┐
+          │                       │                       │
+          ▼                       ▼                       ▼
+     BATTERY SYSTEM         THERMAL SYSTEM        PROTECTION SYSTEM
+          │                       │                       │
+          │                  ┌────┼────┐            ┌────┼────┐
+          │                  │    │    │            │    │    │
+          │                  ▼    ▼    ▼            ▼    ▼    ▼
+          │                 PHP Heater Insulation Enclosure Silicone
+          │
+          ▼
+   ELECTRICAL / CONTROL
+          │
+     ┌────┼──────────────┐
+     │    │              │
+     ▼    ▼              ▼
+    MCU  MOSFET       Power Monitoring
+     │
+     ▼
+   LoRa Module
+     │
+     ▼
+   Antenna
 ```
+2. Assembly Purpose
 
-The actual geometry should be taken from the current CAD model.
+The purpose of the overall CAD assembly is to provide a common physical representation of the HIFLY system.
 
----
+The assembly connects the system-level architecture to the physical arrangement of the prototype.
 
-## 3. Assembly Layout
+Problem
+  │
+  ▼
+System Requirements
+  │
+  ▼
+HIFLY Architecture
+  │
+  ▼
+Subsystem Designs
+  │
+  ▼
+CAD Assembly
+  │
+  ▼
+Physical Integration
 
-A simplified conceptual layout is:
+The assembly therefore provides the mechanical context required to understand how the individual HIFLY subsystems interact.
 
-```text
-              ┌──────────────────────┐
-              │ Protective Layer     │
-              └──────────────────────┘
-                        │
-                        ↓
-              ┌──────────────────────┐
-              │ Thermal Insulation   │
-              └──────────────────────┘
-                        │
-        ┌───────────────┴───────────────┐
-        │                               │
-        ↓                               ↓
- ┌───────────────┐               ┌───────────────┐
- │ Heating       │               │ PHP           │
- │ Element       │               │ Assembly      │
- └───────┬───────┘               └───────┬───────┘
-         │                                 │
-         └────────────┬────────────────────┘
-                      ↓
-             ┌───────────────────┐
-             │   Battery Pack    │
-             └───────────────────┘
+3. Major Assembly Components
+
+The overall assembly contains the following major functional groups:
+
+Assembly Group	Main Elements
+Battery system	Li-ion battery pack and associated interfaces
+Thermal system	PHP, heater and insulation
+Sensing	Temperature, voltage and current sensing
+Control	Microcontroller and control electronics
+Power switching	MOSFET switching stage
+Communication	LilyGO T3-S3 LoRa and antenna
+Protection	Enclosure, flexible silicone and protective layer
+Integration	Mechanical interfaces and component placement
+4. Assembly Architecture
+┌─────────────────────────────────────────────────────────────┐
+│                     HIFLY ASSEMBLY                         │
+│                                                             │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │                   PROTECTION LAYER                    │  │
+│  │                                                       │  │
+│  │   Enclosure • Insulation • Flexible Protection       │  │
+│  │   Lightweight Protective Structure                    │  │
+│  │                                                       │  │
+│  │   ┌────────────────────────────────────────────────┐  │  │
+│  │   │              INTERNAL SYSTEM                  │  │  │
+│  │   │                                                │  │  │
+│  │   │  ┌──────────────┐       ┌──────────────────┐ │  │  │
+│  │   │  │   BATTERY    │       │ THERMAL SYSTEM   │ │  │  │
+│  │   │  │              │       │                  │ │  │  │
+│  │   │  │  Li-ion Pack │◄─────►│ PHP + Heater     │ │  │  │
+│  │   │  └──────┬───────┘       └────────┬─────────┘ │  │  │
+│  │   │         │                        │           │  │  │
+│  │   │         ▼                        ▼           │  │  │
+│  │   │  Temperature Sensors      Thermal Interface │  │  │
+│  │   │         │                                │  │  │
+│  │   │         └────────────┬───────────────────┘  │  │  │
+│  │   │                      ▼                      │  │  │
+│  │   │               ┌──────────────┐              │  │  │
+│  │   │               │ MCU / CONTROL│              │  │  │
+│  │   │               └──────┬───────┘              │  │  │
+│  │   │                      │                      │  │  │
+│  │   │          ┌───────────┴───────────┐          │  │  │
+│  │   │          ▼                       ▼          │  │  │
+│  │   │      MOSFET Stage          LoRa / Antenna   │  │  │
+│  │   │                                                │  │  │
+│  │   └────────────────────────────────────────────────┘  │  │
+│  │                                                       │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+5. Battery Integration
+
+The battery is positioned as a central subsystem because it provides the electrical energy required by the active and electronic portions of HIFLY.
+
+The assembly considers the battery in relation to:
+
+thermal insulation
+heating element
+PHP
+temperature sensing
+electrical connections
+enclosure
+control electronics
+                   BATTERY
                       │
-                      ↓
-             Temperature Sensor
-```
-
-This diagram is only a conceptual representation and is not a dimensioned drawing.
-
----
-
-## 4. Assembly Components
-
-### 4.1 Battery Pack
-
-The battery pack is the primary thermal-management target.
-
-The assembly should document:
-
-- Battery position
-- Orientation
-- Mounting
-- Available clearance
-- Sensor contact points
-- Heating-element interface
-- PHP interface
-- Insulation boundary
-
-Actual battery dimensions should be taken from the physical battery or verified CAD model.
-
----
-
-### 4.2 Heating Element
-
-The heating element is positioned to provide thermal input to the battery system.
-
-The assembly should show:
-
-```text
-Heating Element
-      ↓
-Thermal Contact
-      ↓
-Battery / Thermal Interface
-```
-
-The exact contact arrangement should match the fabricated prototype.
-
----
-
-### 4.3 Pulsating Heat Pipe
-
-The PHP forms part of the thermal-management architecture.
-
-The assembly should identify:
-
-- PHP location
-- Thermal contact region
-- Routing
-- Support points
-- Condenser region
-- Clearance from neighbouring components
-
-The CAD assembly documents physical integration.
-
-It does not by itself prove PHP thermal performance.
-
----
-
-### 4.4 Thermal Insulation
-
-Thermal insulation surrounds or separates selected regions of the thermal-management system.
-
-The assembly should show:
-
-- Insulation boundary
-- Thickness where finalized
-- Interfaces with the battery
-- Interfaces with the heater
-- Interfaces with the PHP
-- External boundary
-
-The actual material and thickness should be documented separately.
-
----
-
-### 4.5 Protection Chamber
-
-The protection chamber provides a defined physical enclosure for selected sensitive components.
-
-The assembly should document:
-
-- Chamber geometry
-- Component mounting
-- Entry/exit points
-- Cable routing
-- Closure mechanism
-- Service access
-
-If the chamber is intended to operate under reduced pressure, the final design should document the actual pressure-control and sealing arrangement separately.
-
----
-
-### 4.6 Flexible Silicone
-
-Flexible silicone may be integrated around selected interfaces.
-
-Potential functions include:
-
-- Sealing
-- Mechanical protection
-- Vibration isolation
-- Flexible support
-- Environmental protection
-
-The actual application must match the prototype.
-
----
-
-### 4.7 Protective Layer
-
-The outer protective layer is intended to reduce environmental exposure of the protected system.
-
-The final design should identify:
-
-- Material
-- Thickness
-- Mounting method
-- Coverage
-- Interfaces
-
-No radiation-protection performance should be claimed without supporting analysis or test evidence.
-
----
-
-## 5. Sensor Integration
-
-The main assembly should provide sufficient space for temperature and electrical monitoring components.
-
-Example:
-
-```text
-Battery
-   │
-   ├── Temperature Sensor
-   │
-   ├── Voltage Monitoring
-   │
-   └── Current Monitoring
-```
-
-Sensor placement should be chosen to obtain useful measurements without interfering with the mechanical assembly.
-
----
-
-## 6. Electrical Routing
-
-The CAD assembly should account for wiring paths.
-
-Potential wiring includes:
-
-```text
-Battery
-  │
-  ├── Power Wiring
-  │
-  ├── Heater Wiring
-  │
-  ├── Temperature Sensor
-  │
-  ├── Voltage/Current Monitoring
-  │
-  └── Controller
-```
-
-The assembly should maintain adequate clearance for connectors and cable routing.
-
----
-
-## 7. LoRa and Antenna Integration
-
-The LilyGO T3-S3 / LoRa communication hardware requires an antenna arrangement.
-
-The CAD model should identify:
-
-- Controller location
-- Antenna location
-- Antenna support
-- Cable routing where applicable
-- Protective cover/radome where applicable
-
-The CAD model should not be used as proof of communication performance.
-
-Communication performance should be established through testing.
-
----
-
-## 8. Mechanical Supports
-
-The assembly may require supports for:
-
-- Battery
-- PHP
-- Heating element
-- Sensors
-- Controller
-- Protection chamber
-- Antenna
-- Insulation
-
-Each support should be checked for:
-
-- Fit
-- Clearance
-- Accessibility
-- Mechanical stability
-- Compatibility with the selected fabrication method
-
----
-
-## 9. Exploded Assembly
-
-An exploded CAD view should separate major components to make the assembly sequence understandable.
-
-Conceptually:
-
-```text
-             Protective Layer
-                    ↑
+       ┌──────────────┼──────────────┐
+       │              │              │
+       ▼              ▼              ▼
+   Thermal          Electrical     Mechanical
+   Protection       Connection     Packaging
+       │              │              │
+       ▼              ▼              ▼
+   Insulation       Controller     Enclosure
+   PHP              Power Path
+   Heater
+
+The CAD assembly provides the physical relationship between these elements.
+
+6. Battery and Thermal System
+
+The battery is integrated with the thermal-management system rather than treated as an isolated electrical component.
+
+              ┌─────────────────┐
+              │     BATTERY     │
+              └────────┬────────┘
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+          ▼            ▼            ▼
+       Heater         PHP       Insulation
+          │            │            │
+          └────────────┼────────────┘
+                       │
+                       ▼
+                 Thermal System
+                       │
+                       ▼
+                Temperature Sensor
+
+This arrangement allows the CAD assembly to represent both energy storage and thermal-management relationships.
+
+7. PHP Integration
+
+The Pulsating Heat Pipe is integrated into the thermal structure around the relevant heat-transfer region.
+
+                   PHP
                     │
-             Thermal Insulation
-                    ↑
-                    │
-             Protection Structure
-                    ↑
           ┌─────────┴─────────┐
           │                   │
-       PHP Assembly       Heater
-          ↑                   ↑
+          ▼                   ▼
+    Thermal Source       Thermal Region
+          │                   │
           └─────────┬─────────┘
-                    ↑
-               Battery Pack
-                    ↑
-             Mechanical Base
-```
+                    ▼
+              Battery/System
 
-The actual exploded view should be generated from the CAD model.
+The PHP geometry is represented in the assembly as a physical thermal-management element.
 
----
+The CAD model describes geometry and placement; it does not by itself establish the PHP's experimental thermal performance.
 
-## 10. Assembly Sequence
+8. Heater Integration
 
-A possible assembly sequence is:
+The heating element is mechanically integrated with the thermal-management structure.
 
-### Step 1 — Prepare Mechanical Structure
+The functional relationship is:
 
-Verify the base/support structure.
+Controller
+    │
+    ▼
+MOSFET Switching Stage
+    │
+    ▼
+Heating Element
+    │
+    ▼
+Thermal Interface
+    │
+    ▼
+Battery / Thermal Structure
 
-### Step 2 — Install Battery
+The heater is therefore part of both the electrical and thermal assembly.
 
-Position and secure the battery pack.
+9. Insulation Integration
 
-### Step 3 — Install Thermal Components
+Thermal insulation forms part of the physical thermal-protection structure.
 
-Install:
+External Environment
+        │
+        ▼
+┌──────────────────────┐
+│      Insulation      │
+├──────────────────────┤
+│                      │
+│   Protected System   │
+│                      │
+└──────────────────────┘
 
-- Heating element
-- PHP
-- Thermal interface components
+The insulation is integrated with the enclosure and internal thermal-management elements.
 
-### Step 4 — Install Sensors
+Its role is to reduce unwanted thermal exchange between the protected system and its environment.
 
-Attach temperature sensors and electrical monitoring connections.
+10. Temperature-Sensor Integration
 
-### Step 5 — Install Insulation
+Temperature sensors are placed in relation to the thermal regions that require monitoring.
 
-Install the defined thermal insulation arrangement.
+Thermal Region
+      │
+      ▼
+Temperature Sensor
+      │
+      ▼
+Electrical Connection
+      │
+      ▼
+MCU / Controller
+      │
+      ▼
+Thermal-Control Logic
 
-### Step 6 — Install Protection
+The assembly therefore connects physical sensor location with the software thermal-control loop.
 
-Install:
+11. Power-Monitoring Integration
 
-- Protection chamber
-- Flexible silicone
-- Protective layer
+Voltage and current monitoring are part of the electrical subsystem represented in the assembly.
 
-### Step 7 — Install Electronics
+Battery / Electrical Source
+           │
+           ▼
+     Electrical Path
+           │
+     ┌─────┴─────┐
+     ▼           ▼
+ Voltage       Current
+ Sensor        Sensor
+     │           │
+     └─────┬─────┘
+           ▼
+          MCU
+           │
+           ▼
+        Telemetry
 
-Mount the controller and related electronics.
+This allows electrical behavior to be monitored alongside thermal behavior.
 
-### Step 8 — Route Wiring
+12. Controller Integration
 
-Complete:
+The onboard controller forms the central connection between the physical sensors, thermal-control system, safety logic, and communication system.
 
-- Sensor wiring
-- Heater wiring
-- Power wiring
-- Communication wiring
+                 ┌──────────────────┐
+                 │       MCU        │
+                 └────────┬─────────┘
+                          │
+       ┌──────────────────┼──────────────────┐
+       │                  │                  │
+       ▼                  ▼                  ▼
+   Temperature        Voltage/Current       LoRa
+     Sensors            Monitoring        Communication
+       │                  │                  │
+       ▼                  ▼                  ▼
+   Thermal Control     Power Data          GCS
+       │
+       ▼
+    MOSFET
+       │
+       ▼
+    Heater
 
-### Step 9 — Install Antenna
+The CAD assembly provides the physical packaging context for this controller.
 
-Install and secure the antenna arrangement.
+13. MOSFET Integration
 
-### Step 10 — Final Inspection
+The MOSFET switching stage connects the low-power control electronics to the heating element.
 
-Check:
+MCU Control Signal
+        │
+        ▼
+┌──────────────────┐
+│ MOSFET Switching │
+│      Stage       │
+└────────┬─────────┘
+         │
+         ▼
+     Heater Load
 
-- Mechanical fit
-- Wiring
-- Sensor placement
-- Insulation
-- Thermal interfaces
-- Enclosure closure
-- Antenna clearance
+The physical assembly maintains the MOSFET within the electrical and mechanical architecture of the system.
 
----
+14. LoRa Module Integration
 
-## 11. Clearance Checks
+The LilyGO T3-S3 LoRa module is integrated into the electronics section.
 
-The assembly should be checked for interference between components.
+MCU
+ │
+ ▼
+LilyGO T3-S3
+ │
+ ▼
+Antenna
+ │
+ ▼
+Protective Structure
+ │
+ ▼
+Communication Environment
 
-Important checks include:
+The CAD assembly represents the module and antenna as part of the complete system rather than as an independent communication subsystem.
 
-```text
-Battery ↔ Insulation
-Battery ↔ Heater
-Battery ↔ PHP
-PHP ↔ Protection Structure
-Heater ↔ Wiring
-Sensor ↔ Insulation
-Controller ↔ Enclosure
-Antenna ↔ Protective Structure
-Cable ↔ Mechanical Parts
-```
+15. Antenna Integration
 
-Record any interference found during CAD review.
+The antenna requires a suitable physical interface with the surrounding protection structure.
 
----
+              Electronics
+                   │
+                   ▼
+              LoRa Module
+                   │
+                   ▼
+                Antenna
+                   │
+                   ▼
+             Protection
+                   │
+                   ▼
+              Environment
 
-## 12. Assembly Dimensions
+The physical design balances antenna placement with the enclosure and environmental-protection structure.
 
-Do not enter dimensions based on assumptions.
+The CAD geometry alone does not establish a measured communication range or link-performance improvement.
 
-The following should be populated from the actual CAD model:
+16. Enclosure Integration
 
-| Parameter | Value |
-|---|---|
-| Overall assembly length | TBD |
-| Overall assembly width | TBD |
-| Overall assembly height | TBD |
-| Battery dimensions | TBD |
-| PHP dimensions | TBD |
-| Heater dimensions | TBD |
-| Insulation thickness | TBD |
-| Protection-layer thickness | TBD |
-| Enclosure dimensions | TBD |
-| Assembly mass | TBD |
+The enclosure forms the outer mechanical boundary of the integrated HIFLY system.
 
----
+┌───────────────────────────────────────────┐
+│                  ENCLOSURE                 │
+│                                           │
+│   ┌───────────────────────────────────┐   │
+│   │           INTERNAL SYSTEM         │   │
+│   │                                   │   │
+│   │ Battery                          │   │
+│   │ PHP                              │   │
+│   │ Heater                           │   │
+│   │ Sensors                          │   │
+│   │ Controller                       │   │
+│   │ MOSFET                           │   │
+│   │ LoRa                             │   │
+│   │                                   │   │
+│   └───────────────────────────────────┘   │
+│                                           │
+└───────────────────────────────────────────┘
 
-## 13. Assembly Mass
+The enclosure geometry provides the physical boundary within which the thermal and electrical subsystems are integrated.
 
-The total system mass should eventually be determined from actual component masses.
+17. Flexible Protection Integration
 
-Recommended breakdown:
+Flexible silicone protection is incorporated at appropriate mechanical or thermal interfaces.
 
-| Component | Mass |
-|---|---:|
-| Battery | TBD |
-| PHP | TBD |
-| Heating Element | TBD |
-| Insulation | TBD |
-| Protection Structure | TBD |
-| Electronics | TBD |
-| Sensors | TBD |
-| Wiring | TBD |
-| Antenna | TBD |
-| Mechanical Supports | TBD |
-| Other Components | TBD |
-| **Total** | **TBD** |
+Component A
+    │
+    ▼
+┌──────────────┐
+│    Silicone  │
+│   Protection │
+└──────┬───────┘
+       │
+       ▼
+Component B
 
-Do not claim a final mass until the components have been measured or reliably documented.
+The flexible element provides a physical interface between components where flexibility and thermal-cycle tolerance are part of the protection concept.
 
----
+18. Lightweight Protective Layer Integration
 
-## 14. CAD-to-Prototype Comparison
+The lightweight protective layer is represented as part of the outer protection architecture.
 
-The assembly should be compared against the fabricated prototype.
+External Environment
+          │
+          ▼
+┌──────────────────────┐
+│ Lightweight Layer    │
+├──────────────────────┤
+│      Enclosure       │
+├──────────────────────┤
+│      Insulation      │
+├──────────────────────┤
+│ Protected Components │
+└──────────────────────┘
 
-Recommended evidence:
+The physical layer contributes to the environmental-protection architecture.
 
-```text
+The CAD representation does not by itself quantify its radiation-protection performance.
+
+19. Mechanical Interfaces
+
+The assembly contains interfaces between:
+
+battery and thermal structure
+PHP and thermal structure
+heater and thermal structure
+sensors and monitored components
+electronics and enclosure
+LoRa module and antenna
+antenna and protective structure
+
+A conceptual interface map is:
+
+Battery
+  │
+  ├────► Thermal Interface ◄──── PHP
+  │
+  ├────► Heater Interface
+  │
+  ├────► Sensor Interface
+  │
+  └────► Electrical Interface
+               │
+               ▼
+             MCU
+               │
+       ┌───────┴────────┐
+       ▼                ▼
+    MOSFET             LoRa
+       │                │
+       ▼                ▼
+    Heater           Antenna
+
+The CAD assembly provides the geometry needed to represent these interfaces.
+
+20. Assembly Packaging
+
+The HIFLY system is packaged so that the thermal, electrical, and communication subsystems coexist within the same physical structure.
+
+┌────────────────────────────────────────────────┐
+│                  HIFLY PACKAGE                 │
+│                                                │
+│   ┌────────────────┐   ┌───────────────────┐  │
+│   │    BATTERY     │   │ THERMAL SYSTEM    │  │
+│   │                │   │                   │  │
+│   │   Li-ion Pack  │   │ PHP + Heater      │  │
+│   └────────────────┘   └───────────────────┘  │
+│                                                │
+│   ┌────────────────┐   ┌───────────────────┐  │
+│   │    CONTROL     │   │   COMMUNICATION   │  │
+│   │                │   │                   │  │
+│   │ MCU + MOSFET   │   │ LilyGO + Antenna  │  │
+│   └────────────────┘   └───────────────────┘  │
+│                                                │
+│            Protection / Insulation             │
+│                                                │
+└────────────────────────────────────────────────┘
+
+The assembly layout provides the physical relationship between these functional groups.
+
+21. Assembly and Thermal Path
+
+The CAD assembly represents the physical thermal path from active heating and internal thermal regions to the surrounding structure.
+
+                    Heater
+                      │
+                      ▼
+              Thermal Interface
+                      │
+             ┌────────┴────────┐
+             │                 │
+             ▼                 ▼
+          Battery             PHP
+             │                 │
+             └────────┬────────┘
+                      ▼
+               Thermal Structure
+                      │
+                      ▼
+                  Insulation
+                      │
+                      ▼
+                  Environment
+
+The thermal path shown in the CAD architecture is a design representation rather than a measured heat-flow result.
+
+22. Assembly and Electrical Path
+
+The electrical path is represented separately from the thermal path.
+
+Battery
+  │
+  ▼
+Electrical Distribution
+  │
+  ├──────────────► Controller
+  │
+  ├──────────────► Sensors
+  │
+  ├──────────────► MOSFET
+  │                    │
+  │                    ▼
+  │                  Heater
+  │
+  └──────────────► LoRa Module
+                       │
+                       ▼
+                    Antenna
+
+This allows the CAD assembly to represent the relationship between electrical power distribution and physical component placement.
+
+23. Assembly and Data Path
+
+The physical assembly supports the software data path.
+
+Physical System
+      │
+      ▼
+Sensors
+      │
+      ▼
+MCU
+      │
+      ├──────────► Thermal Control
+      │
+      ├──────────► Power Monitoring
+      │
+      └──────────► LoRa
+                        │
+                        ▼
+                       GCS
+
+The CAD model therefore forms the physical foundation of the complete hardware/software system.
+
+24. Assembly and Environmental Protection
+
+The overall assembly integrates multiple environmental-protection concepts.
+
+             HIGH-ALTITUDE ENVIRONMENT
+                        │
+        ┌───────────────┼────────────────┐
+        │               │                │
+        ▼               ▼                ▼
+    Low Temperature   Low Pressure    Radiation
+        │               │                │
+        ▼               ▼                ▼
+    Insulation       Protection      Protective
+                      Enclosure        Layer
+        │               │                │
+        └───────────────┼────────────────┘
+                        │
+                        ▼
+                  HIFLY Assembly
+
+The assembly is therefore designed as an integrated environmental-protection package rather than a collection of unrelated components.
+
+25. Assembly and Thermal Cycling
+
+Thermal cycling affects interfaces between different materials and components.
+
+The assembly includes flexible protection as part of the mechanical response to these interfaces.
+
+Thermal Cycling
+      │
+      ▼
+Repeated Expansion / Contraction
+      │
+      ▼
+Component Interface
+      │
+      ▼
+Flexible Silicone
+      │
+      ▼
+Protected Mechanical Interface
+
+The CAD assembly provides the spatial representation of this interface.
+
+26. Assembly and PHP
+
+The PHP occupies a dedicated position within the thermal-management region.
+
+┌─────────────────────────────────┐
+│         THERMAL REGION          │
+│                                 │
+│       ┌───────────────┐         │
+│       │      PHP      │         │
+│       └───────┬───────┘         │
+│               │                 │
+│               ▼                 │
+│          Thermal Path            │
+│               │                 │
+│               ▼                 │
+│            Battery              │
+│                                 │
+└─────────────────────────────────┘
+
+The CAD assembly provides the physical relationship required for later thermal analysis and prototype construction.
+
+27. Assembly and GCS Relationship
+
+The physical assembly contains the hardware required to generate and transmit the data displayed by the GCS.
+
+HIFLY Physical Assembly
+        │
+        ├── Temperature Sensors
+        ├── Voltage Monitoring
+        ├── Current Monitoring
+        ├── Heater State
+        ├── Safety State
+        │
+        ▼
+       MCU
+        │
+        ▼
+   LilyGO T3-S3
+        │
+        ▼
+       LoRa
+        │
+        ▼
+       GCS
+
+The GCS therefore represents the system state produced by the physical assembly and onboard software.
+
+28. CAD-to-Prototype Relationship
+
+The assembly serves as the geometric reference for the physical prototype.
+
 CAD Assembly
      │
-     ↓
-Rendered View
+     ▼
+Mechanical Integration
      │
-     ↓
+     ▼
+Fabrication / Assembly
+     │
+     ▼
 Physical Prototype
      │
-     ↓
-Photograph
+     ├────────► Photographs
+     ├────────► Video
+     ├────────► Testing
+     └────────► Experimental Data
+
+This relationship provides traceability between the designed geometry and physical evidence.
+
+29. CAD-to-Simulation Relationship
+
+The assembly can also provide the geometry required for simulation.
+
+CAD Assembly
      │
-     ↓
-Inspection Notes
-```
-
-Any significant difference between the CAD design and prototype should be documented.
-
----
-
-## 15. Assembly Revision History
-
-Maintain a revision table.
-
-| Revision | Date | Change | Status |
-|---|---|---|---|
-| A | TBD | Initial assembly | Design |
-| B | TBD | Component arrangement update | Design |
-| C | TBD | Prototype integration update | Prototype |
-
-Replace these entries with the actual revision history.
-
----
-
-## 16. CAD File Naming
-
-Recommended assembly file names:
-
-```text
-HIFLY_Main_Assembly
-HIFLY_Main_Assembly_REV_A
-HIFLY_Main_Assembly_REV_B
-HIFLY_Exploded_Assembly
-HIFLY_Assembly_Drawing
-```
-
-Use the native CAD format and a neutral exchange format where appropriate.
-
-For example:
-
-```text
-HIFLY_Main_Assembly.step
-HIFLY_Main_Assembly.[native CAD format]
-```
-
-Only include formats actually generated by the project.
-
----
-
-## 17. Assembly Evidence
-
-The repository should eventually contain:
-
-- Main assembly CAD file
-- Neutral STEP/STP file where available
-- Assembly screenshot
-- Exploded-view screenshot
-- Technical drawing where available
-- Prototype photograph
-- CAD-to-prototype comparison
-- Revision history
-
-Example repository structure:
-
-```text
-05_CAD/assembly/
-├── README.md
-├── cad/
-├── drawings/
-├── exploded/
-├── screenshots/
-└── prototype_comparison/
-```
-
-Create these directories when the corresponding evidence becomes available.
-
----
-
-## 18. Thermal Simulation Interface
-
-The final assembly may provide geometry for the thermal-analysis workflow.
-
-```text
-Main CAD Assembly
-        ↓
-Simplified Analysis Geometry
-        ↓
-Material Assignment
-        ↓
-Thermal Boundary Conditions
-        ↓
-Thermal Analysis
-        ↓
-Results
-```
-
-The simulation geometry may be simplified from the complete CAD model where small mechanical details do not affect the intended analysis.
-
----
-
-## 19. Manufacturing Considerations
-
-Before fabrication, review:
-
-- Available manufacturing process
-- Material availability
-- Component tolerances
-- Fastener availability
-- Assembly sequence
-- Cable routing
-- Sensor access
-- Inspection access
-- Thermal-interface requirements
-
-The selected manufacturing method should be recorded for fabricated components.
-
----
-
-## 20. Assembly Inspection Checklist
-
-### Mechanical
-
-- [ ] Battery securely mounted
-- [ ] PHP correctly positioned
-- [ ] Heating element correctly positioned
-- [ ] Insulation correctly installed
-- [ ] Protection structure assembled
-- [ ] Flexible silicone correctly applied
-- [ ] Protective layer installed
-- [ ] Mechanical supports secure
-
-### Electrical
-
-- [ ] Sensor wiring secure
-- [ ] Heater wiring secure
-- [ ] Power wiring secure
-- [ ] Controller connections secure
-- [ ] Antenna connection secure
-
-### Clearance
-
-- [ ] No unintended mechanical interference
-- [ ] Cable routing clear
-- [ ] Sensor locations accessible
-- [ ] Enclosure can be closed
-- [ ] Antenna has required clearance
-
----
-
-## 21. Current Assembly Status
-
-| Item | Status |
-|---|---|
-| Main Assembly Concept | Design |
-| Battery Integration | Design / Prototype |
-| PHP Integration | Design / Prototype |
-| Heater Integration | Design / Prototype |
-| Insulation Integration | Design / Prototype |
-| Protection Structure | Design |
-| Sensor Integration | Design / Prototype |
-| Electronics Integration | Design / Prototype |
-| Antenna Integration | Design |
-| Full CAD Assembly | Design / Prototype |
-| CAD-to-Prototype Comparison | Planned |
-| Final Assembly Validation | Planned |
-
-Update the status according to actual evidence.
-
----
-
-## 22. Evidence Classification
-
-Use:
-
-- **Concept** — proposed arrangement
-- **Design** — CAD model completed
-- **Prototype** — physically assembled
-- **Tested** — tested under documented conditions
-- **Validated** — supported by defined evidence
-
-A CAD assembly should not be described as physically validated unless the physical assembly and corresponding evidence exist.
-
----
-
-## 23. Related Files
-
-Main CAD documentation:
-
-```text
-05_CAD/README.md
-```
-
-Battery CAD:
-
-```text
-05_CAD/battery/README.md
-```
-
-PHP CAD:
-
-```text
-05_CAD/php/README.md
-```
-
-Thermal-management CAD:
-
-```text
-05_CAD/thermal_management/README.md
-```
-
-Thermal simulation:
-
-```text
-06_Simulation/
-```
-
-Testing:
-
-```text
-07_Testing/
-```
-
-Prototype media:
-
-```text
-10_Media/
-```
+     ▼
+Geometry Selection
+     │
+     ▼
+Thermal Model
+     │
+     ▼
+Simulation
+     │
+     ├── Temperature Distribution
+     ├── Heat Flux
+     └── Comparative Thermal Evaluation
+
+The simulation results remain separate from the CAD geometry so that design inputs and analytical outputs are not conflated.
+
+30. PHP CAD and Simulation Interpretation
+
+The overall assembly may contain a PHP geometry for thermal analysis.
+
+A conventional steady-state thermal simulation should be interpreted as an evaluation of the thermal architecture containing the PHP rather than as a direct simulation of the internal pulsating two-phase flow.
+
+PHP CAD
+  │
+  ▼
+Thermal Geometry
+  │
+  ▼
+Steady-State Thermal Evaluation
+  │
+  ├── Temperature Distribution
+  ├── Heat Flux
+  └── Thermal Comparison
+
+A dedicated multiphase transient model would be required to directly represent PHP internal flow behavior.
+
+31. Assembly Evidence
+
+The overall CAD assembly can provide evidence for:
+
+physical integration
+component placement
+thermal-system arrangement
+battery packaging
+enclosure architecture
+communication hardware placement
+sensor placement
+mechanical interfaces
+
+The CAD model does not by itself establish:
+
+measured thermal performance
+measured communication range
+validated battery endurance
+measured system weight
+measured power consumption
+radiation attenuation
+pressure performance
+
+Those claims require corresponding experimental or analytical evidence.
+
+32. Assembly Status
+
+The overall assembly status is represented through the engineering evidence associated with the CAD and physical build.
+
+Area	Evidence Type
+Overall geometry	CAD
+Battery arrangement	CAD
+PHP geometry	CAD
+Thermal-management integration	CAD
+Enclosure	CAD
+Component packaging	CAD
+Physical implementation	Prototype evidence
+Thermal behavior	Simulation / testing
+Electrical behavior	Measurements
+Communication behavior	Communication testing
+System validation	Requirement-specific evidence
+
+The status of each individual subsystem is maintained according to the actual evidence available for that subsystem.
+
+33. Assembly Traceability
+
+The overall assembly connects the major HIFLY engineering layers.
+
+                 PROBLEM
+                    │
+                    ▼
+              REQUIREMENTS
+                    │
+                    ▼
+              ARCHITECTURE
+                    │
+                    ▼
+             HARDWARE DESIGN
+                    │
+                    ▼
+                CAD MODEL
+                    │
+                    ▼
+             OVERALL ASSEMBLY
+                    │
+          ┌─────────┼─────────┐
+          │         │         │
+          ▼         ▼         ▼
+      Simulation Prototype Testing
+          │         │         │
+          └─────────┼─────────┘
+                    ▼
+              SYSTEM EVIDENCE
+
+This traceability is important for connecting the physical CAD design with the wider HIFLY project.
+
+34. Complete Assembly Functional Relationship
+                         HIFLY ASSEMBLY
+                              │
+                              ▼
+                 ┌──────────────────────┐
+                 │      ENCLOSURE       │
+                 └──────────┬───────────┘
+                            │
+          ┌─────────────────┼─────────────────┐
+          │                 │                 │
+          ▼                 ▼                 ▼
+       BATTERY          THERMAL            CONTROL
+          │             SYSTEM                │
+          │                 │                 │
+          │            ┌────┼────┐            │
+          │            │    │    │            │
+          │            ▼    ▼    ▼            ▼
+          │           PHP Heater Insulation  MCU
+          │                                    │
+          │                             ┌──────┼──────┐
+          │                             │             │
+          │                             ▼             ▼
+          │                          MOSFET          LoRa
+          │                             │             │
+          │                             ▼             ▼
+          │                          Heater        Antenna
+          │
+          └──────────────┬───────────────────────────┐
+                         │                           │
+                         ▼                           ▼
+                  Temperature                  Voltage / Current
+                     Sensors                      Monitoring
+                         │                           │
+                         └──────────────┬────────────┘
+                                        ▼
+                                  HIFLY Controller
+                                        │
+                                        ▼
+                                      LoRa
+                                        │
+                                        ▼
+                                       GCS
+35. Final Assembly Representation
+
+The HIFLY overall CAD assembly represents the complete physical relationship between the thermal, electrical, communication, sensing, and protection systems.
+
+┌────────────────────────────────────────────────────────────────┐
+│                        HIFLY SYSTEM                            │
+│                                                                │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                    PROTECTION                             │  │
+│  │                                                          │  │
+│  │  Enclosure • Insulation • Flexible Protection            │  │
+│  │  Lightweight Protective Layer                            │  │
+│  │                                                          │  │
+│  │   ┌────────────────────────────────────────────────────┐ │  │
+│  │   │                  THERMAL SYSTEM                   │ │  │
+│  │   │                                                    │ │  │
+│  │   │       PHP ──────── Heater ──────── Insulation     │ │  │
+│  │   │          │            │                           │ │  │
+│  │   │          └────────────┼──────────────┐            │ │  │
+│  │   │                       │              │            │ │  │
+│  │   │                       ▼              ▼            │ │  │
+│  │   │                    BATTERY      Temperature       │ │  │
+│  │   │                                  Sensor           │ │  │
+│  │   └───────────────────────┬────────────────────────────┘ │  │
+│  │                           │                              │  │
+│  │                           ▼                              │  │
+│  │                    ┌──────────────┐                      │  │
+│  │                    │ MCU / CONTROL│                      │  │
+│  │                    └──────┬───────┘                      │  │
+│  │                           │                              │  │
+│  │                ┌──────────┼──────────┐                   │  │
+│  │                ▼                     ▼                   │  │
+│  │             MOSFET                  LoRa                 │  │
+│  │                │                     │                   │  │
+│  │                ▼                     ▼                   │  │
+│  │             Heater                Antenna                │  │
+│  │                                                          │  │
+│  │         Voltage / Current Monitoring                     │  │
+│  │                                                          │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+
+The overall HIFLY CAD assembly is the physical integration layer connecting the battery, thermal-management system, electronics, communication hardware, and environmental-protection structures into one coherent engineering design.
