@@ -1,481 +1,635 @@
-# HIFLY — Software Overview
+# HIFLY — Wiring and Electrical Interconnection
 
-## 1. Software Architecture
+## 1. Overview
 
-The HIFLY software system connects onboard sensing, thermal control, power monitoring, communication, Ground Control Station monitoring and fail-safe operation.
+The HIFLY wiring architecture connects the battery, sensing system, ESP32 controller, heater switching stage, heating element, LilyGO T3-S3 communication system, and supporting electrical hardware into one integrated system.
 
-The software is designed around the LilyGO T3-S3 LoRa onboard controller.
-
----
-
-## 2. Software Functions
-
-The main software functions are:
-
-- Sensor data acquisition
-- Battery temperature monitoring
-- Voltage monitoring
-- Current monitoring
-- Temperature-based thermal control
-- Heater control
-- Power monitoring
-- LoRa communication
-- Ground Control Station data handling
-- System-status monitoring
-- Fail-safe operation
-
----
-
-## 3. Software Architecture
+The wiring architecture follows the functional structure of the HIFLY control system:
 
 ```text
-                 SENSOR INPUTS
-                      │
-        ┌─────────────┼─────────────┐
-        │             │             │
-   Temperature     Voltage       Current
-      Sensor       Monitor        Sensor
-        │             │             │
-        └─────────────┼─────────────┘
-                      ↓
-               DATA ACQUISITION
-                      │
-                      ↓
-             LILYGO T3-S3 CONTROLLER
-                      │
-       ┌──────────────┼──────────────┐
-       │              │              │
-       ↓              ↓              ↓
- Thermal Control  Power Monitor   System Status
-       │              │              │
-       ↓              │              ↓
-    MOSFET            │         Safety / Alerts
-       │              │
-       ↓              │
-    Heater            │
-                      │
-       └──────────────┼──────────────┐
-                      ↓              │
-                LoRa Communication   │
-                      │              │
-                      ↓              │
-                     GCS ←───────────┘
+                    LI-ION BATTERY
+                           │
+                           ↓
+                  POWER DISTRIBUTION
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+          ↓                ↓                ↓
+       ESP32             Sensors          Heater
+          │                │                │
+          │                │                ↓
+          │                │              MOSFET
+          │                │                │
+          │                │                ↓
+          │                │          Heating Element
+          │                │
+          ├────────────────┤
+          │                │
+          ↓                ↓
+      LilyGO T3-S3    Voltage / Current
+          │             Monitoring
+          ↓
+        LoRa
+          │
+          ↓
+         GCS
+```
+The wiring system provides the electrical connection required for temperature monitoring, power monitoring, thermal control, and telemetry.
+
+2. Main Electrical Architecture
+
+The main electrical relationship is:
+
+                         LI-ION BATTERY
+                                │
+                                ↓
+                       POWER DISTRIBUTION
+                                │
+             ┌──────────────────┼──────────────────┐
+             │                  │                  │
+             ↓                  ↓                  ↓
+           ESP32             Sensors            MOSFET
+             │                  │                  │
+             │                  │                  ↓
+             │                  │              HEATER
+             │                  │
+             │                  │
+             ↓                  ↓
+       LilyGO T3-S3       Voltage / Current
+             │              Monitoring
+             ↓
+           LoRa
+             │
+             ↓
+            GCS
+
+The battery is the primary electrical source, while the ESP32 acts as the central control element.
+
+3. Battery Connection
+
+The Li-ion battery provides the electrical supply for the HIFLY onboard system.
+
+The battery power path is:
+
+LI-ION BATTERY
+      │
+      ↓
+POWER DISTRIBUTION
+      │
+      ├──────────────→ ESP32
+      │
+      ├──────────────→ Sensors
+      │
+      ├──────────────→ LilyGO T3-S3
+      │
+      └──────────────→ Heater Power
+
+The heater is treated as a power load controlled through the MOSFET switching stage.
+
+4. ESP32 Controller Connections
+
+The ESP32 is the central electrical and control interface.
+
+The controller receives measurement signals and produces control and communication outputs.
 ```
 
----
+                ┌─────────────────────┐
+                │        ESP32        │
+                │     CONTROLLER      │
+                └──────────┬──────────┘
+                           │
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+        ↓                  ↓                  ↓
+ Temperature          Voltage / Current    MOSFET
+   Inputs                Inputs            Output
+        │                  │                  │
+        ↓                  ↓                  ↓
+ Temperature          Power Monitoring      Heater
+   Sensors
+                           │
+                           ↓
+                     LilyGO T3-S3
+                           │
+                           ↓
+                         LoRa
 
-## 4. Embedded Firmware
-
-The embedded firmware runs on the onboard controller.
-
-### Main Responsibilities
-
-The firmware is responsible for:
-
-1. Initializing connected hardware
-2. Reading sensors
-3. Processing temperature measurements
-4. Monitoring voltage
-5. Monitoring current
-6. Controlling the heating element
-7. Updating system status
-8. Communicating data through LoRa
-9. Handling communication loss
-10. Maintaining autonomous thermal-control operation
-
----
-
-## 5. Sensor Acquisition
-
-The firmware periodically reads the connected sensors.
-
-### Inputs
-
-- Battery temperature
-- Battery voltage
-- Battery current
-- Ambient temperature, where implemented
-
-### Processing
-
-```text
-Sensor
-  ↓
-Sensor Reading
-  ↓
-Validation / Processing
-  ↓
-System Variable
-  ↓
-Thermal Control / Monitoring
 ```
 
-The actual sensor sampling interval should be documented in the firmware configuration.
+The ESP32 performs the central processing required for thermal control and system monitoring.
 
----
+5. Temperature Sensor Wiring
 
-## 6. Temperature-Based Thermal Control
+Temperature sensors provide the feedback required for the thermal-control loop.
 
-The thermal-control logic uses measured battery temperature to determine heater operation.
+The basic connection is:
 
-Conceptually:
-
-```text
-Battery Temperature
+TEMPERATURE SENSOR
+        │
+        │ Sensor Signal
         ↓
-Compare with Control Condition
+      ESP32
+        │
         ↓
-   ┌────┴────┐
-   │         │
-Heating    Heating
-Required   Not Required
-   │         │
-   ↓         ↓
-Heater ON  Heater OFF
-```
+Thermal Evaluation
+        │
+        ↓
+Heater Control
 
-The exact temperature thresholds must match the implemented firmware.
+The temperature sensor is electrically connected to the controller through the appropriate sensor interface.
 
-### Important
+The measured temperature is used for:
 
-The repository should document the actual control thresholds once finalized.
+Thermal-state monitoring
+Heater control
+Thermal-status reporting
+GCS telemetry
+6. Battery Temperature Wiring
 
-No specific threshold should be claimed here until it is confirmed from the implemented firmware.
+Battery temperature is monitored separately as part of the Battery Thermal Management System.
 
----
+LI-ION BATTERY
+      │
+      ↓
+BATTERY TEMPERATURE SENSOR
+      │
+      ↓
+ESP32
+      │
+      ↓
+Battery Thermal Evaluation
+      │
+      ↓
+Heater Control
 
-## 7. Heater Control
+The battery thermal measurement becomes part of the overall thermal-control data.
+
+7. Voltage Measurement Wiring
+
+Voltage monitoring provides the controller with the electrical supply condition.
+
+BATTERY
+   │
+   ↓
+VOLTAGE MEASUREMENT
+   │
+   ↓
+ESP32
+   │
+   ├────────→ Power Status
+   │
+   └────────→ GCS Telemetry
+
+The measured voltage is associated with the electrical state of the system.
+
+8. Current Measurement Wiring
+
+Current monitoring provides information about electrical load.
+
+BATTERY / LOAD PATH
+       │
+       ↓
+CURRENT MEASUREMENT
+       │
+       ↓
+ESP32
+       │
+       ├────────→ Load Monitoring
+       │
+       ├────────→ Power Monitoring
+       │
+       └────────→ GCS Telemetry
+
+Current information is particularly relevant to heater operation because the heating element introduces an active electrical load.
+
+9. Heater Switching Wiring
 
 The heating element is controlled through a MOSFET switching stage.
 
-```text
+The electrical control path is:
+
+                    ESP32
+                      │
+                      │ Control Signal
+                      ↓
+                  MOSFET GATE
+                      │
+                      ↓
+                    MOSFET
+                      │
+             ┌────────┴────────┐
+             │                 │
+             ↓                 ↓
+        Battery Power      Heating Element
+             │                 │
+             └────────┬────────┘
+                      ↓
+                 Thermal Load
+
+The MOSFET provides the switching interface between the low-power controller and the heater load.
+
+10. Heater Control Loop
+
+The heater forms part of a closed-loop thermal system.
+
+Protected Thermal Region
+          │
+          ↓
+Temperature Sensor
+          │
+          ↓
+ESP32 Controller
+          │
+          ↓
 Thermal Control Logic
+          │
           ↓
-     Control Signal
+MOSFET
+          │
           ↓
-        MOSFET
+Heating Element
+          │
           ↓
-   Heating Element
-          ↓
-        Battery
-```
+Protected Thermal Region
 
-The firmware determines the required heater state.
+This loop allows measured thermal conditions to influence heater operation.
 
-The MOSFET provides the electrical switching interface between the controller and heating element.
+11. LilyGO T3-S3 Wiring
 
----
+The LilyGO T3-S3 provides the LoRa communication interface.
 
-## 8. Power Monitoring
+The communication connection is:
 
-The software processes voltage and current measurements to monitor electrical power.
+ESP32 / Controller
+       │
+       ↓
+LilyGO T3-S3
+       │
+       ↓
+LoRa Radio
+       │
+       ↓
+Antenna
+       │
+       ↓
+Wireless Link
+       │
+       ↓
+Ground Station
+
+The LilyGO T3-S3 is integrated into the onboard communication architecture.
+
+12. Telemetry Data Path
+
+The wiring and control system provides the telemetry path from physical measurements to the ground station.
+
+Temperature Sensors
+       │
+       ├─────────────┐
+       │             │
+Voltage Monitor     │
+       │             │
+       ├─────────────┤
+       │             │
+Current Monitor     │
+       │             │
+       └──────┬──────┘
+              ↓
+        ESP32 CONTROLLER
+              │
+              ↓
+        TELEMETRY DATA
+              │
+              ↓
+        LilyGO T3-S3
+              │
+              ↓
+             LoRa
+              │
+              ↓
+       Ground Receiver
+              │
+              ↓
+             GCS
+13. Ground Control Parameters
+
+The onboard wiring supports transmission of the following system parameters:
+
+Parameter	Source
+Battery Temperature	Battery temperature sensor
+Ambient Temperature	Temperature sensor
+Voltage	Voltage monitoring circuit
+Current	Current monitoring circuit
+Heater Status	ESP32 / heater-control state
+Thermal Status	ESP32 thermal logic
+LoRa Link	Communication system
+Operating Mode	Controller state
+Safety Status	ESP32 safety logic
+
+These parameters form the primary electrical and thermal telemetry set.
+
+14. Power and Signal Separation
+
+The HIFLY wiring architecture separates high-power loads from low-power control signals.
+
+              LOW-POWER CONTROL
+                     │
+                     ↓
+                   ESP32
+                     │
+             Control Signal
+                     │
+                     ↓
+                   MOSFET
+                     │
+                     ↓
+              HIGH-POWER LOAD
+                     │
+                     ↓
+              Heating Element
+
+The controller generates the switching command while the power circuit supplies the heater.
+
+This prevents the heating load from being driven directly from a microcontroller output.
+
+15. Common Ground and Electrical Reference
+
+The sensing, controller, and communication circuits operate through a common electrical reference appropriate to the implemented power architecture.
 
 The basic relationship is:
 
-```text
-Power = Voltage × Current
-```
+Battery Ground
+     │
+     ├────────→ ESP32 Ground
+     │
+     ├────────→ Sensor Ground
+     │
+     ├────────→ Monitoring Circuit Ground
+     │
+     ├────────→ MOSFET Control Ground
+     │
+     └────────→ Communication Ground
 
-The measured data can be used for:
+The actual electrical implementation follows the grounding arrangement of the selected hardware and power circuitry.
 
-- Heater power analysis
-- System power monitoring
-- Energy-consumption analysis
-- Mission-level energy assessment
+16. Wiring of the Thermal System
 
-Raw measurements should be preserved before processing.
+The thermal system contains both electrical and passive elements.
 
----
+                    THERMAL SYSTEM
+                          │
+          ┌───────────────┼───────────────┐
+          │                               │
+          ↓                               ↓
+         PHP                           Heater
+          │                               │
+          │                         MOSFET Control
+          │                               │
+          │                               ↑
+          │                               │
+          └──────────→ Thermal Region ←───┘
+                              │
+                              ↓
+                     Temperature Sensor
+                              │
+                              ↓
+                            ESP32
 
-## 9. LoRa Communication
+The PHP does not require an electrical control signal for its passive heat-transfer function.
 
-LoRa provides the communication link between the onboard controller and the Ground Control Station.
+The heater is electrically controlled.
 
-```text
-Onboard Sensors
-      ↓
+17. Battery and Heater Power Relationship
+
+The battery supplies the energy required by the active thermal system.
+
+                     LI-ION BATTERY
+                            │
+                            ↓
+                    POWER DISTRIBUTION
+                            │
+             ┌──────────────┴──────────────┐
+             │                             │
+             ↓                             ↓
+        Electronics                     Heater
+             │                             │
+             ↓                             ↓
+          ESP32                         MOSFET
+             │                             │
+             ↓                             ↓
+      Sensors / LoRa                 Heating Element
+
+Voltage and current monitoring provides visibility into the electrical condition of this system.
+
+18. Communication Wiring
+
+The communication subsystem follows the onboard controller to LoRa path.
+
+ESP32
+  │
+  ↓
 LilyGO T3-S3
-      ↓
-LoRa
-      ↓
-Ground Control Station
+  │
+  ↓
+LoRa Transceiver
+  │
+  ↓
+Antenna
+  │
+  ↓
+Wireless Telemetry
+
+The communication wiring is physically integrated with the protected electronics and antenna structure.
+
+19. Safety-Related Wiring Architecture
+
+Safety-relevant signals are processed onboard.
 ```
 
-The communication system can transmit relevant measurements and system-status information.
+Temperature
+     │
+     ├──────────────┐
+Voltage             │
+     │              │
+Current             │
+     │              │
+     └──────┬───────┘
+            ↓
+      ESP32 CONTROLLER
+            │
+            ↓
+       SAFETY LOGIC
+            │
+       ┌────┴────┐
+       ↓         ↓
+  Heater State  System State
+       │         │
+       ↓         ↓
+     MOSFET     Telemetry
+```
+The communication system provides system-state information, while the onboard controller remains responsible for local control logic.
 
-### Example Data
+20. Communication-Loss Electrical Behaviour
 
-- Battery temperature
-- Voltage
-- Current
-- Heater status
-- Thermal status
-- Operating mode
-- Safety status
-- Communication status
+The wiring architecture keeps the thermal-control path onboard.
 
-The exact communication packet structure should be documented in the firmware implementation.
+                 NORMAL STATE
+                      │
+                      ↓
+                   ESP32
+                      │
+             ┌────────┴────────┐
+             ↓                 ↓
+          Heater            LilyGO
+          Control              │
+                               ↓
+                              LoRa
+                               │
+                               ↓
+                              GCS
 
----
+If the communication path becomes unavailable:
 
-## 10. Ground Control Station
+                 LoRa LINK LOST
+                      │
+                      ↓
+                   ESP32
+                      │
+          ┌───────────┴───────────┐
+          ↓                       ↓
+    Thermal Control          Safety Logic
+          │                       │
+          ↓                       ↓
+       Heater                  System State
 
-The Ground Control Station receives and displays information from the onboard system.
+The local thermal-control wiring therefore remains independent of the wireless telemetry path.
 
-### Planned Dashboard Information
+21. Wiring Architecture for the Seven Subproblems
+Subproblem	Wiring / Electrical Function
+Reduced Cooling Efficiency	PHP integrated into thermal structure
+Insulation Breakdown and Electrical Arcing	Protected electrical enclosure and wiring
+Battery Degradation	Battery temperature sensing and heater control
+Thermal Cycling Damage	Flexible protected interfaces
+Increased Radiation Exposure	Protected electrical assembly
+Communication System Effects	LilyGO T3-S3, LoRa, antenna
+Mission Energy and Endurance	Voltage/current monitoring and controlled heater
+22. Overall Wiring Architecture
 
-- Battery temperature
-- Ambient temperature
-- Voltage
-- Current
-- Heater status
-- Thermal status
-- LoRa link status
-- Operating mode
-- Safety status
-- Alerts
+The complete HIFLY wiring architecture can be represented as:
 
-### Planned Controls
+                              LI-ION BATTERY
+                                     │
+                                     ↓
+                            POWER DISTRIBUTION
+                                     │
+              ┌──────────────────────┼──────────────────────┐
+              │                      │                      │
+              ↓                      ↓                      ↓
+           ESP32                  Sensors                 MOSFET
+              │                      │                      │
+              │          ┌───────────┼───────────┐          │
+              │          │           │           │          ↓
+              │          ↓           ↓           ↓       HEATER
+              │     Temperature    Voltage     Current       │
+              │          │           │           │          │
+              │          └───────────┼───────────┘          │
+              │                      │                      │
+              └──────────────────────┼──────────────────────┘
+                                     │
+                                     ↓
+                              CONTROL SYSTEM
+                                     │
+                        ┌────────────┴────────────┐
+                        │                         │
+                        ↓                         ↓
+                  Thermal Logic              Power Logic
+                        │                         │
+                        ↓                         ↓
+                    Heater                  Energy State
+                        │
+                        ↓
+                  Thermal System
+                        │
+                  ┌─────┴─────┐
+                  ↓           ↓
+                 PHP      Insulation
+                  │           │
+                  └─────┬─────┘
+                        │
+                        ↓
+                Protected Electronics
+                        │
+                        ↓
+                  LilyGO T3-S3
+                        │
+                        ↓
+                       LoRa
+                        │
+                        ↓
+                       GCS
+23. Electrical Data Flow
 
-Where implemented:
+The HIFLY electrical system converts physical measurements into control actions and telemetry.
 
-- AUTO
-- PRE-HEAT
-- HEATER OFF
-- Manual override
+PHYSICAL CONDITION
+       │
+       ↓
+SENSORS
+       │
+       ↓
+ELECTRICAL SIGNALS
+       │
+       ↓
+ESP32
+       │
+       ├────────────→ Thermal Control
+       │
+       ├────────────→ Power Monitoring
+       │
+       ├────────────→ Safety Logic
+       │
+       └────────────→ Telemetry
+                              │
+                              ↓
+                         LilyGO T3-S3
+                              │
+                              ↓
+                             LoRa
+                              │
+                              ↓
+                             GCS
+24. Wiring Architecture Summary
 
-The GCS software and interface are maintained in the GCS section of the repository.
+The HIFLY wiring system provides the electrical connection between the battery, controller, sensors, heater, switching stage, and communication hardware.
 
----
-
-## 11. Fail-Safe Software Behaviour
-
-The onboard controller is designed to maintain essential thermal-control functions during communication loss.
-
-### Normal Condition
-
-```text
-Sensors
+The complete control path is:
+```
+BATTERY
    ↓
-Controller
+POWER DISTRIBUTION
    ↓
-Thermal Control
+SENSORS
    ↓
-Heater
+ESP32
+   ↓
+THERMAL / POWER / SAFETY LOGIC
+   ↓
+MOSFET
+   ↓
+HEATER
+
+The telemetry path is:
+
+SENSORS
+   ↓
+ESP32
+   ↓
+LILYGO T3-S3
    ↓
 LoRa
    ↓
 GCS
 ```
+Together, these two paths create the electrical backbone of the HIFLY system.
 
-### Communication Loss
-
-```text
-Communication Lost
-        ↓
-Onboard Detection
-        ↓
-Continue Autonomous Control
-        ↓
-Maintain Implemented Thermal Logic
-        ↓
-Communication Restored
-        ↓
-Resume GCS Communication
-```
-
-The exact communication-loss timeout and recovery behaviour must be documented using the implemented firmware.
-
----
-
-## 12. Software State Concept
-
-The system can be organized around operating states such as:
-
-```text
-INITIALIZATION
-      ↓
-   MONITORING
-      ↓
-   THERMAL CONTROL
-      ↓
- COMMUNICATION
-      ↓
-   FAIL-SAFE
-      ↓
-   RECOVERY
-```
-
-The exact state-machine implementation will depend on the final firmware.
-
----
-
-## 13. Software Data Flow
-
-```text
-Temperature ─┐
-Voltage ──────┼──→ Data Acquisition
-Current ──────┘           │
-                          ↓
-                 Onboard Controller
-                          │
-             ┌────────────┼────────────┐
-             ↓            ↓            ↓
-        Thermal Logic  Power Data   System Status
-             │            │            │
-             ↓            │            │
-          Heater           │            │
-                          └──────┬─────┘
-                                 ↓
-                            LoRa Packet
-                                 ↓
-                                GCS
-```
-
----
-
-## 14. Alerts and Fault Conditions
-
-The software architecture supports monitoring for conditions such as:
-
-- Low temperature
-- Over-temperature
-- Sensor fault
-- Communication loss
-- Abnormal voltage
-- Abnormal current
-
-The exact alert thresholds must be defined using the actual implemented system requirements and firmware.
-
----
-
-## 15. Autonomous Operation
-
-The onboard controller is intended to provide essential thermal-control operation without requiring continuous operator intervention.
-
-This supports operation when:
-
-- Communication is temporarily unavailable
-- The UAV is outside continuous GCS coverage
-- Manual intervention is not immediately available
-
-The actual autonomous behaviour is limited to functions implemented and tested in the firmware.
-
----
-
-## 16. Firmware Development Structure
-
-The firmware can be organized into functional modules:
-
-```text
-firmware/
-├── sensor acquisition
-├── temperature monitoring
-├── voltage monitoring
-├── current monitoring
-├── thermal control
-├── heater control
-├── power monitoring
-├── LoRa communication
-├── fault handling
-└── system status
-```
-
-The final source-code organization should reflect the actual implementation.
-
----
-
-## 17. Software Testing
-
-Software testing should be performed progressively.
-
-### Stage 1 — Sensor Testing
-
-Verify:
-
-- Temperature readings
-- Voltage readings
-- Current readings
-
-### Stage 2 — Heater Control
-
-Verify:
-
-- Heater ON command
-- Heater OFF command
-- MOSFET switching
-- Temperature response
-
-### Stage 3 — Communication
-
-Verify:
-
-- LoRa transmission
-- Data reception
-- Data integrity
-- Communication-loss detection
-
-### Stage 4 — Fail-Safe
-
-Verify:
-
-- Communication loss
-- Autonomous controller response
-- Recovery after communication restoration
-
-### Stage 5 — Integrated System
-
-Verify:
-
-- Sensor acquisition
-- Thermal control
-- Heater operation
-- Power monitoring
-- LoRa communication
-- GCS monitoring
-- Fail-safe behaviour
-
----
-
-## 18. Software Evidence
-
-Software evidence should include:
-
-- Firmware source code
-- Configuration files
-- Pin assignments
-- Communication protocol
-- Screenshots
-- Test logs
-- GCS interface
-- Recorded system outputs
-
-These should be added as the implementation progresses.
-
----
-
-## 19. Software Status
-
-| Function | Status |
-|---|---|
-| Sensor Acquisition | Development / Prototype |
-| Temperature Monitoring | Prototype |
-| Voltage Monitoring | Prototype |
-| Current Monitoring | Prototype |
-| Thermal Control Logic | Development |
-| Heater Control | Prototype / Development |
-| Power Monitoring | Development |
-| LoRa Communication | Prototype |
-| GCS | Development |
-| Fail-Safe Control | Development |
-| Integrated Firmware | Development |
-
-Status should be updated according to the actual implementation.
-
----
-
-## 20. Software Documentation Rule
-
-Only implemented firmware functionality should be described as operational.
-
-Control thresholds, communication timings, GPIO assignments, packet formats and fault-handling behaviour should be added only after they are confirmed from the actual firmware and prototype configuration.
+The wiring architecture connects thermal control, battery monitoring, power monitoring, safety logic, and telemetry while maintaining the separation between low-power control signals and higher-power heater loads.
