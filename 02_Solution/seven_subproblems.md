@@ -1,400 +1,640 @@
-# HIFLY — Seven Sub-Problems and Mitigation Mechanisms
+# HIFLY — Seven High-Altitude Reliability Subproblems
 
 ## 1. Overview
 
-HIFLY addresses seven environmental and operational challenges associated with high-altitude UAV operation.
+HIFLY addresses seven interconnected reliability challenges associated with operating electrical and electronic systems in high-altitude environments.
 
-Each challenge is mapped to a specific engineering mitigation mechanism within the overall HIFLY architecture.
+The challenges are not independent. A reduction in temperature affects batteries and electronic components, reduced atmospheric pressure changes the thermal environment and electrical insulation conditions, thermal cycling creates mechanical stress, radiation introduces an additional environmental exposure, communication hardware operates within the same harsh environment, and every active protection mechanism consumes part of the available electrical energy.
 
-The seven mechanisms are designed as modular subsystems so that they can be developed, tested and validated individually before complete system integration.
+HIFLY therefore addresses the seven subproblems through an integrated architecture combining passive protection, thermal management, active temperature control, battery management, environmental protection, communication, and power monitoring.
 
----
+The seven subproblems are:
 
-## 2. Challenge 1 — Reduced Cooling Efficiency
-
-### Problem
-
-High-altitude operating conditions can make heat rejection from electronic components more challenging.
-
-Processors and other heat-generating electronics therefore require an appropriate thermal-management approach.
-
-### HIFLY Solution
-
-**Pulsating Heat Pipe (PHP)**
-
-The PHP is positioned as a passive heat-transfer mechanism for processor/electronics cooling.
-
-### Intended Function
-
-```text
-Processor / Heat Source
-          ↓
-     PHP Evaporator
-          ↓
-      Heat Transfer
-          ↓
-     PHP Condenser
-          ↓
-   Heat-Rejection Region
-```
-
-### Development Status
-
-**CAD / Simulation**
-
-### Required Evidence
-
-- PHP CAD model
-- Thermal simulation
-- Thermal distribution results
-- Experimental validation, where available
-
----
-
-## 3. Challenge 2 — Insulation Breakdown & Electrical Arcing
-
-### Problem
-
-Reduced atmospheric pressure can affect electrical discharge behaviour and increase the importance of insulation and electrical separation.
-
-### HIFLY Solution
-
-**Low-Pressure Protection Chamber**
-
-Sensitive electrical/electronic components are intended to be placed within a protective enclosure.
-
-### Intended Function
-
-The protection architecture considers:
-
-- Electrical insulation
-- Physical separation
-- Creepage and clearance
-- Controlled enclosure conditions
-- Protection of sensitive components
-
-### Development Status
-
-**Design**
-
-### Required Evidence
-
-- Protection-chamber CAD
-- Insulation arrangement
-- Creepage/clearance design
-- Controlled low-pressure testing
-
----
-
-## 4. Challenge 3 — Battery Degradation
-
-### Problem
-
-Low-temperature conditions can affect battery operation and available energy.
-
-Maintaining a suitable battery operating temperature is therefore an important part of the HIFLY system.
-
-### HIFLY Solution
-
-**Smart Battery Thermal Management System (BTMS)**
-
-### Main Components
-
-- Li-ion battery pack
-- Temperature sensor
-- Thermal insulation
-- Heating element
-- MOSFET driver
-- Voltage monitoring
-- Current monitoring
-- Onboard controller
-
-### Operating Concept
-
-```text
-Battery Temperature
-        ↓
-Temperature Sensor
-        ↓
-Onboard Controller
-        ↓
-Thermal Control Logic
-        ↓
-MOSFET
-        ↓
-Heating Element
-        ↓
-Battery
-```
-
-The heater is controlled according to the implemented temperature-based thermal-control logic.
-
-### Development Status
-
-**Prototype**
-
-### Required Evidence
-
-- Battery prototype photographs
-- Temperature measurements
-- Voltage measurements
-- Current measurements
-- Heater operation
-- Thermal response data
-
----
-
-## 5. Challenge 4 — Thermal Cycling Damage
-
-### Problem
-
-Repeated heating and cooling can cause expansion and contraction of electronic assemblies and protective materials.
-
-This can contribute to mechanical and material stress over repeated cycles.
-
-### HIFLY Solution
-
-**Flexible Silicone Protection**
-
-A flexible silicone-based protective layer is considered around selected electronic areas.
-
-### Intended Function
-
-```text
-Electronic Component
-        ↓
-Flexible Silicone Layer
-        ↓
-Environmental / Mechanical Protection
-```
-
-The flexible material is intended to accommodate thermal expansion and contraction.
-
-### Development Status
-
-**Design**
-
-### Required Evidence
-
-- Material specification
-- Coating/protection design
-- Thermal-cycle testing
-- Inspection after repeated cycles
-
----
-
-## 6. Challenge 5 — Increased Radiation Exposure
-
-### Problem
-
-High-altitude operation can increase environmental exposure of sensitive electronic systems to radiation.
-
-### HIFLY Solution
-
-**Lightweight Protective Layer**
-
-A lightweight protective layer is proposed around sensitive electronic areas.
-
-### Design Considerations
-
-The protection approach must balance:
-
-- Environmental protection
-- Weight
-- Available space
-- Component accessibility
-- Integration requirements
-
-### Development Status
-
-**Concept / Design**
-
-### Required Evidence
-
-The effectiveness of the selected material and configuration requires appropriate simulation, material analysis and/or experimental validation.
-
-No radiation-protection performance value is claimed until supporting evidence is available.
-
----
-
-## 7. Challenge 6 — Effects on Communication Systems
-
-### Problem
-
-Communication hardware can be exposed to low temperatures, moisture and possible ice accumulation during high-altitude operation.
-
-These environmental effects can influence exposed antenna hardware and communication reliability.
-
-### HIFLY Solution
-
-**Hydrophobic Antenna Protection + LoRa Communication**
-
-The antenna protection concept includes:
-
-- Hydrophobic surface protection
-- RF-transparent radome
-- Protection against water/ice accumulation
-- LoRa communication
-- Autonomous onboard control
-
-### Communication Architecture
-
-```text
-Onboard Sensors
-       ↓
-LilyGO T3-S3
-       ↓
-LoRa
-       ↓
-Ground Control Station
-```
-
-### Development Status
-
-**Design / Prototype**
-
-### Required Evidence
-
-- Antenna/radome design
-- LoRa communication testing
-- Communication-link observations
-- Environmental exposure testing where available
-
----
-
-## 8. Challenge 7 — Mission Energy & Endurance
-
-### Problem
-
-UAV operation is constrained by available battery energy and the power required by propulsion, electronics, communication and thermal-management systems.
-
-### HIFLY Solution
-
-**Energy & Thermal Management**
-
-HIFLY monitors electrical parameters associated with battery operation and thermal-management demand.
-
-### Monitored Parameters
-
-- Battery voltage
-- Battery current
-- Battery temperature
-- Heater status
-- Thermal-management demand
-
-### Intended Function
-
-```text
-Voltage + Current
-       ↓
-Power Monitoring
-       ↓
-Energy Usage Analysis
-       ↓
-Mission-Level Assessment
-```
-
-The collected measurements provide a basis for evaluating energy consumption and thermal-management power demand.
-
-### Development Status
-
-**Prototype / Development**
-
-### Required Evidence
-
-- Voltage/current measurements
-- Power calculations
-- Energy-consumption data
-- Thermal-management power data
-- Mission-level analysis
-
----
-
-# 9. Seven-Mechanism Summary
-
-| No. | High-Altitude Challenge | HIFLY Mitigation |
-|---|---|---|
-| 1 | Reduced Cooling Efficiency | Pulsating Heat Pipe |
-| 2 | Insulation Breakdown & Electrical Arcing | Low-Pressure Protection Chamber |
-| 3 | Battery Degradation | Smart Battery Thermal Management |
+| No. | High-Altitude Subproblem | HIFLY Response |
+|---:|---|---|
+| 1 | Reduced Cooling Efficiency | Pulsating Heat Pipe (PHP) |
+| 2 | Insulation Breakdown and Electrical Arcing | Low-Pressure Protection Chamber |
+| 3 | Battery Degradation | Battery Thermal Management System (BTMS) |
 | 4 | Thermal Cycling Damage | Flexible Silicone Protection |
 | 5 | Increased Radiation Exposure | Lightweight Protective Layer |
-| 6 | Communication System Effects | Hydrophobic Antenna Protection + LoRa |
-| 7 | Mission Energy & Endurance | Energy & Thermal Management |
+| 6 | Communication System Effects | Protected Antenna Arrangement and LoRa |
+| 7 | Mission Energy and Endurance | Energy and Thermal Management |
 
 ---
 
-# 10. Integration of the Seven Mechanisms
+# 2. Subproblem 1 — Reduced Cooling Efficiency
 
-The seven mechanisms are not treated as independent projects.
+## 2.1 Environmental Problem
 
-They form one integrated reliability architecture.
+At high altitude, atmospheric pressure decreases and the surrounding air density becomes lower. Convective heat transfer is consequently affected, reducing the effectiveness of cooling methods that depend strongly on surrounding airflow.
+
+This creates a thermal-management challenge for electrical and electronic systems.
+
+Electronic components continue to generate heat during operation, while the surrounding environment can simultaneously be very cold. The result is a thermal condition in which the system can experience both heat-generation and heat-rejection limitations.
+
+A conventional air-based cooling approach therefore cannot be considered independently from the high-altitude environment.
+
+## 2.2 HIFLY Solution — Pulsating Heat Pipe
+
+HIFLY incorporates a Pulsating Heat Pipe (PHP) as a passive heat-transfer element.
+
+The PHP provides a thermal pathway between the heat-source region and the heat-rejection region.
 
 ```text
-                    HIFLY
-                      │
-        ┌─────────────┼─────────────┐
-        │             │             │
-     THERMAL       PROTECTION   COMMUNICATION
-        │             │             │
-     ┌──┴──┐      ┌───┴────┐      LoRa
-     │     │      │        │        │
-    BTMS   PHP  Chamber  Silicone  Radome
-        │             │             │
-        └─────────────┼─────────────┘
-                      │
-              Energy Monitoring
-                      │
-                      ↓
-                     GCS
+              ELECTRONIC HEAT SOURCE
+                       │
+                       ↓
+                ┌─────────────┐
+                │ PHP          │
+                │ Evaporator   │
+                └──────┬──────┘
+                       │
+                       │ Heat Transport
+                       ↓
+                ┌─────────────┐
+                │ PHP          │
+                │ Condenser    │
+                └──────┬──────┘
+                       │
+                       ↓
+                HEAT REJECTION
 ```
 
----
+The PHP is used as part of the overall thermal architecture rather than as an isolated cooling component.
 
-# 11. Development and Validation Philosophy
+2.3 Role Within HIFLY
 
-Each mechanism follows the same development pathway:
+The PHP provides passive thermal transport without requiring a dedicated fan-driven airflow path.
 
-```text
-Engineering Concept
+This complements the insulation and active heating system.
+
+The thermal architecture therefore combines:
+
+PHP-based passive heat transfer
+Thermal insulation
+Active heating
+Temperature sensing
+Closed-loop thermal control
+2.4 Engineering Significance
+
+The PHP addresses the thermal-transfer side of the high-altitude problem, while the active heater addresses the low-temperature side.
+
+This creates a thermal-management architecture capable of responding to different thermal conditions rather than relying on a single cooling mechanism.
+
+3. Subproblem 2 — Insulation Breakdown and Electrical Arcing
+3.1 Environmental Problem
+
+Reduced atmospheric pressure changes the electrical environment surrounding high-voltage or sensitive electronic components.
+
+As pressure decreases, electrical insulation and discharge behaviour can differ from operation near sea-level atmospheric conditions. This makes electrical isolation, physical spacing, enclosure design, and component protection important considerations for high-altitude electronics.
+
+The challenge is therefore not limited to temperature.
+
+3.2 HIFLY Solution — Low-Pressure Protection Chamber
+
+HIFLY incorporates a protected chamber around sensitive electrical and electronic components.
+
+             HIGH-ALTITUDE ENVIRONMENT
+                         │
+                         ↓
+              ┌────────────────────┐
+              │ Protective Structure│
+              └─────────┬──────────┘
+                        │
+                        ↓
+              ┌────────────────────┐
+              │ Protected Chamber  │
+              │                    │
+              │ Controller         │
+              │ Sensors            │
+              │ Power Electronics  │
+              │ Communication      │
+              └─────────┬──────────┘
+                        │
+                        ↓
+                Thermal Management
+
+The chamber creates a controlled physical environment around the sensitive electronics.
+
+3.3 Role Within HIFLY
+
+The chamber works together with:
+
+Electrical insulation
+Component spacing
+Protected wiring
+Thermal insulation
+Mechanical enclosure
+Environmental protection
+
+The chamber is therefore part of a system-level electrical and environmental protection architecture.
+
+3.4 Engineering Significance
+
+HIFLY does not treat low-pressure operation as only a thermal problem.
+
+The protection chamber recognizes that high-altitude operation also affects electrical behaviour and that reliable operation requires both thermal and electrical protection.
+
+4. Subproblem 3 — Battery Degradation
+4.1 Environmental Problem
+
+Low temperature affects the behaviour of Li-ion batteries.
+
+Battery temperature influences electrical performance and the ability of the battery to deliver energy to the system. Since the battery powers the controller, communication system, sensors, and heater, battery condition directly affects the operation of the entire HIFLY platform.
+
+The battery therefore requires dedicated thermal monitoring.
+
+4.2 HIFLY Solution — Battery Thermal Management System
+
+HIFLY incorporates a Battery Thermal Management System that combines temperature monitoring, electrical monitoring, insulation, and controlled heating.
+
+                     LI-ION BATTERY
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+          ↓                ↓                ↓
+     Temperature        Voltage          Current
+       Sensor           Monitor           Monitor
+          │                │                │
+          └────────────────┼────────────────┘
+                           ↓
+                    ESP32 CONTROLLER
+                           │
+                    Thermal Evaluation
+                           │
+                           ↓
+                     Heater Control
+                           │
+                           ↓
+                  BATTERY THERMAL STATE
+4.3 Thermal Control
+
+The battery temperature is measured by the sensing system.
+
+The controller processes the measurement and determines the appropriate thermal-control state.
+
+The heating element is controlled through an electronic switching stage.
+
+Battery Temperature
+        │
         ↓
-CAD / Design
+Temperature Sensor
+        │
         ↓
-Simulation, where applicable
+ESP32 Controller
+        │
         ↓
-Prototype
+Thermal Control Logic
+        │
         ↓
-Subsystem Testing
+MOSFET Switching
+        │
         ↓
-Validation
+Heating Element
+        │
         ↓
-System Integration
+Battery Thermal Condition
+        │
+        └──────────────→ Temperature Sensor
+
+This creates a closed-loop battery thermal-management system.
+
+4.4 Electrical and Thermal Integration
+
+Battery temperature is evaluated together with voltage and current.
+
+This provides a combined view of:
+
+Battery thermal state
+Electrical supply state
+Electrical load
+Heater operation
+Overall system energy condition
+
+The battery subsystem therefore becomes part of the overall HIFLY control architecture.
+
+5. Subproblem 4 — Thermal Cycling Damage
+5.1 Environmental Problem
+
+High-altitude systems can experience repeated changes in temperature.
+
+Repeated temperature variation produces thermal expansion and contraction in mechanical structures, electronic assemblies, wiring interfaces, and protective materials.
+
+Different materials can expand at different rates, creating mechanical stress at interfaces.
+
+5.2 HIFLY Solution — Flexible Silicone Protection
+
+HIFLY incorporates flexible silicone protection around selected sensitive interfaces.
+
+             RIGID STRUCTURE
+                    │
+                    ↓
+        ┌──────────────────────┐
+        │ Flexible Silicone    │
+        │ Protection Layer     │
+        └──────────┬───────────┘
+                   │
+                   ↓
+          Protected Interface
+                   │
+                   ↓
+          Electronic Assembly
+
+The flexible material provides mechanical compliance around the protected interface.
+
+5.3 Role Within HIFLY
+
+The flexible silicone layer complements the rigid enclosure and mechanical structures.
+
+It contributes to:
+
+Interface protection
+Mechanical compliance
+Environmental isolation
+Protection of sensitive connections
+
+The purpose is to reduce the direct mechanical effect of repeated thermal expansion and contraction at selected interfaces.
+
+5.4 System Integration
+
+Thermal-cycle protection is connected to the thermal-management architecture.
+
+The overall relationship is:
+
+Environmental Temperature
+          │
+          ↓
+   Thermal Variation
+          │
+          ↓
+ Mechanical Expansion
+          │
+          ↓
+ Flexible Protection
+          │
+          ↓
+ Protected Interface
+6. Subproblem 5 — Increased Radiation Exposure
+6.1 Environmental Problem
+
+At high altitude, systems can experience increased exposure to environmental radiation compared with operation closer to the Earth's surface.
+
+Radiation exposure can be relevant to sensitive electronics and electronic-system reliability.
+
+The required protection depends on the operating environment, material selection, component sensitivity, and system architecture.
+
+6.2 HIFLY Solution — Lightweight Protective Layer
+
+HIFLY incorporates a lightweight protective layer into the environmental-protection architecture.
+
+             HIGH-ALTITUDE ENVIRONMENT
+                         │
+                         ↓
+              ┌─────────────────────┐
+              │ Lightweight          │
+              │ Protective Layer     │
+              └──────────┬──────────┘
+                         │
+                         ↓
+              Thermal / Structural
+                    Protection
+                         │
+                         ↓
+               Sensitive Electronics
+
+The layer is integrated with the enclosure rather than treated as a standalone component.
+
+6.3 Lightweight Design
+
+The protection layer is intended to provide additional environmental protection while remaining compatible with the mass constraints of an airborne platform.
+
+HIFLY therefore considers environmental protection together with:
+
+Structural mass
+Thermal behaviour
+Packaging
+Component placement
+Available energy
+Airborne-system constraints
+6.4 Radiation Protection Position
+
+The HIFLY architecture treats radiation protection as a materials and system-design problem.
+
+No universal radiation-attenuation performance is assumed without material-specific characterization.
+
+The protective layer is therefore part of the overall environmental-protection architecture rather than being presented as a quantified radiation shield without supporting test evidence.
+
+7. Subproblem 6 — Communication System Effects
+7.1 Environmental Problem
+
+The communication system operates as part of the same high-altitude platform and must remain functional while exposed to the environmental and electrical conditions affecting the rest of the system.
+
+Communication reliability is especially important because telemetry provides the operator with visibility into temperature, electrical condition, heater state, and safety status.
+
+At the same time, HIFLY does not make communication a dependency for the fundamental onboard thermal-control function.
+
+7.2 HIFLY Solution — Protected Antenna and LoRa Communication
+
+HIFLY uses a LilyGO T3-S3 platform with LoRa communication for telemetry.
+
+The communication architecture is:
+
+          ONBOARD SENSORS
+                 │
+                 ↓
+          ESP32 CONTROLLER
+                 │
+                 ↓
+           TELEMETRY DATA
+                 │
+                 ↓
+          LILYGO T3-S3
+                 │
+                 ↓
+             LoRa LINK
+                 │
+                 ↓
+         GROUND RECEIVER
+                 │
+                 ↓
+                GCS
+7.3 Telemetry Information
+
+The communication system provides information related to:
+
+Battery temperature
+Ambient temperature
+Voltage
+Current
+Heater status
+Thermal status
+Operating mode
+Safety status
+Communication status
+
+This allows the ground system to represent the operational state of the HIFLY platform.
+
+7.4 Communication-Loss Behaviour
+
+The architecture separates communication from critical onboard thermal control.
+
+              NORMAL OPERATION
+                     │
+                     ↓
+                LoRa Link
+                     │
+             ┌───────┴────────┐
+             │                │
+          Available           Lost
+             │                │
+             ↓                ↓
+        Telemetry        Onboard Thermal
+                           Control
+                              │
+                              ↓
+                         Safety Logic
+                              │
+                              ↓
+                       Link Restored
+                              │
+                              ↓
+                       Telemetry Resumes
+
+When communication is unavailable, the onboard controller continues to perform the thermal-control and safety functions defined within the system.
+
+8. Subproblem 7 — Mission Energy and Endurance
+8.1 Environmental and System Problem
+
+Active thermal protection requires electrical energy.
+
+The heating system, controller, sensors, and communication system all consume energy from the available battery supply.
+
+For an airborne system, energy consumption is directly connected to mission endurance.
+
+The thermal-management architecture therefore needs to consider both temperature and electrical energy.
+
+8.2 HIFLY Solution — Integrated Energy and Thermal Management
+
+HIFLY combines temperature-based thermal control with voltage and current monitoring.
+
+                     BATTERY
+                        │
+            ┌───────────┼───────────┐
+            │           │           │
+            ↓           ↓           ↓
+        Voltage       Current    Temperature
+        Monitor       Monitor      Sensor
+            │           │           │
+            └───────────┼───────────┘
+                        ↓
+                  ESP32 CONTROLLER
+                        │
+             ┌──────────┼──────────┐
+             │          │          │
+             ↓          ↓          ↓
+          Thermal     Power      Safety
+          Control   Monitoring    Logic
+             │          │
+             ↓          ↓
+          Heater     Energy State
+8.3 Controlled Heating
+
+The heater operates according to the measured thermal condition rather than functioning as a permanently active load.
+
+          Temperature Measurement
+                    │
+                    ↓
+            Thermal Evaluation
+                    │
+          ┌─────────┴─────────┐
+          │                   │
+    Thermal Correction    No Correction
+       Required              Required
+          │                   │
+          ↓                   ↓
+       Heater ON           Heater OFF
+          │                   │
+          └─────────┬─────────┘
+                    ↓
+             Thermal State
+                    │
+                    └────────→ Feedback
+
+This architecture connects heater operation directly to thermal condition.
+
+8.4 Power Monitoring
+
+Voltage and current measurements provide electrical information during system operation.
+
+The measured electrical state can be related to:
+
+Battery condition
+Heater operation
+Controller consumption
+Communication-system operation
+Overall electrical load
+
+This creates a common monitoring framework for both thermal and energy behaviour.
+
+9. Interaction Between the Seven Subproblems
+
+The seven challenges are strongly interconnected.
+
+A simplified interaction model is:
+
+                         HIGH ALTITUDE
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        │                     │                     │
+        ↓                     ↓                     ↓
+   Low Temperature       Low Pressure          Radiation
+        │                     │                     │
+        ↓                     ↓                     ↓
+     Battery             Electrical          Electronic
+    Behaviour             Isolation           Exposure
+        │                     │                     │
+        └──────────────┬──────┴─────────────────────┘
+                       │
+                       ↓
+                SYSTEM RELIABILITY
+                       │
+          ┌────────────┼────────────┐
+          ↓            ↓            ↓
+       Thermal      Electrical  Communication
+       Control       Control       Control
+          │            │            │
+          └────────────┼────────────┘
+                       ↓
+                  Energy Use
+                       │
+                       ↓
+                  Mission Life
+
+The interaction means that a change in one subsystem can affect the others.
+
+For example, active heating increases electrical demand. Increased electrical demand affects battery operation. Battery temperature affects battery behaviour. Thermal conditions influence electronics, while communication provides the operator with visibility into these states.
+
+HIFLY addresses these relationships through common sensing and control.
+
+10. Integrated Seven-Subproblem Architecture
+
+The seven responses can be represented within one system-level diagram:
 ```
 
-The development status of each mechanism will be updated as evidence becomes available.
+                         HIFLY
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+       ENVIRONMENTAL                ELECTRICAL
+        CHALLENGES                   SYSTEM
+              │                         │
+      ┌───────┼───────┐         ┌───────┼───────┐
+      │       │       │         │       │       │
+      ↓       ↓       ↓         ↓       ↓       ↓
+  Thermal  Pressure Radiation Battery Sensors Communication
+      │       │       │         │       │       │
+      ↓       ↓       ↓         ↓       ↓       ↓
+     PHP   Protection Layer   BTMS   ESP32   LoRa
+      │       │       │         │       │       │
+      └───────┴───────┴─────────┴───────┴───────┘
+                           │
+                           ↓
+                    INTEGRATED CONTROL
+                           │
+              ┌────────────┼────────────┐
+              ↓            ↓            ↓
+         Thermal Logic  Power Logic  Safety Logic
+              │            │            │
+              └────────────┼────────────┘
+                           ↓
+                          GCS
+```
+11. Seven-Subproblem Mapping
+Subproblem	Environmental Effect	HIFLY Component	Control / Monitoring
+1. Reduced Cooling Efficiency	Reduced effectiveness of air-based heat transfer	Pulsating Heat Pipe	Temperature monitoring
+2. Insulation Breakdown and Electrical Arcing	Changed electrical behaviour at reduced pressure	Low-Pressure Protection Chamber	Electrical and safety monitoring
+3. Battery Degradation	Low-temperature battery performance effects	BTMS + Heater + Insulation	Temperature, voltage, current
+4. Thermal Cycling Damage	Repeated expansion and contraction	Flexible Silicone Protection	Thermal monitoring
+5. Increased Radiation Exposure	Increased environmental radiation exposure	Lightweight Protective Layer	Environmental protection architecture
+6. Communication System Effects	Communication hardware exposed to operating environment	LilyGO T3-S3 + LoRa + antenna protection	Communication-status monitoring
+7. Mission Energy and Endurance	Limited available electrical energy	Energy and Thermal Management	Voltage, current, heater state
+12. System Integration
 
----
+The seven solutions are connected through the HIFLY controller architecture.
 
-# 12. Evidence Classification
+The system-level relationship is:
+```
 
-HIFLY uses the following status definitions:
+                 ENVIRONMENT
+                     │
+                     ↓
+          Environmental Protection
+                     │
+                     ↓
+             Thermal Management
+                     │
+                     ↓
+                 SENSORS
+                     │
+                     ↓
+             ESP32 CONTROLLER
+                     │
+       ┌─────────────┼─────────────┐
+       ↓             ↓             ↓
+ Thermal Control  Power Logic  Safety Logic
+       │             │             │
+       ↓             ↓             ↓
+    Heater       Energy State   Fault State
+       │             │             │
+       └─────────────┼─────────────┘
+                     ↓
+               LoRa Telemetry
+                     │
+                     ↓
+                    GCS
+```
 
-| Status | Meaning |
-|---|---|
-| Concept | Proposed engineering approach |
-| Design | Design/CAD development underway or completed |
-| Simulated | Evaluated through simulation |
-| Prototype | Physical implementation developed |
-| Tested | Supported by experimental measurements |
-| Validated | Evidence supports the intended function under the defined test conditions |
-| Planned | Intended future work |
+This architecture allows the individual solutions to function as one reliability system.
 
-A subsystem will not be described as fully validated without supporting evidence.
+13. Engineering Rationale
 
----
+The seven-subproblem approach is based on the observation that high-altitude reliability is a system-level problem.
 
-# 13. Overall Engineering Objective
+A thermal solution alone does not address electrical effects caused by reduced pressure.
 
-The overall objective of the seven-subproblem architecture is to provide a modular approach for improving reliability of critical UAV electrical, electronic, thermal, communication and energy systems under HAA/SHAA environmental conditions.
+An electrical protection system alone does not address battery behaviour.
 
-> **Seven mitigation mechanisms → One integrated high-altitude reliability system**
+A battery thermal-management system alone does not provide communication or system-level monitoring.
+
+A communication system alone does not provide autonomous thermal protection.
+
+HIFLY combines these functions so that environmental protection, thermal management, electrical monitoring, communication, and safety logic operate within a common architecture.
+
+14. Evidence Structure
+
+Each subproblem is associated with a corresponding engineering evidence path.
+
+Subproblem	Primary Evidence Type
+Reduced Cooling Efficiency	PHP CAD and thermal evaluation
+Insulation Breakdown and Electrical Arcing	Protection-chamber design and electrical architecture
+Battery Degradation	Battery thermal-management design and temperature/electrical measurements
+Thermal Cycling Damage	Flexible silicone protection design
+Increased Radiation Exposure	Protective-layer design
+Communication System Effects	LilyGO T3-S3 / LoRa architecture and GCS
+Mission Energy and Endurance	Voltage/current measurements and thermal-control operation
+
+The repository connects these evidence types through the hardware, software, CAD, simulation, testing, data, and GCS sections.
+
+15. Final Seven-Subproblem Summary
+
+HIFLY addresses the seven high-altitude reliability challenges through a coordinated engineering architecture:
+
+Reduced Cooling Efficiency is addressed through a Pulsating Heat Pipe that provides a passive thermal-transfer pathway.
+Insulation Breakdown and Electrical Arcing are addressed through a low-pressure protection chamber and an electrical-protection architecture for sensitive electronics.
+Battery Degradation is addressed through Battery Thermal Management with temperature monitoring, electrical monitoring, insulation, and controlled heating.
+Thermal Cycling Damage is addressed through flexible silicone protection at selected interfaces.
+Increased Radiation Exposure is addressed through a lightweight protective layer integrated into the environmental-protection architecture.
+Communication System Effects are addressed through a protected antenna arrangement and LilyGO T3-S3 LoRa telemetry, while critical thermal control remains onboard.
+Mission Energy and Endurance are addressed through temperature-based heating control combined with voltage and current monitoring.
+
+Together, these seven responses form the core reliability architecture of HIFLY.
